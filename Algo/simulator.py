@@ -11,14 +11,13 @@ OBSTACLE = []
 #input
 #stub method to get obstacle on terminal
 def getObstacle():
-    val = input("Enter obstacle coordinate:\n")
+    val = input("Enter obstacle coordinate (x,y,image):\n")
     while (val!="END"):
         x = val.split(",")
         obsCoor = [int(x[0]),int(x[1])]
         OBSTACLE.append(obsCoor)
-        val = input("Enter obstacle coordinate:\n")
+        val = input("Enter next coordinate (enter END to end):\n")
 
-def findObstacle():
+def findObstaclePth(OBSTACLE):
 
-def moveRobot():
-    
+
