@@ -5,7 +5,6 @@ import time
 import picamera
 
 client_socket = socket.socket()
-
 client_socket.connect(('192.168.9.25', 8000))  # ADD IP HERE
 
 # Make a file-like object out of the connection

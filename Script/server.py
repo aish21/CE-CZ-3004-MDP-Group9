@@ -5,7 +5,8 @@ from PIL import Image
 import matplotlib.pyplot as pl
 
 server_socket = socket.socket()
-server_socket.bind(('', 8000))  # ADD IP HERE
+ip = input("enter ip address")
+server_socket.bind((ip, 8000))  # ADD IP HERE
 server_socket.listen(0)
 
 # Accept a single connection and make a file-like object out of it
