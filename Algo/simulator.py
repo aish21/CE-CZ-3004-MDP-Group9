@@ -1,21 +1,20 @@
 
-#libraries
+#library
 import math
 
 #attributes
-SPEED = 0.25
+SPEED = 1 # constant
 MOVES = 0
 START = [0,0]
 BOUNDARY = [[0,0],(0,200),(200,0),(200,200)]
 VISTED = []
 
 #image of obstacle given in N,S,E,W
-NORTH = math.pi
-SOUTH = math.pi/2
-EAST = -math.pi/2
+NORTH = math.pi/2
+SOUTH = -math.pi/2
+EAST = 0
 WEST = -math.pi
 OBSTACLE = []
-
 
 #input
 #stub method to get obstacle on terminal
@@ -27,7 +26,10 @@ def getObstacle():
         OBSTACLE.append(obsCoor)
         val = input("Enter next coordinate (enter END to end):\n")
 
-def pathplanning(OBSTACLE):
+#find distance from car to obstacles
+def calculateDistance(OBSTACLE):
 
-def nearestNeighbour():
+
+def nearestNeighbour(OBSTACLE):
+
 
