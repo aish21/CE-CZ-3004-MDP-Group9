@@ -15,10 +15,17 @@ SOUTH = -math.pi/2
 EAST = 0
 WEST = -math.pi
 OBSTACLES = [{"obstacleID": 1, "xPos": 1, "yPos": 1, "direction": NORTH, "distance": 0}, 
-            {"obstacleID": 1, "xPos": 9, "yPos": 5, "direction": NORTH, "distance": 0},
-            {"obstacleID": 1, "xPos": 2, "yPos": 7, "direction": NORTH, "distance": 50}]
+            {"obstacleID": 2, "xPos": 9, "yPos": 5, "direction": NORTH, "distance": 0},
+            {"obstacleID": 3, "xPos": 2, "yPos": 7, "direction": NORTH, "distance": 50},
+            {"obstacleID": 4, "xPos": 4, "yPos": 3, "direction": EAST, "distance": 0},
+            {"obstacleID": 5, "xPos": 8, "yPos": 6, "direction": SOUTH, "distance": 0}]
             #in the format [{obstacleID: 1, xPos: 1, yPos: 1, direction: NORTH, distance: 0}, {}...]
             #values here just for testing and debugging 
+distanceMatrix = [[math.inf,0,0,0,0],
+                  [0,math.inf,0,0,0],
+                  [0,0,math.inf,0,0],
+                  [0,0,0,math.inf,0],
+                  [0,0,0,0,math.inf]] # assume 5 obstacles
 
 #input
 #stub method to get obstacle on terminal
@@ -34,15 +41,28 @@ def getObstacle():
 
 #find distance from car to obstacles
 #robotCurrPos is a dictionary {xPos: 1, yPos: 1, direction: NORTH}
-def calculateDistance(OBSTACLES, robotCurrPos):
+def calculateInitialCarToObtDistance(OBSTACLES, robotCurrPos):
     for item in OBSTACLES:
         dist = math.sqrt(((abs(item["xPos"]-robotCurrPos["xPos"]))**2) + ((abs(item["yPos"]-robotCurrPos["yPos"]))**2))
         item["distance"] = dist
     return OBSTACLES
 
+# calculate the distances between obstacles
+def calDistanceBetweenObs(distanceMatrix, OBSTACLES):
+    for i in range(0, len(distanceMatrix)):
+        for j in range(0, len(distanceMatrix)):
+            if(i<=j):
+                continue
+            else: 
+                dist = math.sqrt(((abs(OBSTACLES[i]["xPos"]-OBSTACLES[j]["xPos"]))**2) + ((abs(OBSTACLES[i]["yPos"]-OBSTACLES[j]["yPos"]))**2))
+                distanceMatrix[i][j] = dist
+                distanceMatrix[j][i] = dist
+    return distanceMatrix
+
 def nearestNeighbour(OBSTACLES):
     return
 
 #just testing and debugging
-ans = calculateDistance(OBSTACLES, {"xPos": 10, "yPos": 10, "direction": NORTH})
+#ans = calculateDistance(OBSTACLES, {"xPos": 10, "yPos": 10, "direction": NORTH})
+ans = calDistanceBetweenObs(distanceMatrix, OBSTACLES)
 print(ans)
