@@ -23,11 +23,13 @@ OBSTACLES = [{"obstacleID": 1, "xPos": 1, "yPos": 1, "direction": NORTH, "distan
 #input
 #stub method to get obstacle on terminal
 def getObstacle():
-    val = input("Enter obstacle coordinate (x,y):\n")
+    val = input("Enter obstacle coordinate (x,y,direction):\n")
+    obsID = 1
     while (val!="END"):
         x = val.split(",")
-        obsCoor = [int(x[0]),int(x[1])]
-        OBSTACLE.append(obsCoor)
+        obsCoor = {"obstacleID": obsID, "xPos": int(x[0]), "yPos": int(x[1]), "direction": x[2], "distance": 0}
+        obsID += 1
+        OBSTACLES.append(obsCoor)
         val = input("Enter next coordinate (enter END to end):\n")
 
 #find distance from car to obstacles
