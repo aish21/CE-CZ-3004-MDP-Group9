@@ -16,16 +16,20 @@ EAST = 0
 WEST = -math.pi
 OBSTACLES = [{"obstacleID": 1, "xPos": 1, "yPos": 1, "direction": NORTH, "distance": 0}, 
             {"obstacleID": 2, "xPos": 9, "yPos": 5, "direction": NORTH, "distance": 0},
-            {"obstacleID": 3, "xPos": 2, "yPos": 7, "direction": NORTH, "distance": 50},
+            {"obstacleID": 3, "xPos": 2, "yPos": 7, "direction": NORTH, "distance": 0},
             {"obstacleID": 4, "xPos": 4, "yPos": 3, "direction": EAST, "distance": 0},
-            {"obstacleID": 5, "xPos": 8, "yPos": 6, "direction": SOUTH, "distance": 0}]
+            {"obstacleID": 5, "xPos": 8, "yPos": 6, "direction": SOUTH, "distance": 0},
+            {"obstacleID": 6, "xPos": 3, "yPos": 9, "direction": SOUTH, "distance": 0},
+            {"obstacleID": 7, "xPos": 7, "yPos": 2, "direction": SOUTH, "distance": 0}]
             #in the format [{obstacleID: 1, xPos: 1, yPos: 1, direction: NORTH, distance: 0}, {}...]
             #values here just for testing and debugging 
-distanceMatrix = [[math.inf,0,0,0,0],
-                  [0,math.inf,0,0,0],
-                  [0,0,math.inf,0,0],
-                  [0,0,0,math.inf,0],
-                  [0,0,0,0,math.inf]] # assume 5 obstacles
+distanceMatrix = [[math.inf,0,0,0,0,0,0],
+                  [0,math.inf,0,0,0,0,0],
+                  [0,0,math.inf,0,0,0,0],
+                  [0,0,0,math.inf,0,0,0],
+                  [0,0,0,0,math.inf,0,0],
+                  [0,0,0,0,0,math.inf,0],
+                  [0,0,0,0,0,0,math.inf]] # assume 5 obstacles
 
 #input
 #stub method to get obstacle on terminal
@@ -59,10 +63,36 @@ def calDistanceBetweenObs(distanceMatrix, OBSTACLES):
                 distanceMatrix[j][i] = dist
     return distanceMatrix
 
-def nearestNeighbour(OBSTACLES):
-    return
+def nearestNeighbour(OBSTACLES, distanceMatrix):
+    visitingSequence = []
+    i=0
+    while(i<len(distanceMatrix)):
+        currDist = 40
+        if(i==0):
+            for j in range (0, len(distanceMatrix)):
+                if(OBSTACLES[j]["distance"]<currDist):
+                   currDist = OBSTACLES[j]["distance"]
+                   target = OBSTACLES[j]["obstacleID"]
+            for dist in distanceMatrix:
+                dist[target-1] = math.inf
+            visitingSequence.append(target)
+        else:
+            k=1
+            for dist in distanceMatrix[target-1]:
+                if(dist<currDist):
+                    currDist = dist
+                    target = k
+                k+=1
+            for dist in distanceMatrix:
+                dist[target-1] = math.inf
+            visitingSequence.append(target)
+        i+=1
+    return visitingSequence
 
 #just testing and debugging
-#ans = calculateDistance(OBSTACLES, {"xPos": 10, "yPos": 10, "direction": NORTH})
-ans = calDistanceBetweenObs(distanceMatrix, OBSTACLES)
+OBSTACLES = calculateInitialCarToObtDistance(OBSTACLES, {"xPos": 0, "yPos": 0, "direction": NORTH})
+print(OBSTACLES)
+distanceMatrix = calDistanceBetweenObs(distanceMatrix, OBSTACLES)
+print(distanceMatrix)
+ans = nearestNeighbour(OBSTACLES, distanceMatrix)
 print(ans)
