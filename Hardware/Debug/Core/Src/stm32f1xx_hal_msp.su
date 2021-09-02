@@ -1,0 +1,5 @@
+stm32f1xx_hal_msp.c:64:6:HAL_MspInit	24	static
+stm32f1xx_hal_msp.c:92:6:HAL_TIM_Encoder_MspInit	56	static
+stm32f1xx_hal_msp.c:156:6:HAL_TIM_Base_MspInit	40	static
+stm32f1xx_hal_msp.c:190:6:HAL_TIM_Encoder_MspDeInit	16	static
+stm32f1xx_hal_msp.c:239:6:HAL_TIM_Base_MspDeInit	16	static
