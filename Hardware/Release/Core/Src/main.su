@@ -1,0 +1,13 @@
+main.c:575:6:StartDefaultTask	16	static
+main.c:722:6:show	32	static
+main.c:746:6:encoder_task	72	static
+main.c:204:6:SystemClock_Config	72	static,ignoring_inline_asm
+main.c:110:5:main	112	static,ignoring_inline_asm
+main.c:559:6:HAL_UART_RxCpltCallBack	0	static
+main.c:600:6:moveForward	8	static
+main.c:612:6:moveBackword	16	static
+main.c:623:6:turnForward	0	static
+main.c:628:6:turnLeft	0	static
+main.c:633:6:turnRight	0	static
+main.c:639:6:motors	16	static
+main.c:810:6:Error_Handler	0	static,ignoring_inline_asm

@@ -24,7 +24,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "oled.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,9 +41,12 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
-TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim8;
+
+UART_HandleTypeDef huart3;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -53,13 +55,6 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for OLED_Display */
-osThreadId_t OLED_DisplayHandle;
-const osThreadAttr_t OLED_Display_attributes = {
-  .name = "OLED_Display",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
 /* Definitions for MotorTask */
 osThreadId_t MotorTaskHandle;
 const osThreadAttr_t MotorTask_attributes = {
@@ -67,17 +62,17 @@ const osThreadAttr_t MotorTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
-/* Definitions for EncoderA */
-osThreadId_t EncoderAHandle;
-const osThreadAttr_t EncoderA_attributes = {
-  .name = "EncoderA",
+/* Definitions for showTask */
+osThreadId_t showTaskHandle;
+const osThreadAttr_t showTask_attributes = {
+  .name = "showTask",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
-/* Definitions for EncoderC */
-osThreadId_t EncoderCHandle;
-const osThreadAttr_t EncoderC_attributes = {
-  .name = "EncoderC",
+/* Definitions for EncoderTask */
+osThreadId_t EncoderTaskHandle;
+const osThreadAttr_t EncoderTask_attributes = {
+  .name = "EncoderTask",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
@@ -89,13 +84,14 @@ const osThreadAttr_t EncoderC_attributes = {
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM8_Init(void);
+static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
-static void MX_TIM4_Init(void);
+static void MX_USART3_UART_Init(void);
+static void MX_TIM3_Init(void);
 void StartDefaultTask(void *argument);
-void OLED(void *argument);
-void motor(void *argument);
-void encoderA(void *argument);
-void encoderC(void *argument);
+void motors(void *argument);
+void show(void *argument);
+void encoder_task(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -103,7 +99,8 @@ void encoderC(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint8_t aRxBuffer[20];
+uint16_t control;
 /* USER CODE END 0 */
 
 /**
@@ -135,11 +132,14 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM8_Init();
+  MX_TIM1_Init();
   MX_TIM2_Init();
-  MX_TIM4_Init();
+  MX_USART3_UART_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   OLED_Init();
 
+  HAL_UART_Receive_IT(&huart3,(uint8_t *) aRxBuffer,10);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -165,17 +165,14 @@ int main(void)
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* creation of OLED_Display */
-  OLED_DisplayHandle = osThreadNew(OLED, NULL, &OLED_Display_attributes);
-
   /* creation of MotorTask */
-  MotorTaskHandle = osThreadNew(motor, NULL, &MotorTask_attributes);
+  MotorTaskHandle = osThreadNew(motors, NULL, &MotorTask_attributes);
 
-  /* creation of EncoderA */
-  EncoderAHandle = osThreadNew(encoderA, NULL, &EncoderA_attributes);
+  /* creation of showTask */
+  showTaskHandle = osThreadNew(show, NULL, &showTask_attributes);
 
-  /* creation of EncoderC */
-  EncoderCHandle = osThreadNew(encoderC, NULL, &EncoderC_attributes);
+  /* creation of EncoderTask */
+  EncoderTaskHandle = osThreadNew(encoder_task, NULL, &EncoderTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -236,6 +233,80 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 160;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 1000;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
+  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
+  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
+  sBreakDeadTimeConfig.DeadTime = 0;
+  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
+  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
+  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
+  if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &sBreakDeadTimeConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
+  HAL_TIM_MspPostInit(&htim1);
+
+}
+
+/**
   * @brief TIM2 Initialization Function
   * @param None
   * @retval None
@@ -267,7 +338,7 @@ static void MX_TIM2_Init(void)
   sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC2Filter = 10;
+  sConfig.IC2Filter = 0;
   if (HAL_TIM_Encoder_Init(&htim2, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -285,29 +356,29 @@ static void MX_TIM2_Init(void)
 }
 
 /**
-  * @brief TIM4 Initialization Function
+  * @brief TIM3 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_TIM4_Init(void)
+static void MX_TIM3_Init(void)
 {
 
-  /* USER CODE BEGIN TIM4_Init 0 */
+  /* USER CODE BEGIN TIM3_Init 0 */
 
-  /* USER CODE END TIM4_Init 0 */
+  /* USER CODE END TIM3_Init 0 */
 
   TIM_Encoder_InitTypeDef sConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
-  /* USER CODE BEGIN TIM4_Init 1 */
+  /* USER CODE BEGIN TIM3_Init 1 */
 
-  /* USER CODE END TIM4_Init 1 */
-  htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 0;
-  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 65535;
-  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 65535;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
@@ -317,19 +388,19 @@ static void MX_TIM4_Init(void)
   sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
   sConfig.IC2Filter = 10;
-  if (HAL_TIM_Encoder_Init(&htim4, &sConfig) != HAL_OK)
+  if (HAL_TIM_Encoder_Init(&htim3, &sConfig) != HAL_OK)
   {
     Error_Handler();
   }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM4_Init 2 */
+  /* USER CODE BEGIN TIM3_Init 2 */
 
-  /* USER CODE END TIM4_Init 2 */
+  /* USER CODE END TIM3_Init 2 */
 
 }
 
@@ -390,7 +461,7 @@ static void MX_TIM8_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  if (HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -412,6 +483,39 @@ static void MX_TIM8_Init(void)
 }
 
 /**
+  * @brief USART3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART3_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART3_Init 0 */
+
+  /* USER CODE END USART3_Init 0 */
+
+  /* USER CODE BEGIN USART3_Init 1 */
+
+  /* USER CODE END USART3_Init 1 */
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 115200;
+  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_NONE;
+  huart3.Init.Mode = UART_MODE_TX_RX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART3_Init 2 */
+
+  /* USER CODE END USART3_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -428,46 +532,37 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, OLED_SCL_Pin|OLED_SDA_Pin|OLED_RST_Pin|OLED_DC_Pin
-                          |CIN1_Pin, GPIO_PIN_RESET);
+                          |LED_3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, AIN2_Pin|AIN1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, AIN2_Pin|AIN1_Pin|BIN1_Pin|BIN2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(CIN2_GPIO_Port, CIN2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pins : OLED_SCL_Pin OLED_SDA_Pin OLED_RST_Pin OLED_DC_Pin */
-  GPIO_InitStruct.Pin = OLED_SCL_Pin|OLED_SDA_Pin|OLED_RST_Pin|OLED_DC_Pin;
+  /*Configure GPIO pins : OLED_SCL_Pin OLED_SDA_Pin OLED_RST_Pin OLED_DC_Pin
+                           LED_3_Pin */
+  GPIO_InitStruct.Pin = OLED_SCL_Pin|OLED_SDA_Pin|OLED_RST_Pin|OLED_DC_Pin
+                          |LED_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : AIN2_Pin AIN1_Pin */
-  GPIO_InitStruct.Pin = AIN2_Pin|AIN1_Pin;
+  /*Configure GPIO pins : AIN2_Pin AIN1_Pin BIN1_Pin BIN2_Pin */
+  GPIO_InitStruct.Pin = AIN2_Pin|AIN1_Pin|BIN1_Pin|BIN2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : CIN2_Pin */
-  GPIO_InitStruct.Pin = CIN2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(CIN2_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : CIN1_Pin */
-  GPIO_InitStruct.Pin = CIN1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(CIN1_GPIO_Port, &GPIO_InitStruct);
-
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallBack(UART_HandleTypeDef *huart)
+{
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(huart);
 
+	HAL_UART_Transmit(&huart3,(uint8_t *)aRxBuffer,10,0xFFFF);
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -481,145 +576,231 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
+	uint8_t ch = 'A';
   for(;;)
   {
-    osDelay(1);
+	  HAL_UART_Transmit(&huart3,(uint8_t *)&ch,1,0xFFFF);
+	  if(ch<'Z')
+		  ch++;
+	  else ch = 'A';
+
+	HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
+    osDelay(5000);
   }
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_OLED */
-/**
-* @brief Function implementing the OLED_Display thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_OLED */
-void OLED(void *argument)
-{
-  /* USER CODE BEGIN OLED */
-	uint8_t initialMessage[20] = "Started!\0";
-  /* Infinite loop */
-  for(;;)
-  {
-	  OLED_ShowString(10, 10, initialMessage);
-
-    osDelay(1);
-  }
-  /* USER CODE END OLED */
-}
-
-/* USER CODE BEGIN Header_motor */
+/* USER CODE BEGIN Header_motors */
 /**
 * @brief Function implementing the MotorTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_motor */
-void motor(void *argument)
+/* USER CODE END Header_motors */
+void moveForward()
 {
-  /* USER CODE BEGIN motor */
-	uint16_t speed = 1000;
+
+	uint16_t speed = 2000;
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speed);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speed);
+	osDelay(1);
+}
+void moveBackword()
+{
+	uint16_t speed = 2000;
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_SET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speed);
+
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_SET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speed);
+}
+void turnForward()
+{
+	htim1.Instance ->CCR4 = 72; // center
+
+}
+void turnLeft()
+{
+	htim1.Instance ->CCR4 = 58; // extreme left
+
+}
+void turnRight()
+{
+	htim1.Instance ->CCR4 = 89; // extreme right
+
+}
+
+void motors(void *argument)
+{
+  /* USER CODE BEGIN motors */
+	uint16_t operator, i=0;
+	uint16_t speed = 1500;
+	HAL_UART_Receive_IT(&huart3,(uint8_t *) aRxBuffer,10);
 	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);//testing for front wheel
+	//operator = aRxBuffer[i];
+	//operator = 0;
+	for(;;)
+	{
+	while(1)
+	{
+		HAL_UART_Receive_IT(&huart3,(uint8_t *) aRxBuffer,10);
+		operator = aRxBuffer[i];
+		switch(operator)
+		{
+			case '0':
+			{
+
+
+				break;
+			}
+			case 'w':
+					moveForward();
+					i++;
+					break;
+			case'a' :
+					aRxBuffer[i] = 'a';
+					turnLeft();
+					i++;
+
+					if(i==10)
+					{
+						i=0;
+					}
+					break;
+			case 'd':
+				aRxBuffer[i] = 'b';
+				turnRight();
+				i++;
+
+				if(i==10)
+				{
+					i=0;
+				}
+
+				break;
+			case 'q':
+				aRxBuffer[i] = 'c';
+				turnForward();
+				i++;
+
+				if(i==10)
+				{
+					i=0;
+				}
+				break;
+			case 's':
+				aRxBuffer[i] = 'c';
+				moveBackword();
+				i++;
+
+				if(i==10)
+				{
+					i=0;
+				}
+				break;
+		}
+	}osDelay(1000);
+	}
+  /* USER CODE END motors */
+}
+
+/* USER CODE BEGIN Header_show */
+/**
+* @brief Function implementing the showTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_show */
+void show(void *argument)
+{
+  /* USER CODE BEGIN show */
+	uint8_t hello[20] = "hello world\0";
+
   /* Infinite loop */
   for(;;)
   {
-	  HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
-	  HAL_GPIO_WritePin(GPIOC, CIN2_Pin, GPIO_PIN_SET);
-	  HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_RESET);
-	  HAL_GPIO_WritePin(GPIOE, CIN1_Pin, GPIO_PIN_RESET);
-	  __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speed);
-	  __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_3, speed);
+	  sprintf(hello,"%s\0", aRxBuffer);
+	  OLED_ShowString(10,10,hello);
+	  OLED_Refresh_Gram();
+	  osDelay(1000);
+  }
+  osDelay(1);
+  /* USER CODE END show */
+}
+
+/* USER CODE BEGIN Header_encoder_task */
+/**
+* @brief Function implementing the EncoderTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_encoder_task */
+void encoder_task(void *argument)
+{
+  /* USER CODE BEGIN encoder_task */
+  /* Infinite loop */
+  HAL_TIM_Encoder_Start(&htim2,TIM_CHANNEL_ALL);
+  HAL_TIM_Encoder_Start(&htim3,TIM_CHANNEL_ALL);
+  int cnt1,cnt2,diff, cnt3, cnt4, diff1;
+  uint32_t tick;
+  uint16_t dir, dir1;
+
+  cnt1 = __HAL_TIM_GET_COUNTER(&htim2);
+  cnt3 = __HAL_TIM_GET_COUNTER(&htim3);
+  tick = HAL_GetTick();
+  uint8_t speedA[20];
+  uint8_t speedB[20];
+  for(;;)
+  {
+	  if(HAL_GetTick()-tick > 1000L){
+		  cnt2 = __HAL_TIM_GET_COUNTER(&htim2);
+		  cnt4 = __HAL_TIM_GET_COUNTER(&htim3);
+		  if(__HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2)){
+			  if(cnt2<cnt1)
+				  diff = cnt1 - cnt2;
+			  else
+				  diff = (65535 - cnt2) + cnt1;
+		  }
+		  else{
+			  if(cnt2 > cnt1)
+				  diff = cnt2 - cnt1;
+			  else
+				  diff = (65535 - cnt1) + cnt2;
+		  }
+		  if(__HAL_TIM_IS_TIM_COUNTING_DOWN(&htim3)){
+			  if(cnt4<cnt3)
+				  diff1 = cnt3 - cnt4;
+			  else
+				  diff1 = (65535 - cnt4) + cnt3;
+		  }
+		  else{
+			  if(cnt4 > cnt3)
+				  diff1 = cnt4 - cnt3;
+			  else
+				  diff1 = (65535 - cnt3) + cnt3;
+		  }
+		  sprintf(speedA,"Speed:%5d\0",diff);
+		  OLED_ShowString(10,20,speedA);
+		  sprintf(speedB,"Speed:%5d\0",diff1);
+		  OLED_ShowString(10,30,speedB);
+		  //dir = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2);
+		  //sprintf(hello,"Dir:%5d\0",dir);
+		  //OLED_ShowString(10,30,hello);
+		  cnt1 = __HAL_TIM_GET_COUNTER(&htim2);
+		  cnt3 = __HAL_TIM_GET_COUNTER(&htim3);
+		  tick = HAL_GetTick();
+	  }
     osDelay(1);
   }
-  /* USER CODE END motor */
-}
-
-/* USER CODE BEGIN Header_encoderA */
-/**
-* @brief Function implementing the EncoderA thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_encoderA */
-void encoderA(void *argument)
-{
-  /* USER CODE BEGIN encoderA */
-	HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
-	int cnt1, cnt2, diff;
-	uint32_t tick;
-	cnt1 = __HAL_TIM_GET_COUNTER(&htim2);
-	tick = HAL_GetTick();
-	uint8_t messageA[30];
-
-  /* Infinite loop */
-  for(;;)
-  {
-		 if(HAL_GetTick() - tick > 1000L){
-			 cnt2 = __HAL_TIM_GET_COUNTER(&htim2);
-			 if(__HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2)){
-				 if(cnt2 < cnt1)
-					 diff = cnt1 - cnt2;
-				 else
-					 diff = (65535 - cnt2) + cnt1;
-			 }
-			 else{
-				 if(cnt1 < cnt2)
-					 diff = cnt2 - cnt1;
-				 else
-					 diff = (65535 - cnt1) + cnt2;
-			 }
-			 sprintf(messageA, "Speed (A):%5d\0", diff);
-			 OLED_ShowString(10, 20, messageA);
-			 cnt1 = __HAL_TIM_GET_COUNTER(&htim2);
-			 tick = HAL_GetTick();
-		 }
-  }
-  /* USER CODE END encoderA */
-}
-
-/* USER CODE BEGIN Header_encoderC */
-/**
-* @brief Function implementing the EncoderC thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_encoderC */
-void encoderC(void *argument)
-{
-  /* USER CODE BEGIN encoderC */
-	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
-	int cnt1, cnt2, diff;
-	uint32_t tick;
-	cnt1 = __HAL_TIM_GET_COUNTER(&htim4);
-	tick = HAL_GetTick();
-	uint8_t messageC[30];
-
-  /* Infinite loop */
-  for(;;)
-  {
-	  if(HAL_GetTick() - tick > 1000L){
-	  		cnt2 = __HAL_TIM_GET_COUNTER(&htim4);
-	  			 if(__HAL_TIM_IS_TIM_COUNTING_DOWN(&htim4)){
-	  				 if(cnt2 < cnt1)
-	  					 diff = cnt1 - cnt2;
-	  				 else
-	  					 diff = (65535 - cnt2) + cnt1;
-	  			 }
-	  			 else{
-	  				 if(cnt1 < cnt2)
-	  					 diff = cnt2 - cnt1;
-	  				 else
-	  					 diff = (65535 - cnt1) + cnt2;
-	  			 }
-	  			 sprintf(messageC, "Speed (C):%5d\0", diff);
-	  			 OLED_ShowString(10, 30, messageC);
-	  			 cnt1 = __HAL_TIM_GET_COUNTER(&htim4);
-	  			 tick = HAL_GetTick();
-	  		 }
-  }
-  /* USER CODE END encoderC */
+  /* USER CODE END encoder_task */
 }
 
 /**
