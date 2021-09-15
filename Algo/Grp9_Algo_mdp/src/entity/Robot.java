@@ -85,11 +85,11 @@ public class Robot {
                 else if (this.currDir == DIRECTION.WEST) this.setPosCol(posCol - 1);
                 break;
             case BACKWARD:
-                // if(this.currDir == DIRECTION.NORTH) this.setPosRow(posRow - 1);
-                // else if(this.currDir == DIRECTION.SOUTH) this.setPosRow(posRow + 1);
-                // else if(this.currDir == DIRECTION.EAST) this.setPosCol(posCol - 1);
-                // else if(this.currDir == DIRECTION.WEST) this.setPosCol(posCol + 1);
-                // break;
+                 if(this.currDir == DIRECTION.NORTH) this.setPosRow(posRow - 1);
+                 else if(this.currDir == DIRECTION.SOUTH) this.setPosRow(posRow + 1);
+                 else if(this.currDir == DIRECTION.EAST) this.setPosCol(posCol - 1);
+                 else if(this.currDir == DIRECTION.WEST) this.setPosCol(posCol + 1);
+                 break;
             case LEFT:
             case RIGHT:
                 break;
@@ -201,9 +201,9 @@ public class Robot {
         }
 
         if (destinationCell_1.isCellValid() && destinationCell_2.isCellValid() && destinationCell_3.isCellValid()) {
-            if (!exploredMap.getMapGrid()[destinationCell_1.getRowPos()][destinationCell_1.getColPos()].isObstacle() &&
-                    !exploredMap.getMapGrid()[destinationCell_2.getRowPos()][destinationCell_2.getColPos()].isObstacle() &&
-                    !exploredMap.getMapGrid()[destinationCell_3.getRowPos()][destinationCell_3.getColPos()].isObstacle()) {
+            if (!exploredMap.getMapGrid()[destinationCell_1.getRowPos()][destinationCell_1.getColPos()].getObstacleType().equals("O") &&
+                    !exploredMap.getMapGrid()[destinationCell_2.getRowPos()][destinationCell_2.getColPos()].getObstacleType().equals("O") &&
+                    !exploredMap.getMapGrid()[destinationCell_3.getRowPos()][destinationCell_3.getColPos()].getObstacleType().equals("O")) {
                 return true;
             }
         }
@@ -259,9 +259,9 @@ public class Robot {
         }
 
         if (destinationCell_1.isCellValid() && destinationCell_2.isCellValid() && destinationCell_3.isCellValid()) {
-            if (!exploredMap.getMapGrid()[destinationCell_1.getRowPos()][destinationCell_1.getColPos()].isObstacle() &&
-                    !exploredMap.getMapGrid()[destinationCell_2.getRowPos()][destinationCell_2.getColPos()].isObstacle() &&
-                    !exploredMap.getMapGrid()[destinationCell_3.getRowPos()][destinationCell_3.getColPos()].isObstacle()) {
+            if (!exploredMap.getMapGrid()[destinationCell_1.getRowPos()][destinationCell_1.getColPos()].getObstacleType().equals("O") &&
+                    !exploredMap.getMapGrid()[destinationCell_2.getRowPos()][destinationCell_2.getColPos()].getObstacleType().equals("O") &&
+                    !exploredMap.getMapGrid()[destinationCell_3.getRowPos()][destinationCell_3.getColPos()].getObstacleType().equals("O")) {
                 return true;
             }
         }

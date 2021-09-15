@@ -67,7 +67,7 @@ public class main extends JFrame {
 		setTitle("CZ3004 MDP Group 9");
 		
 		MapPanel = new MapPanel(true);
-		MapSetting = new MapSetting();
+		MapSetting = new MapSetting(this,rBot);
 		resultMap = MapPanel.getJLabelMap();
 		add(MapPanel);
 		add(MapSetting);
@@ -173,5 +173,7 @@ public class main extends JFrame {
 		}
 		return cellColor;
 	}
+	
+
 
 }

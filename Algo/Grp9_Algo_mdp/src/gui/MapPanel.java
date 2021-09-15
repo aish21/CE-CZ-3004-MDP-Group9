@@ -189,14 +189,6 @@ public class MapPanel extends JPanel {
 		});
 	}
 	
-	private class MyActionListener implements ActionListener{
-
-		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-	}
-	
 	
 	
 	

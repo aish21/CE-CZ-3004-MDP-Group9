@@ -28,26 +28,29 @@ import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
-public class MapSetting extends JPanel {
-	
+import constant.Constants.MOVEMENT;
+import entity.Robot;
 
-    JTextArea editTextArea;
-    JScrollPane scroll;
-    JButton hamiltonianBtn;
-    JButton shortestBtn;
-    JButton connectBtn;
-    JButton ResetBtn;
-    
-    JButton upBtn;
-    JButton downBtn;
-    JButton leftBtn;
-    JButton rightBtn;
-    
+public class MapSetting extends JPanel {
+
+	JTextArea editTextArea;
+	JScrollPane scroll;
+	JButton hamiltonianBtn;
+	JButton shortestBtn;
+	JButton connectBtn;
+	JButton ResetBtn;
+
+	JButton upBtn;
+	JButton downBtn;
+	JButton leftBtn;
+	JButton rightBtn;
+	
+	private float playSpeed;
 
 	/**
 	 * Create the panel.
 	 */
-	public MapSetting() {
+	public MapSetting(main m,Robot rBot) {
 
 
         setLayout(null);
@@ -94,6 +97,9 @@ public class MapSetting extends JPanel {
         upBtn = new JButton();
         upBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		//TODO check if movement valid
+        		rBot.move(MOVEMENT.FORWARD);
+        		m.paintResult();
         	}
         });
         upBtn.setBounds(308, 521, 103, 30);
@@ -103,6 +109,8 @@ public class MapSetting extends JPanel {
         downBtn = new JButton();
         downBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		rBot.move(MOVEMENT.BACKWARD);
+        		m.paintResult();
         	}
         });
         downBtn.setBounds(308, 604, 103, 30);
@@ -112,6 +120,9 @@ public class MapSetting extends JPanel {
         leftBtn = new JButton();
         leftBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		rBot.turn(MOVEMENT.LEFT);
+        		m.paintResult();
+        		
         	}
         });
         leftBtn.setBounds(293, 563, 71, 30);
@@ -121,6 +132,8 @@ public class MapSetting extends JPanel {
         rightBtn = new JButton();
         rightBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		rBot.turn(MOVEMENT.RIGHT);
+        		m.paintResult();
         	}
         });
         rightBtn.setBounds(369, 563, 71, 30);
@@ -141,14 +154,8 @@ public class MapSetting extends JPanel {
         JSeparator separator = new JSeparator();
         separator.setOrientation(SwingConstants.VERTICAL);
         separator.setBounds(275, 521, 8, 113);
-        add(separator);
-        
-        
-        
-
-
-        
-        
+        add(separator);   
         
 	}
+	
 }
