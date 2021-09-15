@@ -10,6 +10,7 @@ public class Cell1 {
 	private int obsDir; ////1=N, 2=S, 3=E, 4=W
 	private boolean isTargetCell;
 	private boolean isSolution; //check if cell is part of the solution
+	private int headDir;
 	
 	public Cell1(int row, int col) {
 		this.row = row;
@@ -17,6 +18,15 @@ public class Cell1 {
 		this.isObstacle = false;
 		this.isSolution = false;
 		this.isTargetCell = false;
+		this.headDir = 1;
+	}
+	
+	public int getHeadDir() {
+		return this.headDir;
+	}
+	
+	public void setHeadDir(int headDir) {
+		this.headDir = headDir;
 	}
 	
 	public int getRow() {

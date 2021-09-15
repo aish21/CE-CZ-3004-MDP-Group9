@@ -146,7 +146,7 @@ public class MapPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				getJLabelMap()[cellRow][cellCol].setBackground(main.getMapColorForCell('U'));
+				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('U'));
 				cellLabels[cellRow][cellCol].setText("");
 
 			}
@@ -155,8 +155,9 @@ public class MapPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				getJLabelMap()[cellRow][cellCol].setBackground(main.getMapColorForCell('T'));
-				cellLabels[cellRow][cellCol].setText("T");
+				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
+				cellLabels[cellRow][cellCol].setText("\u2191");
+				
 
 			}
 		});
@@ -164,8 +165,8 @@ public class MapPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				getJLabelMap()[cellRow][cellCol].setBackground(main.getMapColorForCell('W'));
-				cellLabels[cellRow][cellCol].setText("Top");
+				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
+				cellLabels[cellRow][cellCol].setText("\u2193");
 
 			}
 		});
@@ -173,8 +174,8 @@ public class MapPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				getJLabelMap()[cellRow][cellCol].setBackground(main.getMapColorForCell('W'));
-				cellLabels[cellRow][cellCol].setText("Top");
+				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
+				cellLabels[cellRow][cellCol].setText("\u2190");
 
 			}
 		});
@@ -182,8 +183,8 @@ public class MapPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				getJLabelMap()[cellRow][cellCol].setBackground(main.getMapColorForCell('W'));
-				cellLabels[cellRow][cellCol].setText("Top");
+				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
+				cellLabels[cellRow][cellCol].setText("\u2192");
 
 			}
 		});

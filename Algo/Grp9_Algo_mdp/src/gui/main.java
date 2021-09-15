@@ -67,7 +67,7 @@ public class main extends JFrame {
 		setTitle("CZ3004 MDP Group 9");
 		
 		MapPanel = new MapPanel(true);
-		MapSetting = new MapSetting(this,rBot);
+		MapSetting = new MapSetting(this,MapPanel,rBot);
 		resultMap = MapPanel.getJLabelMap();
 		add(MapPanel);
 		add(MapSetting);
@@ -85,7 +85,7 @@ public class main extends JFrame {
 			for (int y = 0; y < Constants.MAX_COL; y++) {
 				Cell cellObj = initialMap.getMapGrid()[i][y];
 				
-				resultMap[i + 1][y + 1].setBackground(getMapColorForCell('U'));
+				//resultMap[i + 1][y + 1].setBackground(getMapColorForCell('U'));
 			}
 		}
 		Cell startZone = initialMap.getStartGoalPosition();
@@ -165,7 +165,7 @@ public class main extends JFrame {
 		case 'B':
 			cellColor = Color.gray;
 			break; // Waypoint color
-		case 'T':
+		case 'O':
 			cellColor = Color.decode("#F8C471");
 			break; // top obstacle color
 		default:

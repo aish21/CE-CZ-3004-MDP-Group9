@@ -1,4 +1,4 @@
-package algorithm;
+package Algorithm;
 
 import java.util.PriorityQueue;
 import constant.Constants;
@@ -9,10 +9,10 @@ public class AStar {
 	private Map1 mapArena; 
 	private PriorityQueue<Cell1> openCells; // set of nodes to be evaluated
 	private boolean[][] closedCells;// set of nodes evaluated
-	private int startRow, startCol;
-	private int targetRow, targetCol;
+	private int startRow, startCol, startHead;
+	private int targetRow, targetCol, targetHead;
 	
-	public AStar(int startRow, int startCol, int tarRow, int tarCol, int[][] blocks) { //blocks is an array of obsatcles
+	public AStar(int startRow, int startCol, int tarRow, int tarCol, int[][] blocks, int startHead, int tarHead) { //blocks is an array of obstacles //startHead and tarHead not yet
 		this.mapArena = new Map1();
 		this.closedCells = new boolean[Constants.MAX_ROW][Constants.MAX_COL];
 		this.openCells = new PriorityQueue<Cell1>((Cell1 c1, Cell1 c2) -> {
@@ -21,9 +21,11 @@ public class AStar {
 		
 		this.startRow = startRow;
 		this.startCol = startCol;
+		this.startHead = startHead;
 		this.mapArena.setStartRowCol(startRow, startCol);
 		this.targetRow = tarRow;
 		this.targetCol = tarCol;	
+		this.targetHead = tarHead;
 		
 		for (int i=0; i<this.mapArena.getMap().length; i++) {
 			for(int j=0;j<this.mapArena.getMap()[i].length; j++) {
@@ -32,8 +34,13 @@ public class AStar {
 				mapArena.getMap()[i][j].setIsSolution(false);
 			}
 		}
+		for(int i=startRow-1; i<startRow+2; i++) {
+			for(int j=startCol-1; j<startCol+2; j++) {
+				this.mapArena.getMap()[i][j].setFinalCost(0);
+			}
+		}
+		//this.mapArena.getMap()[startRow][startCol].setFinalCost(0);
 		
-		this.mapArena.getMap()[startRow][startCol].setFinalCost(0);
 		for(int i=0; i<blocks.length; i++) {
 			this.mapArena.setObstaclesNTargetPos(blocks[i][0], blocks[i][1], blocks[i][2]);
 		}
@@ -72,51 +79,327 @@ public class AStar {
 				return;
 			}
 			
-			Cell1 t;
-			//backward
-			if(current.getRow()-1 >= 0) {
-				t = this.mapArena.getMap()[current.getRow()-1][current.getCol()];
-				updateCostIfNeeded(current, t, current.getFinalCost() + Constants.MOVE_COST);
-				
-//				//backward left
-//				if(current.getCol()-1 >= 0) {
-//					t = this.mapArena.getMap()[current.getRow()-1][current.getCol()-1];
-//					updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
-//				}
-//				
-//				//backward right
-//				if(current.getCol()+1 < this.mapArena.getMap()[0].length) {
-//					t = this.mapArena.getMap()[current.getRow()-1][current.getCol()+1];
-//					updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
-//				}
+			if (current.getRow()+1>=Constants.MAX_ROW || current.getRow()-1<0 || current.getCol()+1>=Constants.MAX_COL || current.getCol()<0) {
+				return;
 			}
 			
-			//left
-			if(current.getCol() -1 >= 0) {
-				t = this.mapArena.getMap()[current.getRow()][current.getCol()-1];
-				updateCostIfNeeded(current, t, current.getFinalCost() + Constants.MOVE_COST);
+			Cell1 t;
+			
+			switch (current.getHeadDir()) {
+				case 1://north
+					//backward
+					if(current.getRow()-2 >= 0) {
+						boolean noObst = true;
+						for(int i=-1; i<2; i++) {
+							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()+i].getIsObstacle()) {
+								noObst = false;
+							}
+						}
+						if(noObst) {
+							t = this.mapArena.getMap()[current.getRow()-1][current.getCol()];
+							t.setHeadDir(1);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+						}
+//						else {
+//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
+//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
+//						}	
+					}
+					
+					//front
+					if(current.getRow()+2 < this.mapArena.getMap().length) {
+						boolean noObst = true;
+						for(int i=-1; i<2; i++) {
+							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()+i].getIsObstacle()) {
+								noObst = false;
+							}
+						}
+						if(noObst) {
+							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
+							t.setHeadDir(1);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+						}
+//						else {
+//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
+//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
+//						}	
+					}
+					
+					//turning right
+					if(current.getRow()+4 < this.mapArena.getMap().length) {
+						if(current.getCol()+4 < this.mapArena.getMap().length) {
+							boolean noObst = true;
+							for(int i=2; i<5; i++) {
+								for(int j=-1; j<5; j++) {
+									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].getIsObstacle()) {
+										noObst = false;
+									}
+								}		
+							}
+							if(noObst) {
+								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
+								t.setHeadDir(3);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+							}
+						}
+					}
+					
+					//turning left
+					if(current.getRow()+4 < this.mapArena.getMap().length) {
+						if(current.getCol()-4 >=0) {
+							boolean noObst = true;
+							for(int i=2; i<5; i++) {
+								for(int j=-4; j<2; j++) {
+									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].getIsObstacle()) {
+										noObst = false;
+									}
+									
+								}		
+							}
+							if(noObst) {
+								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
+								t.setHeadDir(4);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+							}
+						}
+					}
+					break;
+				case 2: //south
+					//forward
+					if(current.getRow()-2 >= 0) {
+						boolean noObst = true;
+						for(int i=-1; i<2; i++) {
+							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()+i].getIsObstacle()) {
+								noObst = false;
+							}
+						}
+						if(noObst) {
+							t = this.mapArena.getMap()[current.getRow()-1][current.getCol()];
+							t.setHeadDir(2);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+						}
+//						else {
+//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
+//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
+//						}	
+					}
+					
+					//backward
+					if(current.getRow()+2 < this.mapArena.getMap().length) {
+						boolean noObst = true;
+						for(int i=-1; i<2; i++) {
+							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()+i].getIsObstacle()) {
+								noObst = false;
+							}
+						}
+						if(noObst) {
+							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
+							t.setHeadDir(2);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+						}
+//						else {
+//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
+//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
+//						}	
+					}
+					
+					//turning left
+					if(current.getRow()-4 < this.mapArena.getMap().length) {
+						if(current.getCol()+4 < this.mapArena.getMap().length) {
+							boolean noObst = true;
+							for(int i=-2; i<-5; i++) {
+								for(int j=-1; j<5; j++) {
+									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].getIsObstacle()) {
+										noObst = false;
+									}
+								}		
+							}
+							if(noObst) {
+								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
+								t.setHeadDir(3);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+							}
+						}
+					}
+					
+					//turning right
+					if(current.getRow()-4 < this.mapArena.getMap().length) {
+						if(current.getCol()-4 >=0) {
+							boolean noObst = true;
+							for(int i=-2; i<-5; i++) {
+								for(int j=-4; j<2; j++) {
+									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].getIsObstacle()) {
+										noObst = false;
+									}
+									
+								}		
+							}
+							if(noObst) {
+								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
+								t.setHeadDir(4);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+							}
+						}
+					}
+					break;
+				case 3: //east
+					//backward
+					if(current.getCol()-2 >= 0) {
+						boolean noObst = true;
+						for(int i=-1; i<2; i++) {
+							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()-2].getIsObstacle()) {
+								noObst = false;
+							}
+						}
+						if(noObst) {
+							t = this.mapArena.getMap()[current.getRow()][current.getCol()-1];
+							t.setHeadDir(3);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+						}
+//						else {
+//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
+//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
+//						}	
+					}
+					
+					//front
+					if(current.getCol()+2 < this.mapArena.getMap().length) {
+						boolean noObst = true;
+						for(int i=-1; i<2; i++) {
+							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+2].getIsObstacle()) {
+								noObst = false;
+							}
+						}
+						if(noObst) {
+							t = this.mapArena.getMap()[current.getRow()][current.getCol()+1];
+							t.setHeadDir(3);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+						}
+//						else {
+//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
+//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
+//						}	
+					}
+					
+					//turning left
+					if(current.getCol()+4 < this.mapArena.getMap().length) {
+						if(current.getRow()+4 < this.mapArena.getMap().length) {
+							boolean noObst = true;
+							for(int i=2; i<5; i++) {
+								for(int j=-1; j<5; j++) {
+									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].getIsObstacle()) {
+										noObst = false;
+									}
+								}		
+							}
+							if(noObst) {
+								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
+								t.setHeadDir(1);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+							}
+						}
+					}
+					
+					//turning right
+					if(current.getCol()+4 < this.mapArena.getMap().length) {
+						if(current.getRow()-4 >=0) {
+							boolean noObst = true;
+							for(int i=2; i<5; i++) {
+								for(int j=-4; j<2; j++) {
+									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].getIsObstacle()) {
+										noObst = false;
+									}
+									
+								}		
+							}
+							if(noObst) {
+								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()+3];
+								t.setHeadDir(2);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+							}
+						}
+					}
+					break;
+				case 4:// west
+					//forward
+					if(current.getCol()-2 >= 0) {
+						boolean noObst = true;
+						for(int i=-1; i<2; i++) {
+							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()-2].getIsObstacle()) {
+								noObst = false;
+							}
+						}
+						if(noObst) {
+							t = this.mapArena.getMap()[current.getRow()][current.getCol()-1];
+							t.setHeadDir(4);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+						}
+//						else {
+//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
+//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
+//						}	
+					}
+					
+					//backward
+					if(current.getCol()+2 < this.mapArena.getMap().length) {
+						boolean noObst = true;
+						for(int i=-1; i<2; i++) {
+							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+2].getIsObstacle()) {
+								noObst = false;
+							}
+						}
+						if(noObst) {
+							t = this.mapArena.getMap()[current.getRow()][current.getCol()+1];
+							t.setHeadDir(4);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+						}
+//						else {
+//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
+//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
+//						}	
+					}
+					
+					//turning right
+					if(current.getCol()-4 < this.mapArena.getMap().length) {
+						if(current.getRow()+4 < this.mapArena.getMap().length) {
+							boolean noObst = true;
+							for(int i=-2; i<-5; i++) {
+								for(int j=-1; j<5; j++) {
+									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+j].getIsObstacle()) {
+										noObst = false;
+									}
+								}		
+							}
+							if(noObst) {
+								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
+								t.setHeadDir(1);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+							}
+						}
+					}
+					
+					//turning left
+					if(current.getCol()-4 < this.mapArena.getMap().length) {
+						if(current.getRow()-4 >=0) {
+							boolean noObst = true;
+							for(int i=-2; i<-5; i++) {
+								for(int j=-4; j<2; j++) {
+									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].getIsObstacle()) {
+										noObst = false;
+									}
+									
+								}		
+							}
+							if(noObst) {
+								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()-3];
+								t.setHeadDir(2);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+							}
+						}
+					}
+					break;
 			}
-			//right
-			if(current.getCol()+1 < this.mapArena.getMap()[0].length) {
-				t = this.mapArena.getMap()[current.getRow()][current.getCol()+1];
-				updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
-			}
-			//front
-			if(current.getRow()+1 < this.mapArena.getMap().length) {
-				t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-				updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
-				
-				//front left
-				if(current.getCol()-1>=0) {
-					t = this.mapArena.getMap()[current.getRow()+1][current.getCol()-1];
-					updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
-				}
-				//front right
-				if(current.getCol()+1<this.mapArena.getMap()[0].length) {
-					t = this.mapArena.getMap()[current.getRow()+1][current.getCol()+1];
-					updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
-				}
-			}
+			
 		}
 	}
 	
@@ -207,9 +490,9 @@ public class AStar {
 	}
 	
 	public static void main(String[] args) {
-		AStar astar = new AStar(1, 1, 15, 19, new int[][] {
+		AStar astar = new AStar(1, 1, 13, 15, new int[][] {
 			{10,4,1}, {7,4,1}, {15,18,1},{3,7,1}, {4,10,1},{13,8,1}
-		});
+		}, 1, 4);
 		astar.display();
 		astar.process();
 		astar.displayScores();

@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Map;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextArea;
@@ -50,7 +51,7 @@ public class MapSetting extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public MapSetting(main m,Robot rBot) {
+	public MapSetting(main m,MapPanel mPanel,Robot rBot) {
 
 
         setLayout(null);
