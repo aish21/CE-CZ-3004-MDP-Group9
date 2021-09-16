@@ -25,6 +25,8 @@
 /* USER CODE BEGIN Includes */
 #include "oled.h"
 #include <stdbool.h>
+#include <math.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -80,10 +82,10 @@ const osThreadAttr_t EncoderTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
-/* Definitions for IRRead */
-osThreadId_t IRReadHandle;
-const osThreadAttr_t IRRead_attributes = {
-  .name = "IRRead",
+/* Definitions for IRDist */
+osThreadId_t IRDistHandle;
+const osThreadAttr_t IRDist_attributes = {
+  .name = "IRDist",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
@@ -115,6 +117,8 @@ void sensorDist(void *argument);
 /* USER CODE BEGIN 0 */
 uint8_t aRxBuffer[20];
 uint16_t control;
+uint16_t IR1_Val;
+uint16_t IR2_Val;
 /* USER CODE END 0 */
 
 /**
@@ -190,8 +194,8 @@ int main(void)
   /* creation of EncoderTask */
   EncoderTaskHandle = osThreadNew(encoder_task, NULL, &EncoderTask_attributes);
 
-  /* creation of IRRead */
-  IRReadHandle = osThreadNew(sensorDist, NULL, &IRRead_attributes);
+  /* creation of IRDist */
+  IRDistHandle = osThreadNew(sensorDist, NULL, &IRDist_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -694,12 +698,14 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
 	uint8_t ch = 'A';
+
   for(;;)
   {
-	  HAL_UART_Transmit(&huart3,(uint8_t *)&ch,1,0xFFFF);
-	  if(ch<'Z')
+
+	 // HAL_UART_Transmit(&huart3,(uint8_t *)&ch,20,0xFFFF);
+/*	  if(ch<'Z')
 		  ch++;
-	  else ch = 'A';
+	  else ch = 'A';*/
 
 	HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
     osDelay(5000);
@@ -713,6 +719,7 @@ void StartDefaultTask(void *argument)
 * @param argument: Not used
 * @retval None
 */
+
 /* USER CODE END Header_motors */
 uint16_t var1;
 uint16_t var2;
@@ -740,8 +747,18 @@ void stop()
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
 	osDelay(1);
 }
-void turnR()
+void forwardR90()
 {
+	uint16_t speedA = 900;
+	uint16_t speedB = 900;
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_SET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_SET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
+	osDelay(500);
+
 	htim1.Instance ->CCR4 = 89; // extreme right
 	uint16_t speedC = 2500;
 	uint16_t speedD = 200;
@@ -751,21 +768,116 @@ void turnR()
 	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedC);
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedD);
-	//osDelay(2700); setpoint
-	osDelay(3300);
-	uint16_t speedA = 0;
-	uint16_t speedB = 0;
-	//uint16_t speedA = 1000;
-	//speedA = speedA - offset;
+	osDelay(2600);
+
+	htim1.Instance ->CCR4 = 74; // center
+	 speedA = 0;
+	 speedB = 0;
 	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
-	htim1.Instance ->CCR4 = 74; // center
+	//back
+	speedA = 900;
+	speedB = 900;
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_SET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_SET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
+	osDelay(1650);
+	//stop
+	speedA = 0;
+	speedB = 0;
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
 }
-void turnL()
+void backwordR90()
+{
+	uint16_t speedA = 900;
+	uint16_t speedB = 900;
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_RESET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
+	osDelay(800);
+
+	//stop
+	speedA = 0;
+	speedB = 0;
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
+
+	//right backword
+	htim1.Instance ->CCR4 = 89; // extreme right
+	uint16_t speedC = 2500;
+	uint16_t speedD = 200;
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_SET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedC);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedD);
+	osDelay(2300);
+
+	htim1.Instance ->CCR4 = 74; // center
+
+	//stop
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_RESET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
+	osDelay(500);
+	htim1.Instance ->CCR4 = 57; // extreme left
+	//backword
+	speedA=900;
+	speedB=900;
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_RESET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
+	osDelay(500);
+	htim1.Instance ->CCR4 = 92; // extreme right
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_SET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_SET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
+	osDelay(500);
+
+	htim1.Instance ->CCR4 = 74; // center
+		//stop
+	speedA=0;
+	speedB=0;
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_RESET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
+	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
+	osDelay(500);
+
+
+}
+void forwardL90()
 {
 	//walk str8
 	uint16_t speedC = 900;
@@ -776,39 +888,75 @@ void turnL()
 	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedC);
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedD);
-	osDelay(1500);
+	osDelay(850);
 	//hard turn left
-	speedC = 200;
-	speedD = 2300;
+	 speedC = 200;
+	 speedD = 2300;
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedC);
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedD);
 	htim1.Instance ->CCR4 = 57; // extreme left
-	osDelay(2200);
+	osDelay(1950);
 	htim1.Instance ->CCR4 = 74; // center
+	//move back
 	speedC = 900;
 	speedD = 900;
+	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_SET);
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedC);
+	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_SET);
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedD);
-	osDelay(700);
+	osDelay(500);
+	//stop
 	uint16_t speedA = 0;
 	uint16_t speedB = 0;
-	//stop
-	//uint16_t speedA = 1000;
-	//speedA = speedA - offset;
 	HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
 	__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
-
+}
+void backwordL90()
+{
+		uint16_t speedC = 900;
+		uint16_t speedD = 900;
+		HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_SET);
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedC);
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedD);
+		osDelay(1500);
+		//hard turn left
+		speedC = 200;
+		speedD = 2300;
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedC);
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedD);
+		htim1.Instance ->CCR4 = 57; // extreme left
+		osDelay(2200);
+		htim1.Instance ->CCR4 = 74; // center
+		speedC = 900;
+		speedD = 900;
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedC);
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedD);
+		osDelay(700);
+		uint16_t speedA = 0;
+		uint16_t speedB = 0;
+		//stop
+		HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_SET);
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
 }
 void moveForward()
 {
 		//speedA = 800;
 		//speedB = 600;
 	speedA = 1200;
-	speedB = 690;
+	speedB = 1000;
 	  if (speedA == speedB){
 	    dummy += 1;
 	  } else if(A_faster){
@@ -826,22 +974,20 @@ void moveForward()
 		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
 		osDelay(1);
 }
-void moveForward1(int a, int b, int c)
+//for turning
+void moveForward1()
 {
-	/*var1 = atoi(c);
-	var2 = atoi(b);
-	var3 = atoi(c);*/
 		//speedA = 800;
 		//speedB = 600;
-	speedA = a*100;
-	speedB = b*100;
-/*	  if (speedA == speedB){
+	speedA = 2200;
+	speedB = 2000;
+	  if (speedA == speedB){
 	    dummy += 1;
 	  } else if(A_faster){
 	    speedA = speedA - errorVal;
 	  } else {
 	    speedB = speedB - errorVal;
-	  }*/
+	  }
 		//uint16_t speedA = 1000;
 		//speedA = speedA - offset;
 		HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
@@ -852,10 +998,60 @@ void moveForward1(int a, int b, int c)
 		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
 		osDelay(1);
 }
+/* ignore moveForward1 ATM*/
+/*void moveForward1(int a, int b, int c)
+{
+	var1 = atoi(c);
+	var2 = atoi(b);
+	var3 = atoi(c);
+		//speedA = 800;
+		//speedB = 600;
+	speedA = a*100;
+	speedB = b*100;
+	  if (speedA == speedB){
+	    dummy += 1;
+	  } else if(A_faster){
+	    speedA = speedA - errorVal;
+	  } else {
+	    speedB = speedB - errorVal;
+	  }
+		//uint16_t speedA = 1000;
+		//speedA = speedA - offset;
+		HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_RESET);
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
+		osDelay(1);
+}*/
+/* end of moveForward1 */
 void moveBackword()
 {
-	  speedA = 800;
-	  speedB = 600;
+	  speedA = 1200;
+	  speedB = 1000;
+	  if (speedA == speedB){
+	    dummy += 1;
+	  } else if(A_faster){
+	    speedA = speedA - errorVal;
+	  } else {
+	    speedB = speedB - errorVal;
+	  }
+		//uint16_t speed = 2000;
+		//speedA = speedA - offset;
+		HAL_GPIO_WritePin(GPIOA, AIN2_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, AIN1_Pin, GPIO_PIN_SET);
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, speedA);
+
+		HAL_GPIO_WritePin(GPIOA, BIN2_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, BIN1_Pin, GPIO_PIN_SET);
+		__HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, speedB);
+}
+//for turning
+void moveBackword1()
+{
+	  speedA = 2200;
+	  speedB = 2000;
 	  if (speedA == speedB){
 	    dummy += 1;
 	  } else if(A_faster){
@@ -876,7 +1072,6 @@ void moveBackword()
 void turnForward()
 {
 	htim1.Instance ->CCR4 = 74; // center
-
 }
 void turnLeft()
 {
@@ -888,10 +1083,65 @@ void turnRight()
 	htim1.Instance ->CCR4 = 92; // extreme right
 
 }
+sentUART(char sw1)
+{
+	while(1)
+	{
+		uint8_t send[20] = " ";
+		switch(sw1)
+		{
+			case 'w':
+				sprintf(send,"%s\0", "Forward");
+				HAL_UART_Transmit(&huart3,(uint8_t *)&send,20,0xFFFF);
+				break;
+			case 's':
+				sprintf(send,"%s\0", "Reverse");
+				HAL_UART_Transmit(&huart3,(uint8_t *)&send,20,0xFFFF);
+				break;
+			case 'a':
+				sprintf(send,"%s\0", "Left");
+				HAL_UART_Transmit(&huart3,(uint8_t *)&send,20,0xFFFF);
+				break;
+			case 'd':
+				sprintf(send,"%s\0", "Right");
+				HAL_UART_Transmit(&huart3,(uint8_t *)&send,20,0xFFFF);
+				break;
+			case 'q':
+				sprintf(send,"%s\0", "Forward L turn 90");
+				HAL_UART_Transmit(&huart3,(uint8_t *)&send,20,0xFFFF);
+				break;
+			case 'e':
+				sprintf(send,"%s\0", "Forward R turn 90");
+				HAL_UART_Transmit(&huart3,(uint8_t *)&send,20,0xFFFF);
+				break;
+			case 'z':
+				sprintf(send,"%s\0", "Reverse left 90");
+				HAL_UART_Transmit(&huart3,(uint8_t *)&send,20,0xFFFF);
+				break;
+			case 'c':
+				sprintf(send,"%s\0", "Reverse right 90");
+				HAL_UART_Transmit(&huart3,(uint8_t *)&send,20,0xFFFF);
+				break;
+			case 'x':
+				sprintf(send,"%s\0", "Front");
+				HAL_UART_Transmit(&huart3,(uint8_t *)&send,20,0xFFFF);
+				break;
+			case '0':
+				sprintf(send,"%s\0", "Stop");
+				HAL_UART_Transmit(&huart3,(uint8_t *)&send,20,0xFFFF);
+				break;
+
+		}
+		break;
+
+	}
+}
+
 void motors(void *argument)
 {
   /* USER CODE BEGIN motors */
 	uint16_t operator[4], i=0,y=0,z=0;
+	//uint16_t operator[4],y=0,z=0;
 	//uint16_t speedA = 1000;
 	//uint16_t speedB = 1000;
 	HAL_UART_Receive_IT(&huart3,(uint8_t *) aRxBuffer,5);
@@ -911,59 +1161,176 @@ void motors(void *argument)
 			HAL_UART_Receive_IT(&huart3,(uint8_t *) aRxBuffer,5);
 			operator[0] = aRxBuffer[0];
 		}*/
-
 		if(i==5)
 		{
 			i=0;
 		}
-		switch(operator[i])
+		if (IR2_Val <= 20);
 		{
+			stop();
+		}
+		switch(aRxBuffer[i])
+		{
+		//turn by 5
+		case'O':
+			aRxBuffer[i] = '>';
+			turnRight();
+			moveForward();
+			osDelay(250);
+			stop();
+			turnLeft();
+			moveBackword();
+			osDelay(250);
+			turnForward();
+			stop();
+			i++;
+			break;
+		//turn by 10
+			case'o':
+				aRxBuffer[i] = '>';
+				turnRight();
+				moveForward();
+				osDelay(500);
+				stop();
+				turnLeft();
+				moveBackword();
+				osDelay(500);
+				turnForward();
+				stop();
+				i++;
+				break;
+			//360 turn
+			case'm':
+				aRxBuffer[i] = '>';
+				turnRight();
+				osDelay(500);
+				moveForward1();
+				osDelay(8800);
+				stop();
+				i++;
+				break;
+
+			case'l':
+				aRxBuffer[i] = '>';
+				turnRight();
+				osDelay(500);
+				moveForward1();
+				osDelay(800);
+				stop();
+				turnLeft();
+				osDelay(500);
+				moveBackword1();
+				osDelay(1000);
+				stop();
+				//pos to center
+				turnRight();
+				osDelay(500);
+				moveForward();
+				osDelay(500);
+				stop();
+				turnLeft();
+				osDelay(500);
+				moveBackword();
+				osDelay(100);
+				stop();
+				turnForward();
+				i++;
+				break;
+			case'L':
+				aRxBuffer[i] = '>';
+				turnLeft();
+				osDelay(500);
+				moveForward1();
+				osDelay(800);
+				stop();
+				turnRight();
+				osDelay(500);
+				moveBackword1();
+				osDelay(800);
+				//pos
+				turnLeft();
+				moveForward();
+				osDelay(1000);
+				stop();
+				turnRight();
+				moveBackword();
+				osDelay(1000);
+				stop();
+				turnForward();
+				moveForward();
+				osDelay(500);
+				stop();
+
+				i++;
+				break;
 			case 'e':
 				aRxBuffer[i] = '>';
 				operator[i] = '>';
-				turnR();
+				forwardR90();
+				sentUART('e');
 				i++;
 				break;
 			case 'q':
 				aRxBuffer[i] = '<';
 				operator[i] = '<';
-				turnL();
+				forwardL90();
+				sentUART('q');
 				i++;
 				break;
 			case '0':
 				aRxBuffer[i] = '&';
 				operator[i] = '&';
 				stop();
+				sentUART('0');
 				i++;
 				break;
 			case 'w':
 				aRxBuffer[i] = '^';
 				operator[i] = '^';
 				moveForward();
+				sentUART('w');
 				i++;
 				break;
 			case'a' :
 				aRxBuffer[i] = '@';
 				operator[i] = '@';
 				turnLeft();
+				sentUART('a');
 				i++;
 				break;
 			case 'd':
 				aRxBuffer[i] = '$';
 				operator[i] = '$';
 				turnRight();
+				sentUART('d');
 				i++;
 				break;
-			case '9':
+			case 'x':
 				aRxBuffer[i] = '-';
 				operator[i] = '-';
 				turnForward();
+				sentUART('x');
 				i++;
 				break;
 			case 's':
 				aRxBuffer[i]= '_';
 				operator[i]= '_';
 				moveBackword();
+				sentUART('s');
+				i++;
+				break;
+			case 'z':
+				aRxBuffer[i]= '+';
+				operator[i]= '+';
+				backwordL90();
+				sentUART('z');
+				i++;
+				break;
+			case 'c':
+				aRxBuffer[i]= ')';
+				operator[i]= ')';
+				backwordR90();
+				sentUART('c');
 				i++;
 				break;
 			case'X':
@@ -979,7 +1346,6 @@ void motors(void *argument)
 						break;
 					}
 				}
-
 /*				var1 = atoi(operator[1]);
 				var2 = atoi(operator[2]);
 				var3 = atoi(operator[3]);*/
@@ -1077,6 +1443,7 @@ void encoder_task(void *argument)
 	  tick = HAL_GetTick();
 	  uint8_t SpeedA[20];
 	  uint8_t SpeedB[20];
+	  uint8_t shah;
 	  for(;;)
 	  {
 		  if(HAL_GetTick()-tick > 100L){
@@ -1106,10 +1473,6 @@ void encoder_task(void *argument)
 				  else
 					  readSpeedB = (65535 - cnt3) + cnt3;
 			  }
-			  sprintf(SpeedA,"Speed:%5d\0",readSpeedA);
-			  //OLED_ShowString(10,20,SpeedA);
-			  sprintf(SpeedB,"Speed:%5d\0",readSpeedB);
-			  //OLED_ShowString(10,30,SpeedB);
 
 	      if(readSpeedA > readSpeedB){
 	        errorVal = readSpeedA - readSpeedB;
@@ -1127,15 +1490,22 @@ void encoder_task(void *argument)
 			  cnt1 = __HAL_TIM_GET_COUNTER(&htim2);
 			  cnt3 = __HAL_TIM_GET_COUNTER(&htim3);
 			  tick = HAL_GetTick();
+
 		  }
-	    osDelay(1);
+
+		  shah = ((cnt1 *20)/1320);
+//		  sprintf(SpeedA,"tick:%5d\0",cnt1);
+//		  OLED_ShowString(10,20,SpeedA);
+//		  sprintf(SpeedB,"d:%5d\0",shah);
+//		  OLED_ShowString(10,30,SpeedB);
+		  osDelay(1);
 	  }
   /* USER CODE END encoder_task */
 }
 
 /* USER CODE BEGIN Header_sensorDist */
 /**
-* @brief Function implementing the IRRead thread.
+* @brief Function implementing the IRDist thread.
 * @param argument: Not used
 * @retval None
 */
@@ -1143,33 +1513,46 @@ void encoder_task(void *argument)
 void sensorDist(void *argument)
 {
   /* USER CODE BEGIN sensorDist */
-  /* Infinite loop */
-	uint16_t IR1_val;
-	uint16_t IR2_val;
-	uint8_t IR1[20];
-	uint8_t IR2[20];
-	uint8_t distance1;
-	uint8_t distance2;
-  for(;;)
-  {
-	HAL_ADC_Start(&hadc1);
-	HAL_ADC_Start(&hadc2);
-	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-	HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
-	IR1_val = HAL_ADC_GetValue(&hadc1);
-	IR2_val = HAL_ADC_GetValue(&hadc2);
+	  /* Infinite loop */
+		uint16_t IR1_val;
+		uint16_t IR2_val;
+		uint8_t IR1[20];
+		uint8_t IR2[20];
+		uint8_t distance1;
+		uint8_t distance2;
+	  for(;;)
+	  {
+			HAL_ADC_Start(&hadc1);
+			HAL_ADC_Start(&hadc2);
+			HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+			HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
+			IR1_val = HAL_ADC_GetValue(&hadc1);
+			IR2_val = HAL_ADC_GetValue(&hadc2);
 
-	distance1 = 4800/(IR1_val - 20);
-	distance2 = 4800/(IR2_val - 20);
+//			IR1_Val = IR1_val;
+//			IR2_Val = IR2_val;
 
-	sprintf(IR1,"Dist(cm):%5d\0",distance1);
-	OLED_ShowString(10,20,IR1);
+			//distance1 = 3.31881*(IR2_val * IR2_val) - 240.944*(IR2_val) + 5250.12;
+			//distance1 = 39413.4 - 32787.2*pow(IR2_val, 0.0453191);
+			//distance2 = 0.05*(IR2_val * IR2_val) - 8.23*(IR2_val) + 395.5;
+			//distance2 = IR2_val;
 
-	sprintf(IR2,"Dist(cm):%5d\0",distance2);
-	OLED_ShowString(10,30,IR2);
+			distance2 = (32378.4/IR2_val) - 1.11073;
+			distance1 = (30200/IR1_val) + 0.582877;//selftest
+			IR2_Val = distance2;
+			IR1_Val = distance1;
 
-    osDelay(1);
-  }
+			sprintf(IR1,"Dist1(cm):%5d\0",distance1);
+			OLED_ShowString(10,20,IR1);
+
+			sprintf(IR2,"Dist2(cm):%5d\0",distance2);
+			OLED_ShowString(10,30,IR2);
+
+//			sprintf(IR2,"Dist2(cm):%5d\0",IR2_val);
+//			OLED_ShowString(10,40,IR2);
+
+			osDelay(1000);
+	  }
   /* USER CODE END sensorDist */
 }
 
