@@ -75,9 +75,31 @@ public class AStar {
 			}
 			closedCells[current.getRow()][current.getCol()] = true;
 			
-			if(current.equals(this.mapArena.getMap()[this.targetRow][this.targetCol])) {
-				return;
-			}
+//			if(current.equals(this.mapArena.getMap()[this.targetRow][this.targetCol])) {
+//				switch (current.getHeadDir()){
+//					case 1: 
+//						if(this.targetHead == 2) {
+//							System.out.println("Hi1");
+//							return;
+//						}
+//					case 2: 
+//						if(this.targetHead == 1) {
+//							System.out.println("Hi2");
+//							return;
+//						}
+//					case 3: 
+//						if(this.targetHead == 4) {
+//							System.out.println("Hi3");
+//							return;
+//						}
+//					case 4: 
+//						if(this.targetHead == 3) {
+//							System.out.println("Hi4");
+//							return;
+//						}
+//				}
+//				//continue;
+//			}
 			
 			if (current.getRow()+1>=Constants.MAX_ROW || current.getRow()-1<0 || current.getCol()+1>=Constants.MAX_COL || current.getCol()<0) {
 				return;
@@ -204,7 +226,7 @@ public class AStar {
 					}
 					
 					//turning left
-					if(current.getRow()-4 < this.mapArena.getMap().length) {
+					if(current.getRow()-4 >= 0) {
 						if(current.getCol()+4 < this.mapArena.getMap().length) {
 							boolean noObst = true;
 							for(int i=-2; i<-5; i++) {
@@ -215,7 +237,7 @@ public class AStar {
 								}		
 							}
 							if(noObst) {
-								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
+								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()+3];
 								t.setHeadDir(3);
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
 							}
@@ -223,7 +245,7 @@ public class AStar {
 					}
 					
 					//turning right
-					if(current.getRow()-4 < this.mapArena.getMap().length) {
+					if(current.getRow()-4 >= 0) {
 						if(current.getCol()-4 >=0) {
 							boolean noObst = true;
 							for(int i=-2; i<-5; i++) {
@@ -235,7 +257,7 @@ public class AStar {
 								}		
 							}
 							if(noObst) {
-								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
+								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()-3];
 								t.setHeadDir(4);
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
 							}
@@ -360,7 +382,7 @@ public class AStar {
 					}
 					
 					//turning right
-					if(current.getCol()-4 < this.mapArena.getMap().length) {
+					if(current.getCol()-4 >= 0) {
 						if(current.getRow()+4 < this.mapArena.getMap().length) {
 							boolean noObst = true;
 							for(int i=-2; i<-5; i++) {
@@ -379,7 +401,7 @@ public class AStar {
 					}
 					
 					//turning left
-					if(current.getCol()-4 < this.mapArena.getMap().length) {
+					if(current.getCol()-4 >= 0) {
 						if(current.getRow()-4 >=0) {
 							boolean noObst = true;
 							for(int i=-2; i<-5; i++) {
@@ -490,9 +512,9 @@ public class AStar {
 	}
 	
 	public static void main(String[] args) {
-		AStar astar = new AStar(1, 1, 13, 15, new int[][] {
-			{10,4,1}, {7,4,1}, {15,18,1},{3,7,1}, {4,10,1},{13,8,1}
-		}, 1, 4);
+		AStar astar = new AStar(1, 1, 18, 18, new int[][] {
+			{5,9,2}, {7,14,4}, {12,9,3}, {15,15,2}, {15,4,4}//,{13,8,1}
+		}, 1, 2);
 		astar.display();
 		astar.process();
 		astar.displayScores();
