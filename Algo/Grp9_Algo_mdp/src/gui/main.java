@@ -2,12 +2,17 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.ScrollPane;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JViewport;
 import javax.swing.border.EmptyBorder;
 
 import constant.Constants;
@@ -20,9 +25,6 @@ public class main extends JFrame {
 
 	private MapPanel MapPanel;
 	private JPanel MapSetting;
-	private MapPanel simulationMap;
-	private JPanel designMap;
-
 	private JLabel[][] resultMap; // Use to display simulation
 
 	Thread simHamitonian, simFastest, simRealRun;
@@ -66,8 +68,8 @@ public class main extends JFrame {
 		setLayout(new FlowLayout());
 		setTitle("CZ3004 MDP Group 9");
 		
-		MapPanel = new MapPanel(true);
-		MapSetting = new MapSetting(this,MapPanel,rBot);
+		MapPanel = new MapPanel(this,true,initialMap);
+		MapSetting = new MapSetting(this,initialMap,rBot);
 		resultMap = MapPanel.getJLabelMap();
 		add(MapPanel);
 		add(MapSetting);
@@ -83,9 +85,11 @@ public class main extends JFrame {
 
 		for (int i = 0; i < Constants.MAX_ROW; i++) {
 			for (int y = 0; y < Constants.MAX_COL; y++) {
-				Cell cellObj = initialMap.getMapGrid()[i][y];
+				Cell cellObj = initialMap.getMap()[i][y];
+				if(resultMap[i + 1][y + 1].getText().isBlank()) {
+					resultMap[i + 1][y + 1].setBackground(getMapColorForCell('U'));
+				}
 				
-				//resultMap[i + 1][y + 1].setBackground(getMapColorForCell('U'));
 			}
 		}
 		Cell startZone = initialMap.getStartGoalPosition();
@@ -95,7 +99,7 @@ public class main extends JFrame {
 		for (int i : Constants.WITHIN_3BY3) {
 			for (int y : Constants.WITHIN_3BY3) {
 
-				resultMap[startZone.getRowPos() + i + 1][startZone.getColPos() + y + 1]
+				resultMap[startZone.getRow() + i + 1][startZone.getCol() + y + 1]
 						.setBackground(getMapColorForCell('S'));
 			}
 		}
@@ -172,6 +176,154 @@ public class main extends JFrame {
 			cellColor = Color.black; // Error color
 		}
 		return cellColor;
+	}
+
+	public void resetArena() {
+		// reset arena with robot at starting point & obstacles
+		rBot.setCurrDir(DIRECTION.NORTH);
+		rBot.setPosCol(1);
+		rBot.setPosRow(1);
+		
+		for (int i = 0; i < Constants.MAX_ROW; i++) {
+			for (int y = 0; y < Constants.MAX_COL; y++) {
+				Cell cellObj = initialMap.getMap()[i][y];
+				
+				if(cellObj.isObstacle()) {
+					resultMap[i][y].setBackground(getMapColorForCell('O'));
+				}
+				else {
+					resultMap[i][y].setBackground(getMapColorForCell('U'));
+				}
+				
+			}
+		}
+		Cell startZone = initialMap.getStartGoalPosition();
+
+
+		// Paint the Start and End Zone (3x3 grid)
+		for (int i : Constants.WITHIN_3BY3) {
+			for (int y : Constants.WITHIN_3BY3) {
+
+				resultMap[startZone.getRow() + i + 1][startZone.getCol() + y + 1]
+						.setBackground(getMapColorForCell('S'));
+			}
+		}
+		// Paint the robot (3x3 grid)
+		for (int i : Constants.WITHIN_3BY3) {
+			for (int y : Constants.WITHIN_3BY3) {
+				resultMap[rBot.getPosRow() + i + 1][rBot.getPosCol() + y + 1].setBackground(getMapColorForCell('R'));
+
+			}
+		}
+
+		// Paint the front of the robot
+		switch (rBot.getCurrDir().toString()) {
+
+		case "NORTH":
+			resultMap[rBot.getPosRow() + 2][rBot.getPosCol() + 1].setBackground(getMapColorForCell('H'));
+
+			break;
+		case "EAST":
+			resultMap[rBot.getPosRow() + 1][rBot.getPosCol() + 2].setBackground(getMapColorForCell('H'));
+
+			break;
+		case "SOUTH":
+			resultMap[rBot.getPosRow()][rBot.getPosCol() + 1].setBackground(getMapColorForCell('H'));
+
+			break;
+		case "WEST":
+			resultMap[rBot.getPosRow() + 1][rBot.getPosCol()].setBackground(getMapColorForCell('H'));
+
+			break;
+
+		}
+
+		
+	}
+
+	public void clearArena() {
+		// clear arena with robot at starting point with no obstacles
+		// reset arena with robot at starting point & obstacles
+		rBot.setCurrDir(DIRECTION.NORTH);
+		rBot.setPosCol(1);
+		rBot.setPosRow(1);
+		
+		for (int i = 0; i < Constants.MAX_ROW; i++) {
+			for (int y = 0; y < Constants.MAX_COL; y++) {
+				Cell cellObj = initialMap.getMap()[i][y];
+				resultMap[i + 1][y + 1].setBackground(getMapColorForCell('U'));
+				resultMap[i + 1][y + 1].setText("");
+				cellObj.isNotObstacle();
+				
+			}
+		}
+		Cell startZone = initialMap.getStartGoalPosition();
+
+
+		// Paint the Start and End Zone (3x3 grid)
+		for (int i : Constants.WITHIN_3BY3) {
+			for (int y : Constants.WITHIN_3BY3) {
+
+				resultMap[startZone.getRow() + i + 1][startZone.getCol() + y + 1]
+						.setBackground(getMapColorForCell('S'));
+			}
+		}
+		// Paint the robot (3x3 grid)
+		for (int i : Constants.WITHIN_3BY3) {
+			for (int y : Constants.WITHIN_3BY3) {
+				resultMap[rBot.getPosRow() + i + 1][rBot.getPosCol() + y + 1].setBackground(getMapColorForCell('R'));
+
+			}
+		}
+
+		// Paint the front of the robot
+		switch (rBot.getCurrDir().toString()) {
+
+		case "NORTH":
+			resultMap[rBot.getPosRow() + 2][rBot.getPosCol() + 1].setBackground(getMapColorForCell('H'));
+
+			break;
+		case "EAST":
+			resultMap[rBot.getPosRow() + 1][rBot.getPosCol() + 2].setBackground(getMapColorForCell('H'));
+
+			break;
+		case "SOUTH":
+			resultMap[rBot.getPosRow()][rBot.getPosCol() + 1].setBackground(getMapColorForCell('H'));
+
+			break;
+		case "WEST":
+			resultMap[rBot.getPosRow() + 1][rBot.getPosCol()].setBackground(getMapColorForCell('H'));
+
+			break;
+
+		}
+
+	}
+	
+    /**
+     * This method display string text in the scrollview on GUI
+     *
+     * @param msg String value to be displayed on GUI.
+     */
+    public void displayMsgToUI(String msg) {
+    	JViewport viewport = ((JScrollPane)MapSetting.getComponents()[9]).getViewport();
+		JTextArea textArea = (JTextArea)viewport.getView();	
+		textArea.append(msg + "\n");
+		textArea.setCaretPosition(textArea.getText().length());
+    }
+	
+	public void addObstacle(int row, int col) {
+		JViewport viewport = ((JScrollPane)MapSetting.getComponents()[9]).getViewport();
+		JTextArea textArea = (JTextArea)viewport.getView();
+		textArea.append("\nObstacle added at ["+(row-1)+"]["+(col-1)+"]");
+		textArea.setCaretPosition(textArea.getText().length());
+	}
+	
+	public void removeObstacle(int row, int col) {
+		JViewport viewport = ((JScrollPane)MapSetting.getComponents()[9]).getViewport();
+		JTextArea textArea = (JTextArea)viewport.getView();
+		textArea.append("\nObstacle Removed at ["+(row-1)+"]["+(col-1)+"]");
+		textArea.setCaretPosition(textArea.getText().length());
 	}
 	
 

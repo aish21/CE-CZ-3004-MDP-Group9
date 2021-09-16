@@ -1,154 +1,241 @@
 package entity;
+//import constant.Constants;
 
 import constant.Constants;
 
-/**
- * @author Nicholas Yeo Ming Jie
- * @author Neo Zhao Wei
- * @author David Loh Shun Hao
- * @version 1.0
- * @since 2020-10-27
- */
 public class Cell {
-
-    private int rowPos;                         // Specifies row of map
-    private int colPos;                         // Specifies column of map
-    private boolean isVirtualWall;
-    private String obstacleType;					//Specifies obstacle type
-    private String sensor;
-
+	private int row, col;
+	private Cell parent;
+	private double heuristicCost; //hcost
+	private double finalCost; //fCost = g+h
+	private boolean obstacle;
+	private int obsDir; //0= notObstacle 1=Top, 2=Bottom, 3=Right, 4=Left
+	private boolean targetCell;
+	private boolean solution; //check if cell is part of the solution
+	private int headDir;
+	
+	public Cell(int row, int col) {
+		this.row = row;
+		this.col = col;
+		this.obstacle = false;
+		this.solution = false;
+		this.targetCell = false;
+		this.headDir = 1;
+		this.obsDir = 0;
+	}
+	
+	
+	public void isNotObstacle() {
+		this.obsDir = 0;
+		this.obstacle = false;
+	}
+	
+	public void setObstacle(int dir) {
+		this.obstacle = true;
+		this.obsDir = dir;
+	}
+	
     /**
-     * Non-default Constructor
-     *
-     * @param rowValue row value of cell
-     * @param colValue column value of cell
-     */
-    public Cell(int rowValue, int colValue) {
-        this.rowPos = rowValue;
-        this.colPos = colValue;
-        this.sensor = "none";
-    }
-
-    /**
-     * Non-default Constructor
-     *
-     * @param rowValue  row value of cell
-     * @param colValue  column value of cell
-     * @param obstacleType type of obstacle
-     */
-    public Cell(int rowValue, int colValue, String obstacleType ) {
-        this.rowPos = rowValue;
-        this.colPos = colValue;
-        this.obstacleType = obstacleType;
-        this.sensor = "none";
-    }
-
-    /**
-     * Non-default Constructor
-     *
-     * @param rowValue    row value of cell
-     * @param colValue    column value of cell
-     * @param obstacleType type of obstacle
-     * @param sensorValue Sensor value that read the cell
-     */
-    public Cell(int rowValue, int colValue,String obstacleType, String sensorValue) {
-        this.rowPos = rowValue;
-        this.colPos = colValue;
-        this.obstacleType = obstacleType;
-        this.sensor = sensorValue;
-    }
-
-    /**
-     * @param sensorValue The new value specify which sensor the cell is read by
-     */
-    public void setSensor(String sensorValue) {
-        this.sensor = sensorValue;
-    }
-
-    /**
-     * @return sensor which read the cell
-     */
-    public String getSensor() {
-        return this.sensor;
-    }
-
-    /**
-     * @param rowValue The new value to set the row value of cell
-     */
-    public void setRowPos(int rowValue) {
-        this.rowPos = rowValue;
-    }
-
-    /**
-     * @param colValue The new value to set the column value of cell
-     */
-    public void setColPos(int colValue) {
-        this.colPos = colValue;
-    }
+	 * @return the cell row
+	 */
+	public int getRow() {
+		return row;
+	}
 
 
-    /**
-     * @return row value of cell
-     */
-    public int getRowPos() {
-        return this.rowPos;
-    }
+	/**
+	 * @param row the row to set
+	 */
+	public void setRow(int row) {
+		this.row = row;
+	}
 
-    /**
-     * @return column value of cell
-     */
-    public int getColPos() {
-        return this.colPos;
-    }
 
-    
-    /**
-     * @param set obstacle type
-     */
-    public void setObstacleType (String type) {
-        this.obstacleType = type;
-    }
-    
-    /**
-     * @return get obstacle type
-     */
-    public String getObstacleType () {
-        return obstacleType;
-    }
-    
-    
-    /**
-     * @return the virtual wall status of cell
-     */
-    public boolean isVirtualWall() {
-        return isVirtualWall;
-    }
 
-    /**
-     * @param isVirtualWall The new value to specify if cell is a virtual wall
-     */
-    public void setVirtualWall(boolean isVirtualWall) {
-        this.isVirtualWall = isVirtualWall;
-    }
+	/**
+	 * @return the cell column
+	 */
+	public int getCol() {
+		return col;
+	}
 
-    /**
+
+
+	/**
+	 * @param col the cell column to set
+	 */
+	public void setCol(int col) {
+		this.col = col;
+	}
+
+
+
+	/**
+	 * @return the parent
+	 */
+	public Cell getParent() {
+		return parent;
+	}
+
+
+
+	/**
+	 * @param parent the parent to set
+	 */
+	public void setParent(Cell parent) {
+		this.parent = parent;
+	}
+
+
+
+	/**
+	 * @return the heuristicCost
+	 */
+	public double getHeuristicCost() {
+		return heuristicCost;
+	}
+
+
+
+	/**
+	 * @param heuristicCost the heuristicCost to set
+	 */
+	public void setHeuristicCost(double heuristicCost) {
+		this.heuristicCost = heuristicCost;
+	}
+
+
+
+	/**
+	 * @return the finalCost
+	 */
+	public double getFinalCost() {
+		return finalCost;
+	}
+
+
+
+	/**
+	 * @param finalCost the finalCost to set
+	 */
+	public void setFinalCost(double finalCost) {
+		this.finalCost = finalCost;
+	}
+
+
+
+	/**
+	 * @return the obstacle
+	 */
+	public boolean isObstacle() {
+		return obstacle;
+	}
+
+
+
+	/**
+	 * @param obstacle the obstacle to set
+	 */
+	public void setObstacle(boolean obstacle) {
+		this.obstacle = obstacle;
+	}
+
+
+
+	/**
+	 * @return the obsDir
+	 */
+	public int getObsDir() {
+		return obsDir;
+	}
+
+
+
+	/**
+	 * @param obsDir the obsDir to set
+	 */
+	public void setObsDir(int obsDir) {
+		this.obsDir = obsDir;
+	}
+
+
+
+	/**
+	 * @return the targetCell
+	 */
+	public boolean isTargetCell() {
+		return targetCell;
+	}
+
+
+
+	/**
+	 * @param targetCell the targetCell to set
+	 */
+	public void setTargetCell(boolean targetCell) {
+		this.targetCell = targetCell;
+	}
+
+
+
+	/**
+	 * @return the solution
+	 */
+	public boolean isSolution() {
+		return solution;
+	}
+
+
+
+	/**
+	 * @param solution the solution to set
+	 */
+	public void setSolution(boolean solution) {
+		this.solution = solution;
+	}
+
+
+
+	/**
+	 * @return the headDir
+	 */
+	public int getHeadDir() {
+		return headDir;
+	}
+
+
+
+	/**
+	 * @param headDir the headDir to set
+	 */
+	public void setHeadDir(int headDir) {
+		this.headDir = headDir;
+	}
+
+
+
+	/**
      * @return true if cell is within the width and length of arena
      */
     public boolean isCellValid() {
-        if (this.rowPos >= Constants.MAX_ROW) {
+        if (this.row >= Constants.MAX_ROW) {
             return false;
         }
-        if (this.colPos >= Constants.MAX_COL) {
+        if (this.col >= Constants.MAX_COL) {
             return false;
         }
-        if (this.rowPos < 0) {
+        if (this.row < 0) {
             return false;
         }
-        if (this.colPos < 0) {
+        if (this.col < 0) {
             return false;
         }
 
         return true;
     }
 
+	@Override
+	public String toString() {
+		return "{" + this.row + ", " + this.col + "}";
+	}
 }

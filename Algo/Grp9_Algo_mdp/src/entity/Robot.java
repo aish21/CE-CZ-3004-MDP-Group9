@@ -4,11 +4,10 @@ import constant.Constants.DIRECTION;
 import constant.Constants.MOVEMENT;
 
 /**
- * @author Nicholas Yeo Ming Jie
- * @author Neo Zhao Wei
- * @author David Loh Shun Hao
+ * @author Goh Cheng Guan, Clive
+ * @author 
  * @version 1.0
- * @since 2020-10-27
+ * @since 2020-09-10
  */
 public class Robot {
 
@@ -167,43 +166,47 @@ public class Robot {
         //determine position of cell that are 2 blocks infront of robot in the direction it is heading
         switch (absoluteDir) {
             case NORTH:
-                destinationCell_1.setRowPos(this.getPosRow() + 2);
-                destinationCell_1.setColPos(this.getPosCol());
-                destinationCell_2.setRowPos(this.getPosRow() + 2);
-                destinationCell_2.setColPos(this.getPosCol() - 1);
-                destinationCell_3.setRowPos(this.getPosRow() + 2);
-                destinationCell_3.setColPos(this.getPosCol() + 1);
+                destinationCell_1.setRow(this.getPosRow() + 2);
+                destinationCell_1.setCol(this.getPosCol());
+                destinationCell_2.setRow(this.getPosRow() + 2);
+                destinationCell_2.setCol(this.getPosCol() - 1);
+                destinationCell_3.setRow(this.getPosRow() + 2);
+                destinationCell_3.setCol(this.getPosCol() + 1);
                 break;
             case SOUTH:
-                destinationCell_1.setRowPos(this.getPosRow() - 2);
-                destinationCell_1.setColPos(this.getPosCol());
-                destinationCell_2.setRowPos(this.getPosRow() - 2);
-                destinationCell_2.setColPos(this.getPosCol() + 1);
-                destinationCell_3.setRowPos(this.getPosRow() - 2);
-                destinationCell_3.setColPos(this.getPosCol() - 1);
+                destinationCell_1.setRow(this.getPosRow() - 2);
+                destinationCell_1.setCol(this.getPosCol());
+                destinationCell_2.setRow(this.getPosRow() - 2);
+                destinationCell_2.setCol(this.getPosCol() + 1);
+                destinationCell_3.setRow(this.getPosRow() - 2);
+                destinationCell_3.setCol(this.getPosCol() - 1);
                 break;
             case WEST:
-                destinationCell_1.setRowPos(this.getPosRow());
-                destinationCell_1.setColPos(this.getPosCol() - 2);
-                destinationCell_2.setRowPos(this.getPosRow() - 1);
-                destinationCell_2.setColPos(this.getPosCol() - 2);
-                destinationCell_3.setRowPos(this.getPosRow() + 1);
-                destinationCell_3.setColPos(this.getPosCol() - 2);
+                destinationCell_1.setRow(this.getPosRow());
+                destinationCell_1.setCol(this.getPosCol() - 2);
+                destinationCell_2.setRow(this.getPosRow() - 1);
+                destinationCell_2.setCol(this.getPosCol() - 2);
+                destinationCell_3.setRow(this.getPosRow() + 1);
+                destinationCell_3.setCol(this.getPosCol() - 2);
                 break;
             case EAST:
-                destinationCell_1.setRowPos(this.getPosRow());
-                destinationCell_1.setColPos(this.getPosCol() + 2);
-                destinationCell_2.setRowPos(this.getPosRow() + 1);
-                destinationCell_2.setColPos(this.getPosCol() + 2);
-                destinationCell_3.setRowPos(this.getPosRow() - 1);
-                destinationCell_3.setColPos(this.getPosCol() + 2);
+                destinationCell_1.setRow(this.getPosRow());
+                destinationCell_1.setCol(this.getPosCol() + 2);
+                destinationCell_2.setRow(this.getPosRow() + 1);
+                destinationCell_2.setCol(this.getPosCol() + 2);
+                destinationCell_3.setRow(this.getPosRow() - 1);
+                destinationCell_3.setCol(this.getPosCol() + 2);
                 break;
         }
+        
+        System.out.format("cell[%d][%d]"+exploredMap.getMap()[destinationCell_1.getRow()][destinationCell_1.getCol()].isObstacle(),destinationCell_1.getRow(),destinationCell_1.getCol());
+        System.out.format("cell[%d][%d]"+exploredMap.getMap()[destinationCell_2.getRow()][destinationCell_2.getCol()].isObstacle(),destinationCell_2.getRow(),destinationCell_2.getCol());
+        System.out.format("cell[%d][%d]"+exploredMap.getMap()[destinationCell_3.getRow()][destinationCell_3.getCol()].isObstacle(),destinationCell_3.getRow(),destinationCell_3.getCol());
 
         if (destinationCell_1.isCellValid() && destinationCell_2.isCellValid() && destinationCell_3.isCellValid()) {
-            if (!exploredMap.getMapGrid()[destinationCell_1.getRowPos()][destinationCell_1.getColPos()].getObstacleType().equals("O") &&
-                    !exploredMap.getMapGrid()[destinationCell_2.getRowPos()][destinationCell_2.getColPos()].getObstacleType().equals("O") &&
-                    !exploredMap.getMapGrid()[destinationCell_3.getRowPos()][destinationCell_3.getColPos()].getObstacleType().equals("O")) {
+            if (!exploredMap.getMap()[destinationCell_1.getRow()][destinationCell_1.getCol()].isObstacle() &&
+                    !exploredMap.getMap()[destinationCell_2.getRow()][destinationCell_2.getCol()].isObstacle() &&
+                    !exploredMap.getMap()[destinationCell_3.getRow()][destinationCell_3.getCol()].isObstacle()) {
                 return true;
             }
         }
@@ -225,43 +228,43 @@ public class Robot {
 
         switch (d) {
             case NORTH:
-                destinationCell_1.setRowPos(this.getPosRow() + 2);
-                destinationCell_1.setColPos(this.getPosCol());
-                destinationCell_2.setRowPos(this.getPosRow() + 2);
-                destinationCell_2.setColPos(this.getPosCol() - 1);
-                destinationCell_3.setRowPos(this.getPosRow() + 2);
-                destinationCell_3.setColPos(this.getPosCol() + 1);
+                destinationCell_1.setRow(this.getPosRow() + 2);
+                destinationCell_1.setCol(this.getPosCol());
+                destinationCell_2.setRow(this.getPosRow() + 2);
+                destinationCell_2.setCol(this.getPosCol() - 1);
+                destinationCell_3.setRow(this.getPosRow() + 2);
+                destinationCell_3.setCol(this.getPosCol() + 1);
                 break;
             case SOUTH:
-                destinationCell_1.setRowPos(this.getPosRow() - 2);
-                destinationCell_1.setColPos(this.getPosCol());
-                destinationCell_2.setRowPos(this.getPosRow() - 2);
-                destinationCell_2.setColPos(this.getPosCol() + 1);
-                destinationCell_3.setRowPos(this.getPosRow() - 2);
-                destinationCell_3.setColPos(this.getPosCol() - 1);
+                destinationCell_1.setRow(this.getPosRow() - 2);
+                destinationCell_1.setCol(this.getPosCol());
+                destinationCell_2.setRow(this.getPosRow() - 2);
+                destinationCell_2.setCol(this.getPosCol() + 1);
+                destinationCell_3.setRow(this.getPosRow() - 2);
+                destinationCell_3.setCol(this.getPosCol() - 1);
                 break;
             case WEST:
-                destinationCell_1.setRowPos(this.getPosRow());
-                destinationCell_1.setColPos(this.getPosCol() - 2);
-                destinationCell_2.setRowPos(this.getPosRow() - 1);
-                destinationCell_2.setColPos(this.getPosCol() - 2);
-                destinationCell_3.setRowPos(this.getPosRow() + 1);
-                destinationCell_3.setColPos(this.getPosCol() - 2);
+                destinationCell_1.setRow(this.getPosRow());
+                destinationCell_1.setCol(this.getPosCol() - 2);
+                destinationCell_2.setRow(this.getPosRow() - 1);
+                destinationCell_2.setCol(this.getPosCol() - 2);
+                destinationCell_3.setRow(this.getPosRow() + 1);
+                destinationCell_3.setCol(this.getPosCol() - 2);
                 break;
             case EAST:
-                destinationCell_1.setRowPos(this.getPosRow());
-                destinationCell_1.setColPos(this.getPosCol() + 2);
-                destinationCell_2.setRowPos(this.getPosRow() + 1);
-                destinationCell_2.setColPos(this.getPosCol() + 2);
-                destinationCell_3.setRowPos(this.getPosRow() - 1);
-                destinationCell_3.setColPos(this.getPosCol() + 2);
+                destinationCell_1.setRow(this.getPosRow());
+                destinationCell_1.setCol(this.getPosCol() + 2);
+                destinationCell_2.setRow(this.getPosRow() + 1);
+                destinationCell_2.setCol(this.getPosCol() + 2);
+                destinationCell_3.setRow(this.getPosRow() - 1);
+                destinationCell_3.setCol(this.getPosCol() + 2);
                 break;
         }
 
         if (destinationCell_1.isCellValid() && destinationCell_2.isCellValid() && destinationCell_3.isCellValid()) {
-            if (!exploredMap.getMapGrid()[destinationCell_1.getRowPos()][destinationCell_1.getColPos()].getObstacleType().equals("O") &&
-                    !exploredMap.getMapGrid()[destinationCell_2.getRowPos()][destinationCell_2.getColPos()].getObstacleType().equals("O") &&
-                    !exploredMap.getMapGrid()[destinationCell_3.getRowPos()][destinationCell_3.getColPos()].getObstacleType().equals("O")) {
+            if (!exploredMap.getMap()[destinationCell_1.getRow()][destinationCell_1.getCol()].isObstacle() &&
+                    !exploredMap.getMap()[destinationCell_2.getRow()][destinationCell_2.getCol()].isObstacle() &&
+                    !exploredMap.getMap()[destinationCell_3.getRow()][destinationCell_3.getCol()].isObstacle()) {
                 return true;
             }
         }

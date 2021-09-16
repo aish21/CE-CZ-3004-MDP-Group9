@@ -19,6 +19,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.PopupMenuEvent;
 
 import constant.Constants;
+import entity.Cell;
+import entity.Map;
 
 import javax.swing.JSplitPane;
 
@@ -43,14 +45,14 @@ public class MapPanel extends JPanel {
 	 *
 	 * @param isClickable Allow for mouse click when true.
 	 */
-	public MapPanel(boolean isClickable) {
+	public MapPanel(main m,boolean isClickable, Map map) {
 		super(new GridLayout(Constants.MAX_ROW + 1, Constants.MAX_COL + 1));
 		this.isClickable = isClickable;
 		this.setPreferredSize(new Dimension(600, 650));
 		populateMapPanel();
 		if (isClickable)
 			setupClick();
-		//popup menu items
+		// popup menu items
 		popupmenu.add(normal);
 		popupmenu.add(obstacle);
 		popupmenu.add(obstacleTop);
@@ -58,6 +60,87 @@ public class MapPanel extends JPanel {
 		popupmenu.add(obstacleLeft);
 		popupmenu.add(obstacleRight);
 
+		normal.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(cellLabels[cellRow][cellCol].getBackground()!=main.getMapColorForCell('U')) {
+					cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('U'));
+					cellLabels[cellRow][cellCol].setText("");
+					m.removeObstacle(cellRow, cellCol);
+					
+					//set Cell as obstacle
+					map.getMap()[cellRow-1][cellCol-1].isNotObstacle();
+				}
+
+			}
+		});
+		obstacle.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
+				cellLabels[cellRow][cellCol].setText("O");
+				m.addObstacle(cellRow, cellCol);
+				
+				//set Cell as obstacle
+				map.getMap()[cellRow-1][cellCol-1].setObstacle(1);
+
+			}
+		});
+		obstacleTop.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
+				cellLabels[cellRow][cellCol].setText("\u2191");
+				m.addObstacle(cellRow, cellCol);
+				
+				//set Cell as obstacle
+				map.getMap()[cellRow-1][cellCol-1].setObstacle(1);
+				System.out.println("Obstacle placed at "+ cellRow +" " + cellCol);
+
+			}
+		});
+		obstacleBottom.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
+				cellLabels[cellRow][cellCol].setText("\u2193");
+				m.addObstacle(cellRow, cellCol);
+				
+				//set Cell as obstacle
+				map.getMap()[cellRow-1][cellCol-1].setObstacle(2);
+
+			}
+		});
+		obstacleLeft.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
+				cellLabels[cellRow][cellCol].setText("\u2190");
+				m.addObstacle(cellRow, cellCol);
+				
+				//set Cell as obstacle
+				map.getMap()[cellRow-1][cellCol-1].setObstacle(4);
+
+			}
+		});
+		obstacleRight.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
+				cellLabels[cellRow][cellCol].setText("\u2192");
+				m.addObstacle(cellRow, cellCol);
+				
+				//set Cell as obstacle
+				map.getMap()[cellRow-1][cellCol-1].setObstacle(3);
+
+			}
+		});
 	}
 
 	public JLabel[][] getJLabelMap() {
@@ -92,6 +175,7 @@ public class MapPanel extends JPanel {
 			}
 		}
 	}
+	
 
 	private void setupClick() {
 		for (int row = Constants.MAX_ROW; row >= 0; row--) {
@@ -110,8 +194,7 @@ public class MapPanel extends JPanel {
 								if (cellLabels[row][col] == source & e.getButton() == 3) {
 									popupmenu.show(e.getComponent(), e.getX(), e.getY());
 									cellRow = row;
-									cellCol = col;	
-									
+									cellCol = col;
 
 								}
 							}
@@ -133,64 +216,6 @@ public class MapPanel extends JPanel {
 				});
 			}
 		}
-
-		normal.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-		obstacle.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('U'));
-				cellLabels[cellRow][cellCol].setText("");
-
-			}
-		});
-		obstacleTop.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
-				cellLabels[cellRow][cellCol].setText("\u2191");
-				
-
-			}
-		});
-		obstacleBottom.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
-				cellLabels[cellRow][cellCol].setText("\u2193");
-
-			}
-		});
-		obstacleLeft.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
-				cellLabels[cellRow][cellCol].setText("\u2190");
-
-			}
-		});
-		obstacleRight.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
-				cellLabels[cellRow][cellCol].setText("\u2192");
-
-			}
-		});
 	}
-	
-	
-	
-	
+
 }

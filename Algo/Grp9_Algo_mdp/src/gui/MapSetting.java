@@ -6,7 +6,6 @@ import javax.swing.JButton;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Map;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextArea;
@@ -31,15 +30,20 @@ import javax.swing.SwingConstants;
 
 import constant.Constants.MOVEMENT;
 import entity.Robot;
+import entity.Map;
 
 public class MapSetting extends JPanel {
 
+
+	private static final long serialVersionUID = 1L;
+	
 	JTextArea editTextArea;
 	JScrollPane scroll;
 	JButton hamiltonianBtn;
 	JButton shortestBtn;
 	JButton connectBtn;
-	JButton ResetBtn;
+	JButton resetBtn;
+	JButton clearBtn;
 
 	JButton upBtn;
 	JButton downBtn;
@@ -51,7 +55,7 @@ public class MapSetting extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public MapSetting(main m,MapPanel mPanel,Robot rBot) {
+	public MapSetting(main m,Map map,Robot rBot) {
 
 
         setLayout(null);
@@ -85,22 +89,37 @@ public class MapSetting extends JPanel {
         connectBtn.setText("Connect to Rpi");
         add(connectBtn);
         
-        ResetBtn = new JButton();
-        ResetBtn.addActionListener(new ActionListener() {
+        resetBtn = new JButton();
+        resetBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		editTextArea.append("\nArena Resetted!");
+        		m.resetArena();
+        	}
+        });
+        resetBtn.setText("Reset Arena ");
+        resetBtn.setBounds(155, 563, 110, 30);
+        add(resetBtn);
+        
+        clearBtn = new JButton();
+        clearBtn.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		editTextArea.setText("Arena Cleared!");
+        		m.clearArena();
         		
         	}
         });
-        ResetBtn.setText("Reset Arena ");
-        ResetBtn.setBounds(155, 521, 110, 30);
-        add(ResetBtn);
+        clearBtn.setText("Clear Arena ");
+        clearBtn.setBounds(155, 521, 110, 30);
+        add(clearBtn);
+        
         
         upBtn = new JButton();
         upBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		//TODO check if movement valid
-        		rBot.move(MOVEMENT.FORWARD);
-        		m.paintResult();
+        		if(rBot.isMovementValid(map, MOVEMENT.FORWARD)) {
+        			rBot.move(MOVEMENT.FORWARD);
+            		m.paintResult();
+        		}
         	}
         });
         upBtn.setBounds(308, 521, 103, 30);
@@ -110,8 +129,10 @@ public class MapSetting extends JPanel {
         downBtn = new JButton();
         downBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		if (rBot.isMovementValid(map, MOVEMENT.BACKWARD)) {
         		rBot.move(MOVEMENT.BACKWARD);
         		m.paintResult();
+        		}
         	}
         });
         downBtn.setBounds(308, 604, 103, 30);
@@ -121,9 +142,10 @@ public class MapSetting extends JPanel {
         leftBtn = new JButton();
         leftBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		rBot.turn(MOVEMENT.LEFT);
-        		m.paintResult();
-        		
+        		if(rBot.isMovementValid(map, MOVEMENT.LEFT)) {
+        			rBot.turn(MOVEMENT.LEFT);
+            		m.paintResult();
+        		}
         	}
         });
         leftBtn.setBounds(293, 563, 71, 30);
@@ -133,8 +155,10 @@ public class MapSetting extends JPanel {
         rightBtn = new JButton();
         rightBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		rBot.turn(MOVEMENT.RIGHT);
-        		m.paintResult();
+        		if(rBot.isMovementValid(map, MOVEMENT.RIGHT)) {
+        			rBot.turn(MOVEMENT.RIGHT);
+            		m.paintResult();
+        		}
         	}
         });
         rightBtn.setBounds(369, 563, 71, 30);
@@ -150,7 +174,7 @@ public class MapSetting extends JPanel {
         scroll.setViewportView(editTextArea);
         scroll.setBounds(0, 10, 450, 500);
         add(scroll);
-        editTextArea.setText("Instructions: Click on the grid to add\nobstacles.");
+        editTextArea.setText("Instructions: Right-click on the grid to add\nobstacles.");
         
         JSeparator separator = new JSeparator();
         separator.setOrientation(SwingConstants.VERTICAL);
@@ -158,5 +182,6 @@ public class MapSetting extends JPanel {
         add(separator);   
         
 	}
+	
 	
 }

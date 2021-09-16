@@ -91,7 +91,8 @@ def nearestNeighbour(OBSTACLES, distanceMatrix):
 
 #just testing and debugging
 OBSTACLES = calculateInitialCarToObtDistance(OBSTACLES, {"xPos": 0, "yPos": 0, "direction": NORTH})
-print(OBSTACLES)
+print(len(OBSTACLES))
+print("----------")
 distanceMatrix = calDistanceBetweenObs(distanceMatrix, OBSTACLES)
 print(distanceMatrix)
 ans = nearestNeighbour(OBSTACLES, distanceMatrix)
