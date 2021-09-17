@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 import javax.swing.event.PopupMenuEvent;
+import java.util.ArrayList;
 
 import constant.Constants;
 import entity.Cell;
@@ -27,9 +28,9 @@ import javax.swing.JSplitPane;
 public class MapPanel extends JPanel {
 
 	private JLabel[][] cellLabels;
-	private boolean isClickable; // Allows mouse click on map when true
 	private int cellRow = 0;
 	private int cellCol = 0;
+	private ArrayList<Cell> obstacleList;
 
 	// Popup Menu
 	final JPopupMenu popupmenu = new JPopupMenu("Options");
@@ -47,7 +48,6 @@ public class MapPanel extends JPanel {
 	 */
 	public MapPanel(main m,boolean isClickable, Map map) {
 		super(new GridLayout(Constants.MAX_ROW + 1, Constants.MAX_COL + 1));
-		this.isClickable = isClickable;
 		this.setPreferredSize(new Dimension(600, 650));
 		populateMapPanel();
 		if (isClickable)
@@ -59,6 +59,8 @@ public class MapPanel extends JPanel {
 		popupmenu.add(obstacleBottom);
 		popupmenu.add(obstacleLeft);
 		popupmenu.add(obstacleRight);
+		
+		obstacleList = new ArrayList<Cell>();
 
 		normal.addActionListener(new ActionListener() {
 
@@ -69,8 +71,12 @@ public class MapPanel extends JPanel {
 					cellLabels[cellRow][cellCol].setText("");
 					m.removeObstacle(cellRow, cellCol);
 					
-					//set Cell as obstacle
-					map.getMap()[cellRow-1][cellCol-1].isNotObstacle();
+					//set Cell as not obstacle
+					Cell obs = map.getMap()[cellRow-1][cellCol-1];
+					obs.isNotObstacle();
+					obstacleList.remove(obs);
+						
+					
 				}
 
 			}
@@ -84,7 +90,9 @@ public class MapPanel extends JPanel {
 				m.addObstacle(cellRow, cellCol);
 				
 				//set Cell as obstacle
-				map.getMap()[cellRow-1][cellCol-1].setObstacle(1);
+				Cell obs = map.getMap()[cellRow-1][cellCol-1];
+				obs.setObstacle(1);
+				obstacleList.add(obs);
 
 			}
 		});
@@ -97,8 +105,9 @@ public class MapPanel extends JPanel {
 				m.addObstacle(cellRow, cellCol);
 				
 				//set Cell as obstacle
-				map.getMap()[cellRow-1][cellCol-1].setObstacle(1);
-				System.out.println("Obstacle placed at "+ cellRow +" " + cellCol);
+				Cell obs = map.getMap()[cellRow-1][cellCol-1];
+				obs.setObstacle(1);
+				obstacleList.add(obs);
 
 			}
 		});
@@ -111,7 +120,9 @@ public class MapPanel extends JPanel {
 				m.addObstacle(cellRow, cellCol);
 				
 				//set Cell as obstacle
-				map.getMap()[cellRow-1][cellCol-1].setObstacle(2);
+				Cell obs = map.getMap()[cellRow-1][cellCol-1];
+				obs.setObstacle(2);
+				obstacleList.add(obs);
 
 			}
 		});
@@ -124,7 +135,9 @@ public class MapPanel extends JPanel {
 				m.addObstacle(cellRow, cellCol);
 				
 				//set Cell as obstacle
-				map.getMap()[cellRow-1][cellCol-1].setObstacle(4);
+				Cell obs = map.getMap()[cellRow-1][cellCol-1];
+				obs.setObstacle(4);
+				obstacleList.add(obs);
 
 			}
 		});
@@ -137,7 +150,9 @@ public class MapPanel extends JPanel {
 				m.addObstacle(cellRow, cellCol);
 				
 				//set Cell as obstacle
-				map.getMap()[cellRow-1][cellCol-1].setObstacle(3);
+				Cell obs = map.getMap()[cellRow-1][cellCol-1];
+				obs.setObstacle(3);
+				obstacleList.add(obs);
 
 			}
 		});
@@ -175,7 +190,6 @@ public class MapPanel extends JPanel {
 			}
 		}
 	}
-	
 
 	private void setupClick() {
 		for (int row = Constants.MAX_ROW; row >= 0; row--) {
