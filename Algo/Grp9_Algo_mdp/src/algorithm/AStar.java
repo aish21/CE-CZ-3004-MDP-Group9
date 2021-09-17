@@ -1,24 +1,23 @@
-package algorithm;
+package Algorithm;
 
 import java.util.PriorityQueue;
 import constant.Constants;
-import entity.Map;
-import entity.Cell;
+import entity.Map1;
+import entity.Cell1;
 
 public class AStar {
-	private Map mapArena; 
-	private PriorityQueue<Cell> openCells; // set of nodes to be evaluated
+	private Map1 mapArena; 
+	private PriorityQueue<Cell1> openCells; // set of nodes to be evaluated
 	private boolean[][] closedCells;// set of nodes evaluated
 	private int startRow, startCol, startHead;
 	private int targetRow, targetCol, targetHead;
 	
 	public AStar(int startRow, int startCol, int tarRow, int tarCol, int[][] blocks, int startHead, int tarHead) { //blocks is an array of obstacles //startHead and tarHead not yet
-		this.mapArena = new Map();
+		this.mapArena = new Map1();
 		this.closedCells = new boolean[Constants.MAX_ROW][Constants.MAX_COL];
-		this.openCells = new PriorityQueue<Cell>((Cell c1, Cell c2) -> {
+		this.openCells = new PriorityQueue<Cell1>((Cell1 c1, Cell1 c2) -> {
 			return c1.getFinalCost()<c2.getFinalCost() ? -1 : c1.getFinalCost() > c2.getFinalCost() ? 1 : 0;
 		});
-		
 		this.startRow = startRow;
 		this.startCol = startCol;
 		this.startHead = startHead;
@@ -31,7 +30,7 @@ public class AStar {
 			for(int j=0;j<this.mapArena.getMap()[i].length; j++) {
 				double heuristicCost = Math.abs(i - tarRow) + Math.abs(j-tarCol);
 				mapArena.getMap()[i][j].setHeuristicCost(heuristicCost);
-				mapArena.getMap()[i][j].setSolution(false);
+				mapArena.getMap()[i][j].setIsSolution(false);
 			}
 		}
 		for(int i=startRow-1; i<startRow+2; i++) {
@@ -40,13 +39,13 @@ public class AStar {
 			}
 		}
 		//this.mapArena.getMap()[startRow][startCol].setFinalCost(0);
-		
+		this.mapArena.getMap()[startRow][startCol].setHeadDir(startHead);
 		for(int i=0; i<blocks.length; i++) {
 			this.mapArena.setObstaclesNTargetPos(blocks[i][0], blocks[i][1], blocks[i][2]);
 		}
 	}
 	
-	public void updateCostIfNeeded(Cell current, Cell tar, double cost) {
+	public void updateCostIfNeeded(Cell1 current, Cell1 tar, double cost, int tarHead) {
 		if(tar==null || closedCells[tar.getRow()][tar.getCol()]) {
 			return;
 		}
@@ -57,16 +56,18 @@ public class AStar {
 		if(!isOpen || tarFinalCost < tar.getFinalCost()) {
 			tar.setFinalCost(tarFinalCost);
 			tar.setParent(current);
+			tar.setHeadDir(tarHead);
 			if(!isOpen) {
 				this.openCells.add(tar);
 			}
+			//System.out.println(tar);
 		}
 	}
 	
 	public void process() {
 		//we add the start location to open list
 		openCells.add(this.mapArena.getMap()[this.startRow][this.startCol]);
-		Cell current;
+		Cell1 current;
 		
 		while(true) {
 			current = openCells.poll();
@@ -98,14 +99,19 @@ public class AStar {
 //							return;
 //						}
 //				}
-//				//continue;
+//				
 //			}
+			if(current.equals(this.mapArena.getMap()[this.targetRow][this.targetCol]) && current.getHeadDir() == this.targetHead) {
+				System.out.println("TarHead: " + this.targetHead );
+				System.out.println("CurrHead: " + current.getHeadDir() );
+				return;
+			}
 			
 			if (current.getRow()+1>=Constants.MAX_ROW || current.getRow()-1<0 || current.getCol()+1>=Constants.MAX_COL || current.getCol()<0) {
 				return;
 			}
 			
-			Cell t;
+			Cell1 t;
 			
 			switch (current.getHeadDir()) {
 				case 1://north
@@ -113,14 +119,14 @@ public class AStar {
 					if(current.getRow()-2 >= 0) {
 						boolean noObst = true;
 						for(int i=-1; i<2; i++) {
-							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()+i].isObstacle()) {
+							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()+i].getIsObstacle()) {
 								noObst = false;
 							}
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()-1][current.getCol()];
-							t.setHeadDir(1);
-							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+							//t.setHeadDir(1);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 1);
 						}
 //						else {
 //							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
@@ -132,14 +138,14 @@ public class AStar {
 					if(current.getRow()+2 < this.mapArena.getMap().length) {
 						boolean noObst = true;
 						for(int i=-1; i<2; i++) {
-							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()+i].isObstacle()) {
+							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()+i].getIsObstacle()) {
 								noObst = false;
 							}
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-							t.setHeadDir(1);
-							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+							//t.setHeadDir(1);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 1);
 						}
 //						else {
 //							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
@@ -153,15 +159,15 @@ public class AStar {
 							boolean noObst = true;
 							for(int i=2; i<5; i++) {
 								for(int j=-1; j<5; j++) {
-									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].isObstacle()) {
+									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].getIsObstacle()) {
 										noObst = false;
 									}
 								}		
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
-								t.setHeadDir(3);
-								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+								//t.setHeadDir(3);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 3);
 							}
 						}
 					}
@@ -172,7 +178,7 @@ public class AStar {
 							boolean noObst = true;
 							for(int i=2; i<5; i++) {
 								for(int j=-4; j<2; j++) {
-									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].isObstacle()) {
+									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].getIsObstacle()) {
 										noObst = false;
 									}
 									
@@ -180,8 +186,8 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
-								t.setHeadDir(4);
-								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+								//t.setHeadDir(4);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 4);
 							}
 						}
 					}
@@ -191,14 +197,14 @@ public class AStar {
 					if(current.getRow()-2 >= 0) {
 						boolean noObst = true;
 						for(int i=-1; i<2; i++) {
-							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()+i].isObstacle()) {
+							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()+i].getIsObstacle()) {
 								noObst = false;
 							}
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()-1][current.getCol()];
-							t.setHeadDir(2);
-							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+							//t.setHeadDir(2);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 2);
 						}
 //						else {
 //							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
@@ -210,14 +216,14 @@ public class AStar {
 					if(current.getRow()+2 < this.mapArena.getMap().length) {
 						boolean noObst = true;
 						for(int i=-1; i<2; i++) {
-							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()+i].isObstacle()) {
+							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()+i].getIsObstacle()) {
 								noObst = false;
 							}
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-							t.setHeadDir(2);
-							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+							//t.setHeadDir(2);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 2);
 						}
 //						else {
 //							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
@@ -231,15 +237,15 @@ public class AStar {
 							boolean noObst = true;
 							for(int i=-2; i<-5; i++) {
 								for(int j=-1; j<5; j++) {
-									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].isObstacle()) {
+									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].getIsObstacle()) {
 										noObst = false;
 									}
 								}		
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()+3];
-								t.setHeadDir(3);
-								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+								//t.setHeadDir(3);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 3);
 							}
 						}
 					}
@@ -250,7 +256,7 @@ public class AStar {
 							boolean noObst = true;
 							for(int i=-2; i<-5; i++) {
 								for(int j=-4; j<2; j++) {
-									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].isObstacle()) {
+									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].getIsObstacle()) {
 										noObst = false;
 									}
 									
@@ -258,8 +264,8 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()-3];
-								t.setHeadDir(4);
-								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+								//t.setHeadDir(4);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 4);
 							}
 						}
 					}
@@ -269,14 +275,14 @@ public class AStar {
 					if(current.getCol()-2 >= 0) {
 						boolean noObst = true;
 						for(int i=-1; i<2; i++) {
-							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()-2].isObstacle()) {
+							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()-2].getIsObstacle()) {
 								noObst = false;
 							}
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()][current.getCol()-1];
-							t.setHeadDir(3);
-							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+							//t.setHeadDir(3);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 3);
 						}
 //						else {
 //							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
@@ -288,14 +294,14 @@ public class AStar {
 					if(current.getCol()+2 < this.mapArena.getMap().length) {
 						boolean noObst = true;
 						for(int i=-1; i<2; i++) {
-							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+2].isObstacle()) {
+							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+2].getIsObstacle()) {
 								noObst = false;
 							}
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()][current.getCol()+1];
-							t.setHeadDir(3);
-							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+							//t.setHeadDir(3);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 3);
 						}
 //						else {
 //							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
@@ -309,15 +315,15 @@ public class AStar {
 							boolean noObst = true;
 							for(int i=2; i<5; i++) {
 								for(int j=-1; j<5; j++) {
-									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].isObstacle()) {
+									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].getIsObstacle()) {
 										noObst = false;
 									}
 								}		
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
-								t.setHeadDir(1);
-								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+								//t.setHeadDir(1);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 1);
 							}
 						}
 					}
@@ -328,7 +334,7 @@ public class AStar {
 							boolean noObst = true;
 							for(int i=2; i<5; i++) {
 								for(int j=-4; j<2; j++) {
-									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].isObstacle()) {
+									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].getIsObstacle()) {
 										noObst = false;
 									}
 									
@@ -336,8 +342,8 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()+3];
-								t.setHeadDir(2);
-								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+								//t.setHeadDir(2);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 2);
 							}
 						}
 					}
@@ -347,14 +353,14 @@ public class AStar {
 					if(current.getCol()-2 >= 0) {
 						boolean noObst = true;
 						for(int i=-1; i<2; i++) {
-							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()-2].isObstacle()) {
+							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()-2].getIsObstacle()) {
 								noObst = false;
 							}
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()][current.getCol()-1];
-							t.setHeadDir(4);
-							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+							//t.setHeadDir(4);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 4);
 						}
 //						else {
 //							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
@@ -366,14 +372,14 @@ public class AStar {
 					if(current.getCol()+2 < this.mapArena.getMap().length) {
 						boolean noObst = true;
 						for(int i=-1; i<2; i++) {
-							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+2].isObstacle()) {
+							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+2].getIsObstacle()) {
 								noObst = false;
 							}
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()][current.getCol()+1];
-							t.setHeadDir(4);
-							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST);
+							//t.setHeadDir(4);
+							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 4);
 						}
 //						else {
 //							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
@@ -387,15 +393,15 @@ public class AStar {
 							boolean noObst = true;
 							for(int i=-2; i<-5; i++) {
 								for(int j=-1; j<5; j++) {
-									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+j].isObstacle()) {
+									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+j].getIsObstacle()) {
 										noObst = false;
 									}
 								}		
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
-								t.setHeadDir(1);
-								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+								//t.setHeadDir(1);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 1);
 							}
 						}
 					}
@@ -406,7 +412,7 @@ public class AStar {
 							boolean noObst = true;
 							for(int i=-2; i<-5; i++) {
 								for(int j=-4; j<2; j++) {
-									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].isObstacle()) {
+									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].getIsObstacle()) {
 										noObst = false;
 									}
 									
@@ -414,8 +420,8 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()-3];
-								t.setHeadDir(2);
-								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST);
+								//t.setHeadDir(2);
+								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 2);
 							}
 						}
 					}
@@ -434,7 +440,7 @@ public class AStar {
 					System.out.print("SO  "); //Source Cell
 				else if(i==this.targetRow && j == this.targetCol)
 					System.out.print("DE  "); //destination Cell
-				else if(!this.mapArena.getMap()[i][j].isObstacle()) 
+				else if(!this.mapArena.getMap()[i][j].getIsObstacle()) 
 					System.out.printf("%-3d ", 0);				
 				else
 					System.out.print("BL  "); //obstacle cell
@@ -448,11 +454,11 @@ public class AStar {
 		System.out.println("\nScores for Cells : ");
 		for (int i=0; i<this.mapArena.getMap().length; i++) {
 			for(int j=0; j<this.mapArena.getMap()[i].length; j++) {
-				if(!this.mapArena.getMap()[i][j].isObstacle()) {
-					System.out.printf("%-3s ", this.mapArena.getMap()[i][j].getFinalCost());
+				if(!this.mapArena.getMap()[i][j].getIsObstacle()) {
+					System.out.printf("%-3s \t", this.mapArena.getMap()[i][j].getFinalCost());
 				}
 				else {
-					System.out.print("BL  ");
+					System.out.print("BL  \t");
 				}
 				
 			}
@@ -464,13 +470,13 @@ public class AStar {
 	public void displaySolution() {
 		if(closedCells[this.targetRow][this.targetCol]) {
 			System.out.println("Path: ");
-			Cell current = this.mapArena.getMap()[this.targetRow][this.targetCol];
+			Cell1 current = this.mapArena.getMap()[this.targetRow][this.targetCol];
 			System.out.println(current);
-			this.mapArena.getMap()[current.getParent().getRow()][current.getParent().getCol()].setSolution(true);
+			this.mapArena.getMap()[current.getParent().getRow()][current.getParent().getCol()].setIsSolution(true);
 			
-			while(!current.getParent().isObstacle()) {
+			while(!current.getParent().getIsObstacle()) {
 				System.out.println(" -> " + current.getParent());
-				this.mapArena.getMap()[current.getParent().getRow()][current.getParent().getCol()].setSolution(true);;
+				this.mapArena.getMap()[current.getParent().getRow()][current.getParent().getCol()].setIsSolution(true);;
 				current = current.getParent();
 				if(current.equals(this.mapArena.getMap()[this.startRow][this.startCol])) {
 					break;
@@ -481,7 +487,7 @@ public class AStar {
 			
 //			for (int i=0; i<this.mapArena.getMap().length; i++) {
 //				for(int j=0; j<this.mapArena.getMap()[i].length; j++) {
-//					if(!this.mapArena.getMap()[i][j].isObstacle()) {
+//					if(!this.mapArena.getMap()[i][j].getIsObstacle()) {
 //						System.out.printf("%-3d ", this.mapArena.getMap()[i][j].getFinalCost());
 //					}
 //					else {
@@ -497,8 +503,8 @@ public class AStar {
 						System.out.print("SO  "); //Source Cell
 					else if(i==this.targetRow && j == this.targetCol)
 						System.out.print("DE  "); //destination Cell
-					else if(!this.mapArena.getMap()[i][j].isObstacle()) 
-						System.out.printf("%-3s ", this.mapArena.getMap()[i][j].isSolution() ? "X" : "0");				
+					else if(!this.mapArena.getMap()[i][j].getIsObstacle()) 
+						System.out.printf("%-3s ", this.mapArena.getMap()[i][j].getIsSolution() ? "X" : "0");				
 					else
 						System.out.print("BL  "); //obstacle cell
 				}
@@ -512,13 +518,31 @@ public class AStar {
 	}
 	
 	public static void main(String[] args) {
-		AStar astar = new AStar(1, 1, 18, 18, new int[][] {
-			{5,9,2}, {7,14,4}, {12,9,3}, {15,15,2}, {15,4,4}//,{13,8,1}
-		}, 1, 2);
-		astar.display();
-		astar.process();
-		astar.displayScores();
-		astar.displaySolution();
+		int startR = 1;
+		int startC = 1;
+		int[] tarHeadRArr = {5, 7, 9, 12, 12};
+		int[] tarHeadCArr = {6, 17, 9, 4, 15};
+		int[] tarHeadDirArr = {1, 3, 4, 1, 2, 1};
+		int arrIdx = 0;
+		for(int i=0; i<tarHeadRArr.length; i++ ) {
+			AStar astar = new AStar(startR, startC, tarHeadRArr[i], tarHeadCArr[i], new int[][] {
+				{5,9,4}, {7,14,3}, {12,9,2}, {15,15,1}, {15,4,2}//,{13,8,1}
+			}, tarHeadDirArr[i], tarHeadDirArr[i+1]);
+			astar.process();
+			astar.displayScores();
+			astar.displaySolution();
+			startR = tarHeadRArr[i];
+			startC = tarHeadCArr[i];
+			//arrIdx += 1;
+			
+		}
+//		AStar astar = new AStar(1, 1, 1, 6, new int[][] {
+//			{5,9,4}, {7,14,3}, {12,9,2}, {15,15,1}, {15,4,2}//,{13,8,1}
+//		}, 1, 1);
+		//astar.display();
+//		astar.process();
+//		astar.displayScores();
+//		astar.displaySolution();
 		
 	}
 }
