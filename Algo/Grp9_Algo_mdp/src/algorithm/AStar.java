@@ -1,9 +1,15 @@
-package algorithm;
+package Algorithm;
 
 import java.util.PriorityQueue;
 import constant.Constants;
+import constant.Constants.DIRECTION;
 import entity.Map;
+import entity.Robot;
 import entity.Cell;
+import java.util.Arrays;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AStar {
 	private Map mapArena; 
@@ -235,7 +241,7 @@ public class AStar {
 					if(current.getRow()-4 >= 0) {
 						if(current.getCol()+4 < this.mapArena.getMap().length) {
 							boolean noObst = true;
-							for(int i=-2; i<-5; i++) {
+							for(int i=-4; i<-1; i++) {
 								for(int j=-1; j<5; j++) {
 									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].isObstacle()) {
 										noObst = false;
@@ -254,7 +260,7 @@ public class AStar {
 					if(current.getRow()-4 >= 0) {
 						if(current.getCol()-4 >=0) {
 							boolean noObst = true;
-							for(int i=-2; i<-5; i++) {
+							for(int i=-4; i<-1; i++) {
 								for(int j=-4; j<2; j++) {
 									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].isObstacle()) {
 										noObst = false;
@@ -354,6 +360,7 @@ public class AStar {
 						boolean noObst = true;
 						for(int i=-1; i<2; i++) {
 							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()-2].isObstacle()) {
+								System.out.println("Obs: {" + (current.getRow()+i) + ", "+ (current.getCol()-2) + "}");
 								noObst = false;
 							}
 						}
@@ -373,6 +380,7 @@ public class AStar {
 						boolean noObst = true;
 						for(int i=-1; i<2; i++) {
 							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+2].isObstacle()) {
+								System.out.println("Obs: {" + (current.getRow()+i) + ", "+ (current.getCol()+2) + "}");
 								noObst = false;
 							}
 						}
@@ -391,9 +399,10 @@ public class AStar {
 					if(current.getCol()-4 >= 0) {
 						if(current.getRow()+4 < this.mapArena.getMap().length) {
 							boolean noObst = true;
-							for(int i=-2; i<-5; i++) {
+							for(int i=-4; i<-1; i++) {
 								for(int j=-1; j<5; j++) {
-									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+j].isObstacle()) {
+									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].isObstacle()) {
+										
 										noObst = false;
 									}
 								}		
@@ -410,7 +419,7 @@ public class AStar {
 					if(current.getCol()-4 >= 0) {
 						if(current.getRow()-4 >=0) {
 							boolean noObst = true;
-							for(int i=-2; i<-5; i++) {
+							for(int i=-4; i<-1; i++) {
 								for(int j=-4; j<2; j++) {
 									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].isObstacle()) {
 										noObst = false;
@@ -520,13 +529,63 @@ public class AStar {
 	public static void main(String[] args) {
 		int startR = 1;
 		int startC = 1;
-		int[] tarHeadRArr = {5, 7, 9, 12, 12};
-		int[] tarHeadCArr = {6, 17, 9, 4, 15};
-		int[] tarHeadDirArr = {1, 3, 4, 1, 2, 1};
-		int arrIdx = 0;
+		Robot r = new Robot(1, 1, DIRECTION.NORTH);
+		//int arrIdx = 0;
+		List<Cell> obsList = new ArrayList<Cell>();
+		
+		//adding of Cells
+		Cell c1 = new Cell(5, 6);
+		c1.setHeadDir(3);
+		c1.setObstacle(true);
+
+		Cell c2 = new Cell(7, 17);
+		c2.setHeadDir(4); //if no possible path, try on spot turn?
+		c2.setObstacle(true);
+
+		Cell c3 = new Cell(9, 9);
+		c3.setHeadDir(1);
+		c3.setObstacle(true);
+
+		Cell c4 = new Cell(12, 4);
+		c4.setHeadDir(1);
+		c4.setObstacle(true);
+
+		Cell c5 = new Cell(12, 15);
+		c5.setHeadDir(1);
+		c5.setObstacle(true);
+		
+		obsList.add(c5);
+		obsList.add(c2);
+		obsList.add(c1);
+		obsList.add(c4);
+		obsList.add(c3);
+		
+		obsList = NearestNeighbour.calcualteDistance(obsList, r);
+
+		// get nearest Neighbour
+		ArrayList<Cell > nnList = NearestNeighbour.findNearestNeighbour(obsList);
+		
+		int[] tarHeadRArr = new int[5]; //{5, 7, 9, 12, 12};
+		int[] tarHeadCArr = new int[5]; //{6, 17, 9, 4, 15};
+		int[] tarHeadDirArr = new int[6]; //{1, 3, 4, 1, 1, 1};
+		
+		for (int i=0; i<=nnList.size(); i++) {
+			if(i==0) {
+				tarHeadDirArr[0] = 1;
+			}
+			else {
+				tarHeadRArr[i-1] = nnList.get(i-1).getRow();
+				tarHeadCArr[i-1] = nnList.get(i-1).getCol();
+				tarHeadDirArr[i] = nnList.get(i-1).getHeadDir();
+			}
+		}
+		System.out.println(Arrays.toString(tarHeadRArr));
+		System.out.println(Arrays.toString(tarHeadCArr));
+		System.out.println(Arrays.toString(tarHeadDirArr));
+		
 		for(int i=0; i<tarHeadRArr.length; i++ ) {
 			AStar astar = new AStar(startR, startC, tarHeadRArr[i], tarHeadCArr[i], new int[][] {
-				{5,9,4}, {7,14,3}, {12,9,2}, {15,15,1}, {15,4,2}//,{13,8,1}
+				{5,9,4}, {7,14,3}, {12,9,2}, {15,15,2}, {15,4,2} //,{13,8,1}
 			}, tarHeadDirArr[i], tarHeadDirArr[i+1]);
 			astar.process();
 			astar.displayScores();
@@ -536,10 +595,10 @@ public class AStar {
 			//arrIdx += 1;
 			
 		}
-//		AStar astar = new AStar(1, 1, 1, 6, new int[][] {
+//		AStar astar = new AStar(1, 1, 3, 4, new int[][] {
 //			{5,9,4}, {7,14,3}, {12,9,2}, {15,15,1}, {15,4,2}//,{13,8,1}
 //		}, 1, 1);
-		//astar.display();
+//		astar.display();
 //		astar.process();
 //		astar.displayScores();
 //		astar.displaySolution();

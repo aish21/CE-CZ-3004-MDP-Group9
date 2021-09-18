@@ -236,7 +236,7 @@ public class Cell implements Comparable<Cell>{
 
 	@Override
 	public String toString() {
-		return "{" + this.row + ", " + this.col + "}";
+		return "{" + this.row + ", " + this.col + ", " + this.headDir + "}";
 	}
 
 
