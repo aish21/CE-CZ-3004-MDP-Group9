@@ -21,7 +21,7 @@ public class TCPComm2 {
     private PrintStream dout = null;
     private static TCPComm2 cs = null;
 
-    private static final String IPaddr = "192.168.8.1";
+    private static final String IPaddr = "192.168.9.9";
     private static final int portNum = 5182;
 
     /**

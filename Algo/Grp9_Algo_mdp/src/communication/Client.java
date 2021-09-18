@@ -20,18 +20,18 @@ public class Client {
     public static void main(String[] args) {
 
         TCPComm tcpObj = TCPComm.getInstance();
+        System.out.println(tcpObj);
         tcpObj.establishConnection();
         System.out.println("Start");
-        Scanner sc = new Scanner(System.in);
-        String enteredMsg = "";
+        //Scanner sc = new Scanner(System.in);
+        //String enteredMsg = "";
+        tcpObj.sendMessage("hello!");
 
-        while (!enteredMsg.equals("end")) {
-            System.out.println("Enter message: ");
-            enteredMsg = sc.nextLine();
-            tcpObj.sendMessage(enteredMsg);
-            System.out.println("Waiting for reply..");
-            //tcpObj.readMessage();
-        }
+		/*
+		 * while (!enteredMsg.equals("end")) { System.out.println("Enter message: ");
+		 * enteredMsg = sc.nextLine(); tcpObj.sendMessage(enteredMsg);
+		 * System.out.println("Waiting for reply.."); //tcpObj.readMessage(); }
+		 */
         //tcpObj.closeConnection();
     }
 }

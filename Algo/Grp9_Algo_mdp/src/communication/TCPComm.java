@@ -15,7 +15,7 @@ import java.net.Socket;
  */
 public class TCPComm {
 
-    private static final String IPaddr = "192.168.8.1";
+    private static final String IPaddr = "192.168.9.9";
     private static final int portNum = 5182;
     private static TCPComm tcpObj = null;
     private Socket clientSocket;
@@ -48,8 +48,11 @@ public class TCPComm {
      */
     public String establishConnection() {
         String msg = "";
+        System.out.println("1");
         try {
+        	System.out.println("2");
             clientSocket = new Socket(IPaddr, portNum);
+            System.out.println("hello: " + clientSocket);
             this.outputStream = new DataOutputStream(clientSocket.getOutputStream());
             this.inputStream = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (Exception ex) {

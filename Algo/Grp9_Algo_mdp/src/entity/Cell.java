@@ -3,7 +3,7 @@ package entity;
 
 import constant.Constants;
 
-public class Cell {
+public class Cell implements Comparable<Cell>{
 	private int row, col;
 	private Cell parent;
 	private double heuristicCost; //hcost
@@ -237,5 +237,19 @@ public class Cell {
 	@Override
 	public String toString() {
 		return "{" + this.row + ", " + this.col + "}";
+	}
+
+
+	@Override
+	public int compareTo(Cell o) {
+		if(this.getHeuristicCost() > o.getHeuristicCost()) {
+			return 1;
+		}
+		else if(this.getHeuristicCost() < o.getHeuristicCost()){
+			return -1;
+		}
+		else {
+			return 0;
+		}
 	}
 }

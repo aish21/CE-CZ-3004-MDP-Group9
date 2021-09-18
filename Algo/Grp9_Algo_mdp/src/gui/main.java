@@ -189,10 +189,12 @@ public class main extends JFrame {
 				Cell cellObj = initialMap.getMap()[i][y];
 				
 				if(cellObj.isObstacle()) {
-					resultMap[i][y].setBackground(getMapColorForCell('O'));
+					System.out.println("col: " + cellObj.getCol());
+					System.out.println("row: " + cellObj.getRow());
+					resultMap[i+1][y+1].setBackground(getMapColorForCell('O'));
 				}
 				else {
-					resultMap[i][y].setBackground(getMapColorForCell('U'));
+					resultMap[i+1][y+1].setBackground(getMapColorForCell('U'));
 				}
 				
 			}
@@ -315,14 +317,14 @@ public class main extends JFrame {
 	public void addObstacle(int row, int col) {
 		JViewport viewport = ((JScrollPane)MapSetting.getComponents()[9]).getViewport();
 		JTextArea textArea = (JTextArea)viewport.getView();
-		textArea.append("\nObstacle added at ["+(row-1)+"]["+(col-1)+"]");
+		textArea.append("\nObstacle added at ["+(col-1)+"]["+(row-1)+"]");
 		textArea.setCaretPosition(textArea.getText().length());
 	}
 	
 	public void removeObstacle(int row, int col) {
 		JViewport viewport = ((JScrollPane)MapSetting.getComponents()[9]).getViewport();
 		JTextArea textArea = (JTextArea)viewport.getView();
-		textArea.append("\nObstacle Removed at ["+(row-1)+"]["+(col-1)+"]");
+		textArea.append("\nObstacle Removed at ["+(col-1)+"]["+(row-1)+"]");
 		textArea.setCaretPosition(textArea.getText().length());
 	}
 	
