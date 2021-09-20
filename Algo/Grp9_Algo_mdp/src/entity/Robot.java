@@ -69,6 +69,24 @@ public class Robot {
     public void setCurrDir(DIRECTION currDir) {
         this.currDir = currDir;
     }
+    
+    /**
+     * @param return direction with int value
+     */
+    public int ToDirectionHead(DIRECTION currDir) {
+    	switch (currDir) {
+		case NORTH:
+			return 1;
+		case SOUTH:
+			return 2;
+		case EAST:
+			return 3;
+		case WEST:
+			return 4;
+		default:
+			return 0;
+		}
+    }
 
     /**
      * This method move the robot forward regardless of its current direction

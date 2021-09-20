@@ -63,8 +63,8 @@ public class Map {
 		this.robPosCol = startCol;
 	}
 	
-	public void setObstaclesNTargetPos(int obsRow, int obsCol, int dir) { //1=Top, 2=Bottom, 3=Left, 4=Right
-		this.map[obsRow][obsCol].setObstacle(dir);;
+	public void setMapTargetCell(int obsRow, int obsCol, int dir) { //1=Top, 2=Bottom, 3=Left, 4=Right
+		this.map[obsRow][obsCol].setObstacle(dir);
 		switch (dir) {
 			case 1:
 				this.targetRow = obsRow + 3;
@@ -88,6 +88,43 @@ public class Map {
 				this.map[obsRow][obsCol-3].setTargetCell(true);
 				break;
 		}
+	}
+	
+	public void setMapObstacle(ArrayList<Cell> obstacles) {
+		for(int i = 0; i<obstacles.size();i++) {
+			try {
+				this.getMap()[obstacles.get(i).getRow()][obstacles.get(i).getCol()] = (Cell) obstacles.get(i).clone();
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void setMapHeuristicCost(int targetRow, int targetCol) {
+		for (int i=0; i<this.getMap().length; i++) {
+			for(int j=0;j<this.getMap()[i].length; j++) {
+				double heuristicCost = Math.abs(i - targetRow) + Math.abs(j-targetCol);
+				this.getMap()[i][j].setHeuristicCost(heuristicCost);
+				this.getMap()[i][j].setSolution(false);
+			}
+		}
+	}
+	
+	public void setRobotMap(Robot r) {
+		//final cost
+		for(int i=r.getPosRow()-1; i<r.getPosRow()+2; i++) {
+			for(int j=r.getPosCol()-1; j<r.getPosCol(); j++) {
+				this.getMap()[i][j].setFinalCost(0);
+			}
+		}
+		//set start head
+		int dirHead = r.ToDirectionHead(r.getCurrDir());
+		this.getMap()[r.getPosRow()][r.getPosCol()].setHeadDir(dirHead);
+		System.out.println("-----map.setrobotmap---");
+		System.out.print(r.getCurrDir());
+		System.out.println(this.getMap()[r.getPosRow()][r.getPosCol()].getHeadDir());
+		System.out.println("----End-------");
 	}
 	
 //	public void updateRobPos(Constants.MOVEMENT goingDir, Constants.DIRECTION facingDir) {

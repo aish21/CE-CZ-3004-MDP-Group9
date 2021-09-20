@@ -52,6 +52,8 @@ public class main extends JFrame {
 	 */
 	public main() {
 		setMapRobotObj();
+		initialMap.getMap()[10][6].setObstacle(true);
+		initialMap.getMap()[10][6].setObsDir(1); 
 		initLayout();
 		paintResult();
 
@@ -327,6 +329,17 @@ public class main extends JFrame {
 		textArea.append("\nObstacle Removed at ["+(col-1)+"]["+(row-1)+"]");
 		textArea.setCaretPosition(textArea.getText().length());
 	}
+
+    /**
+     * This method get the step per second input by user on GUI
+     *
+     * @return float value specified by user from GUI
+     */
+    public float getUserSpeed() {
+        float speed = 1;
+        speed = 10;
+        return speed;
+    }
 	
 
 

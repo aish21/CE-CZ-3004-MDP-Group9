@@ -3,7 +3,7 @@ package entity;
 
 import constant.Constants;
 
-public class Cell implements Comparable<Cell>{
+public class Cell implements Comparable<Cell>, Cloneable {
 	private int row, col;
 	private Cell parent;
 	private double heuristicCost; //hcost
@@ -12,7 +12,7 @@ public class Cell implements Comparable<Cell>{
 	private int obsDir; //0= notObstacle 1=Top, 2=Bottom, 3=Right, 4=Left
 	private boolean targetCell;
 	private boolean solution; //check if cell is part of the solution
-	private int headDir;
+	private int headDir; //0= notObstacle 1=Top, 2=Bottom, 3=Right, 4=Left
 	
 	public Cell(int row, int col) {
 		this.row = row;
@@ -252,4 +252,12 @@ public class Cell implements Comparable<Cell>{
 			return 0;
 		}
 	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		Cell c = null;
+		c = (Cell) super.clone();
+		return c;
+	}
+	
 }

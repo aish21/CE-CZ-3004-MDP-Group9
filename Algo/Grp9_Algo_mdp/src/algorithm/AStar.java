@@ -1,4 +1,4 @@
-package Algorithm;
+package algorithm;
 
 import java.util.PriorityQueue;
 import constant.Constants;
@@ -47,7 +47,7 @@ public class AStar {
 		//this.mapArena.getMap()[startRow][startCol].setFinalCost(0);
 		this.mapArena.getMap()[startRow][startCol].setHeadDir(startHead);
 		for(int i=0; i<blocks.length; i++) {
-			this.mapArena.setObstaclesNTargetPos(blocks[i][0], blocks[i][1], blocks[i][2]);
+			this.mapArena.setMapTargetCell(blocks[i][0], blocks[i][1], blocks[i][2]);
 		}
 	}
 	

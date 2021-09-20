@@ -19,6 +19,7 @@ public class NearestNeighbour {
 	}
 
 	public static List<Cell> calcualteDistance(List<Cell> obstacles, Robot r) {
+		System.out.println("-----nearestNeighbour.calculateDist----");
 		for (int i = 0; i < obstacles.size(); i++) {
 			int robotRowVal = r.getPosRow();
 			int robotColVal = r.getPosCol();
@@ -32,6 +33,7 @@ public class NearestNeighbour {
 			System.out.println("Cell: [" + obstacles.get(i).getRow() + "][" + obstacles.get(i).getCol() + "] cost: "
 					+ obstacles.get(i).getHeuristicCost());
 		}
+		System.out.println("-----End----");
 		return obstacles;
 	}
 
