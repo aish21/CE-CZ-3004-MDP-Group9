@@ -53,7 +53,7 @@ public class simulateHamitonian implements Runnable {
             //ArrayList<Cell> cellsInPath = fastestPath.findAllWPEndPaths(exploreMap);
             //String moveString = convertCellsToMovements(cellsInPath);
             
-            String test = "HP|F6|R1|F5|L1|F2";
+            String test = "HP|W5|E1|";
             printFastestPathMovement(test);
             //printFastestPathMovement(moveString);
 
@@ -126,16 +126,16 @@ public class simulateHamitonian implements Runnable {
            switch (fastestPathMovements.get(i)) {
 
                case FORWARD:
-                   result += "F";
+                   result += "W";
                    break;
                case LEFT:
-                   result += "L";
+                   result += "A";
                    break;
                case RIGHT:
-                   result += "R";
+                   result += "D";
                    break;
                case BACKWARD:
-                   result += "B";
+                   result += "S";
                    break;
                default:
                    break;
@@ -180,8 +180,8 @@ public class simulateHamitonian implements Runnable {
        ArrayList<MOVEMENT> fastestPathMovements = new ArrayList<MOVEMENT>();
 
        for (int i = 0; i < cellsInPath.size(); i++) {
-           int destRow = cellsInPath.get(i).getRowPos();
-           int destCol = cellsInPath.get(i).getColPos();
+           int destRow = cellsInPath.get(i).getRow();
+           int destCol = cellsInPath.get(i).getCol();
            switch (mBot.getCurrDir()) {
                case NORTH:
                    if (currCol == destCol) {
@@ -315,27 +315,37 @@ public class simulateHamitonian implements Runnable {
 
                switch (arr[i].substring(0, 1)) {
 
-                   case "F":
+                   case "W":
 
                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
                            this.robot.move(MOVEMENT.FORWARD);
                            displayToUI();
                        }
                        break;
-                   case "R":
-                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-                           this.robot.turn(MOVEMENT.RIGHT);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                       }
-                       break;
-                   case "L":
+                   case "A":
                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
                            this.robot.turn(MOVEMENT.LEFT);
                            displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
+                           //this.robot.move(MOVEMENT.FORWARD);
+                           //displayToUI();
+                       }
+                       break;
+                   case "D":
+                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+                           this.robot.turn(MOVEMENT.RIGHT);
                            displayToUI();
+                           //this.robot.move(MOVEMENT.FORWARD);
+                           //displayToUI();
+                       }
+                       break;
+                   case "S":
+                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+                           this.robot.move(MOVEMENT.BACKWARD);
+                           displayToUI();
+                           //this.robot.turn(MOVEMENT.RIGHT);
+                           //displayToUI();
+                           //this.robot.move(MOVEMENT.FORWARD);
+                           //displayToUI();
                        }
                        break;
                    case "B":
@@ -348,6 +358,43 @@ public class simulateHamitonian implements Runnable {
                            displayToUI();
                        }
                        break;
+                   case "Q":
+                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                           this.robot.turn(MOVEMENT.LEFT);
+                           displayToUI();
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                       }
+                       break;
+                   case "E":
+                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                           this.robot.turn(MOVEMENT.RIGHT);
+                           displayToUI();
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                           this.robot.move(MOVEMENT.FORWARD);
+                           displayToUI();
+                       }
+                       break;
+                   
                    default:
                        break;
                }

@@ -313,14 +313,16 @@ public class main extends JFrame {
 	public void addObstacle(int row, int col) {
 		JViewport viewport = ((JScrollPane)MapSetting.getComponents()[9]).getViewport();
 		JTextArea textArea = (JTextArea)viewport.getView();
-		textArea.append("\nObstacle added at ["+(col-1)+"]["+(row-1)+"]");
+		textArea.append("Obstacle added at ["+(col-1)+"]["+(row-1)+"]");
+		textArea.append("\n");
 		textArea.setCaretPosition(textArea.getText().length());
 	}
 	
 	public void removeObstacle(int row, int col) {
 		JViewport viewport = ((JScrollPane)MapSetting.getComponents()[9]).getViewport();
 		JTextArea textArea = (JTextArea)viewport.getView();
-		textArea.append("\nObstacle Removed at ["+(col-1)+"]["+(row-1)+"]");
+		textArea.append("Obstacle Removed at ["+(col-1)+"]["+(row-1)+"]");
+		textArea.append("\n");
 		textArea.setCaretPosition(textArea.getText().length());
 	}
 

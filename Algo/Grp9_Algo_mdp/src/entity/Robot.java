@@ -287,5 +287,143 @@ public class Robot {
             }
         }
         return false;
-    }
+    }   /**
+     * This method generate the 3 cell coordinates that are directly on the right of the robot based on the robot's current facing direction
+    *
+    * @param robot The robot object
+    * @return String value of the 3 cell coordinates
+    */
+   public String rpiImageString(Robot robot) {
+
+       switch (robot.getCurrDir()) {
+           case EAST:
+               return eastImageString(robot);
+           case NORTH:
+               return northImageString(robot);
+           case SOUTH:
+               return southImageString(robot);
+           case WEST:
+               return westImageString(robot);
+           default:
+               return "";
+
+       }
+
+       //return "";
+   }
+
+   /**
+    * This method generate the 3 cell coordinates that are directly on the right of the robot while it is facing North.
+    *
+    * @param robot The robot object
+    * @return String value of the 3 cell coordinates
+    */
+   public String northImageString(Robot robot) {
+
+       String imageString;
+
+       int row = robot.getPosRow();
+       int col = robot.getPosCol();
+
+       String x1 = Integer.toString(col + 2);
+       String y1 = Integer.toString(row + 1);
+
+       String x2 = Integer.toString(col + 2);
+       String y2 = Integer.toString(row);
+
+       String x3 = Integer.toString(col + 2);
+       String y3 = Integer.toString(row - 1);
+
+       imageString = "|(" + x1 + "),(" + y1 + ")|(" + x2 + "),(" + y2 + ")|(" + x3 + "),(" + y3 + ")";
+
+       return imageString;
+
+   }
+
+   /**
+    * This method generate the 3 cell coordinates that are directly on the right of the robot while it is facing South.
+    *
+    * @param robot The robot object
+    * @return String value of the 3 cell coordinates
+    */
+   public String southImageString(Robot robot) {
+
+       String imageString;
+
+       int row = robot.getPosRow();
+       int col = robot.getPosCol();
+
+       String x1 = Integer.toString(col - 2);
+       String y1 = Integer.toString(row - 1);
+
+       String x2 = Integer.toString(col - 2);
+       String y2 = Integer.toString(row);
+
+       String x3 = Integer.toString(col - 2);
+       String y3 = Integer.toString(row + 1);
+
+       imageString = "|(" + x1 + "),(" + y1 + ")|(" + x2 + "),(" + y2 + ")|(" + x3 + "),(" + y3 + ")";
+
+       return imageString;
+
+   }
+
+   /**
+    * This method generate the 3 cell coordinates that are directly on the right of the robot while it is facing East.
+    *
+    * @param robot The robot object
+    * @return String value of the 3 cell coordinates
+    */
+   public String eastImageString(Robot robot) {
+
+       String imageString;
+
+       int row = robot.getPosRow();
+       int col = robot.getPosCol();
+
+       String x1 = Integer.toString(col + 1);
+       String y1 = Integer.toString(row - 2);
+
+       String x2 = Integer.toString(col);
+       String y2 = Integer.toString(row - 2);
+
+       String x3 = Integer.toString(col - 1);
+       String y3 = Integer.toString(row - 2);
+
+       imageString = "|(" + x1 + "),(" + y1 + ")|(" + x2 + "),(" + y2 + ")|(" + x3 + "),(" + y3 + ")";
+
+       return imageString;
+
+   }
+
+   /**
+    * This method generate the 3 cell coordinates that are directly on the right of the robot while it is facing West.
+    *
+    * @param robot The robot object
+    * @return String value of the 3 cell coordinates
+    */
+   public String westImageString(Robot robot) {
+
+       String imageString;
+
+       int row = robot.getPosRow();
+       int col = robot.getPosCol();
+
+       String x1 = Integer.toString(col - 1);
+       String y1 = Integer.toString(row + 2);
+
+       String x2 = Integer.toString(col);
+       String y2 = Integer.toString(row + 2);
+
+       String x3 = Integer.toString(col + 1);
+       String y3 = Integer.toString(row + 2);
+
+       imageString = "|(" + x1 + "),(" + y1 + ")|(" + x2 + "),(" + y2 + ")|(" + x3 + "),(" + y3 + ")";
+
+       return imageString;
+
+   }
+
+    
+    
 }
