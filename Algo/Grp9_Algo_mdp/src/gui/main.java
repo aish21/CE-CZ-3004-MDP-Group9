@@ -52,8 +52,6 @@ public class main extends JFrame {
 	 */
 	public main() {
 		setMapRobotObj();
-		initialMap.getMap()[10][6].setObstacle(true);
-		initialMap.getMap()[10][6].setObsDir(1); 
 		initLayout();
 		paintResult();
 
@@ -88,7 +86,12 @@ public class main extends JFrame {
 		for (int i = 0; i < Constants.MAX_ROW; i++) {
 			for (int y = 0; y < Constants.MAX_COL; y++) {
 				Cell cellObj = initialMap.getMap()[i][y];
-				if(resultMap[i + 1][y + 1].getText().isBlank()) {
+				if(cellObj.isObstacle()) {
+					resultMap[i + 1][y + 1].setBackground(getMapColorForCell('O'));
+					resultMap[i + 1][y + 1].setText(MapPanel.setSymbol(cellObj.getObsDir()));
+				}
+				else
+				{
 					resultMap[i + 1][y + 1].setBackground(getMapColorForCell('U'));
 				}
 				
@@ -159,18 +162,9 @@ public class main extends JFrame {
 		case 'E':
 			cellColor = Color.yellow;
 			break; // endZone color
-		case 'P':
-			cellColor = Color.green;
-			break; // Explored path color
-		case 'W':
-			cellColor = Color.red;
-			break; // Wall,Obstacles color
 		case 'H':
 			cellColor = Color.pink;
 			break; // Robot head color
-		case 'B':
-			cellColor = Color.gray;
-			break; // Waypoint color
 		case 'O':
 			cellColor = Color.decode("#F8C471");
 			break; // top obstacle color

@@ -101,7 +101,7 @@ public class MapPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
-				cellLabels[cellRow][cellCol].setText("\u2191");
+				cellLabels[cellRow][cellCol].setText(setSymbol(1));
 				m.addObstacle(cellRow, cellCol);
 				
 				//set Cell as obstacle
@@ -116,7 +116,7 @@ public class MapPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
-				cellLabels[cellRow][cellCol].setText("\u2193");
+				cellLabels[cellRow][cellCol].setText(setSymbol(2));
 				m.addObstacle(cellRow, cellCol);
 				
 				//set Cell as obstacle
@@ -131,7 +131,7 @@ public class MapPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
-				cellLabels[cellRow][cellCol].setText("\u2190");
+				cellLabels[cellRow][cellCol].setText(setSymbol(4));
 				m.addObstacle(cellRow, cellCol);
 				
 				//set Cell as obstacle
@@ -146,7 +146,7 @@ public class MapPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
-				cellLabels[cellRow][cellCol].setText("\u2192");
+				cellLabels[cellRow][cellCol].setText(setSymbol(3));
 				m.addObstacle(cellRow, cellCol);
 				
 				//set Cell as obstacle
@@ -230,6 +230,27 @@ public class MapPanel extends JPanel {
 				});
 			}
 		}
+	}
+	
+	public String setSymbol(int ObsDir) {
+		String s = "";
+		switch (ObsDir) {
+		case 1:
+			s = "\u2191";
+			break;
+		case 2:
+			s = "\u2193";
+			break;
+		case 3:
+			s = "\u2190";
+			break;
+		case 4:
+			s = "\u2192";
+			break;
+		default:
+			break;
+		}
+		return s;
 	}
 
 }

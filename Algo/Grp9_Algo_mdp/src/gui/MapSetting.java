@@ -64,6 +64,12 @@ public class MapSetting extends JPanel {
         hamiltonianBtn = new JButton();
         hamiltonianBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		m.simHamitonian = new Thread(new simulateHamitonian(m, rBot, map));
+        		m.simHamitonian.start();
+
+        		hamiltonianBtn.setEnabled(false);
+        		shortestBtn.setEnabled(false);
+        		connectBtn.setEnabled(false);
         	}
         });
         hamiltonianBtn.setBounds(10, 521, 135, 30);
@@ -73,6 +79,9 @@ public class MapSetting extends JPanel {
         shortestBtn = new JButton();
         shortestBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		hamiltonianBtn.setEnabled(false);
+        		shortestBtn.setEnabled(false);
+        		connectBtn.setEnabled(false);
         	}
         });
         shortestBtn.setBounds(10, 563, 135, 30);
@@ -83,6 +92,9 @@ public class MapSetting extends JPanel {
         connectBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		editTextArea.setText("Connecting to Rpi...");
+        		hamiltonianBtn.setEnabled(false);
+        		shortestBtn.setEnabled(false);
+        		connectBtn.setEnabled(false);
         	}
         });
         connectBtn.setBounds(10, 604, 135, 30);
@@ -93,6 +105,9 @@ public class MapSetting extends JPanel {
         resetBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		editTextArea.append("\nArena Resetted!");
+        		hamiltonianBtn.setEnabled(true);
+        		shortestBtn.setEnabled(true);
+        		connectBtn.setEnabled(true);
         		m.resetArena();
         	}
         });
@@ -104,6 +119,9 @@ public class MapSetting extends JPanel {
         clearBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		editTextArea.setText("Arena Cleared!");
+        		hamiltonianBtn.setEnabled(true);
+        		shortestBtn.setEnabled(true);
+        		connectBtn.setEnabled(true);
         		m.clearArena();
         		
         	}
@@ -174,7 +192,7 @@ public class MapSetting extends JPanel {
         scroll.setViewportView(editTextArea);
         scroll.setBounds(0, 10, 450, 500);
         add(scroll);
-        editTextArea.setText("Instructions: Right-click on the grid to add\nobstacles.");
+        editTextArea.setText("Instructions: Right-click on the grid to add\nobstacles.\n");
         
         JSeparator separator = new JSeparator();
         separator.setOrientation(SwingConstants.VERTICAL);
