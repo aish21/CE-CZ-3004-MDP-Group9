@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import algorithm.AStar;
-import algorithm.NearestNeighbour;
+import Algorithm.AStar;
+import Algorithm.MainConnect;
+import Algorithm.NearestNeighbour;
 import constant.Constants.MOVEMENT;
 import entity.Cell;
 import entity.Map;
@@ -19,7 +20,7 @@ import gui.main;
  * @since 2020-10-19
  */
 
-public class simulateHamitonian implements Runnable {
+public class simulateHamiltonian implements Runnable {
 	
     AStar as;
     NearestNeighbour nn;
@@ -36,7 +37,7 @@ public class simulateHamitonian implements Runnable {
      * @param ro     The robot object which specifies the detail of robot.
      * @param expMap The Map object that the robot have explored.
      */
-    public simulateHamitonian(main mGui, Robot ro, Map map) {
+    public simulateHamiltonian(main mGui, Robot ro, Map map) {
 
         this.map = map;
         this.mGui = mGui;
@@ -52,8 +53,8 @@ public class simulateHamitonian implements Runnable {
 
             //ArrayList<Cell> cellsInPath = fastestPath.findAllWPEndPaths(exploreMap);
             //String moveString = convertCellsToMovements(cellsInPath);
-            
-            String test = "HP|W5|E1|";
+            MainConnect mc = new MainConnect();
+            String test = mc.fullPath();//"HP|W5|E1|";
             printFastestPathMovement(test);
             //printFastestPathMovement(moveString);
 
@@ -311,88 +312,129 @@ public class simulateHamitonian implements Runnable {
        String[] arr = moveString.split("\\|");
 
        try {
-           for (int i = 1; i < arr.length; i++) {
-
-               switch (arr[i].substring(0, 1)) {
-
+           for (int i=arr.length-1; i >= 0; i--) {
+               switch (arr[i]) {
+               	   case "V":
+               		   break;
                    case "W":
-
-                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                       }
+                	   this.robot.move(MOVEMENT.FORWARD);
+                       displayToUI();
+//                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                       }
                        break;
                    case "A":
-                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-                           this.robot.turn(MOVEMENT.LEFT);
-                           displayToUI();
-                           //this.robot.move(MOVEMENT.FORWARD);
-                           //displayToUI();
-                       }
+                	   this.robot.turn(MOVEMENT.LEFT);
+                       displayToUI();
+//                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                           this.robot.turn(MOVEMENT.LEFT);
+//                           displayToUI();
+//                           //this.robot.move(MOVEMENT.FORWARD);
+//                           //displayToUI();
+//                       }
                        break;
                    case "D":
-                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-                           this.robot.turn(MOVEMENT.RIGHT);
-                           displayToUI();
-                           //this.robot.move(MOVEMENT.FORWARD);
-                           //displayToUI();
-                       }
+                	   this.robot.turn(MOVEMENT.RIGHT);
+                       displayToUI();
+//                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                           this.robot.turn(MOVEMENT.RIGHT);
+//                           displayToUI();
+//                           //this.robot.move(MOVEMENT.FORWARD);
+//                           //displayToUI();
+//                       }
                        break;
                    case "S":
-                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-                           this.robot.move(MOVEMENT.BACKWARD);
-                           displayToUI();
-                           //this.robot.turn(MOVEMENT.RIGHT);
-                           //displayToUI();
-                           //this.robot.move(MOVEMENT.FORWARD);
-                           //displayToUI();
-                       }
+                	   this.robot.move(MOVEMENT.BACKWARD);
+                       displayToUI();
+//                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                           this.robot.move(MOVEMENT.BACKWARD);
+//                           displayToUI();
+//                           //this.robot.turn(MOVEMENT.RIGHT);
+//                           //displayToUI();
+//                           //this.robot.move(MOVEMENT.FORWARD);
+//                           //displayToUI();
+//                       }
                        break;
                    case "B":
-                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-                           this.robot.turn(MOVEMENT.RIGHT);
-                           displayToUI();
-                           this.robot.turn(MOVEMENT.RIGHT);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                       }
+                	   this.robot.turn(MOVEMENT.RIGHT);
+                       displayToUI();
+                       this.robot.turn(MOVEMENT.RIGHT);
+                       displayToUI();
+                       this.robot.move(MOVEMENT.FORWARD);
+                       displayToUI();
+//                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                           this.robot.turn(MOVEMENT.RIGHT);
+//                           displayToUI();
+//                           this.robot.turn(MOVEMENT.RIGHT);
+//                           displayToUI();
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                       }
                        break;
                    case "Q":
-                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                           this.robot.turn(MOVEMENT.LEFT);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                       }
+                	   this.robot.move(MOVEMENT.FORWARD);
+                       displayToUI();
+                       this.robot.move(MOVEMENT.FORWARD);
+                       displayToUI();
+                       this.robot.move(MOVEMENT.FORWARD);
+                       displayToUI();
+                       this.robot.turn(MOVEMENT.LEFT);
+                       displayToUI();
+                       this.robot.move(MOVEMENT.FORWARD);
+                       displayToUI();
+                       this.robot.move(MOVEMENT.FORWARD);
+                       displayToUI();
+                       this.robot.move(MOVEMENT.FORWARD);
+                       displayToUI();
+//                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                           this.robot.turn(MOVEMENT.LEFT);
+//                           displayToUI();
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                       }
                        break;
                    case "E":
-                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                           this.robot.turn(MOVEMENT.RIGHT);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                           this.robot.move(MOVEMENT.FORWARD);
-                           displayToUI();
-                       }
+                	 this.robot.move(MOVEMENT.FORWARD);
+                     displayToUI();
+                     this.robot.move(MOVEMENT.FORWARD);
+                     displayToUI();
+                     this.robot.move(MOVEMENT.FORWARD);
+                     displayToUI();
+                     this.robot.turn(MOVEMENT.RIGHT);
+                     displayToUI();
+                     this.robot.move(MOVEMENT.FORWARD);
+                     displayToUI();
+                     this.robot.move(MOVEMENT.FORWARD);
+                     displayToUI();
+                     this.robot.move(MOVEMENT.FORWARD);
+                     displayToUI();
+//                       for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                           this.robot.turn(MOVEMENT.RIGHT);
+//                           displayToUI();
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                           this.robot.move(MOVEMENT.FORWARD);
+//                           displayToUI();
+//                       }
                        break;
                    
                    default:

@@ -1,4 +1,4 @@
-package Algorithm;
+package algorithm;
 
 import java.util.PriorityQueue;
 import constant.Constants;
@@ -372,7 +372,7 @@ public class AStar {
 					break;
 				}
 				movementStr = movementStr + Integer.toString(current.getHeadDir());
-				instructionStr = instructionStr + getInstructionStr(current.getParent().getHeadDir(), current.getRow(), current.getCol(), current.getParent().getRow(), current.getParent().getCol());
+				instructionStr = instructionStr + "|" + getInstructionStr(current.getParent().getHeadDir(), current.getRow(), current.getCol(), current.getParent().getRow(), current.getParent().getCol());
 			}
 			
 			System.out.println("\n");
@@ -398,42 +398,42 @@ public class AStar {
 				switch (finalActualHead) {
 				case 1: 
 					if(finalExpectedHead == 3) {
-						movementStr = "D" + movementStr ;
-						instructionStr = "D" + instructionStr;
+						movementStr = "D|" + movementStr ;
+						instructionStr = "D|" + instructionStr;
 					}
 					else if (finalExpectedHead == 4) {
-						movementStr = "A" + movementStr;
-						instructionStr = "A" + instructionStr;
+						movementStr = "A|" + movementStr;
+						instructionStr = "A|" + instructionStr;
 					}
 					break;
 				case 2: 
 					if(finalExpectedHead == 3) {
-						movementStr = "A" + movementStr;
-						instructionStr = "A" + instructionStr;
+						movementStr = "A|" + movementStr;
+						instructionStr = "A|" + instructionStr;
 					}
 					else if (finalExpectedHead == 4) {
-						movementStr = "D" + movementStr ;
-						instructionStr = "D" + instructionStr;
+						movementStr = "D|" + movementStr ;
+						instructionStr = "D|" + instructionStr;
 					}
 					break;
 				case 3: 
 					if(finalExpectedHead == 1) {
-						movementStr = "A" + movementStr;
-						instructionStr = "A" + instructionStr;
+						movementStr = "A|" + movementStr;
+						instructionStr = "A|" + instructionStr;
 					}
 					else if (finalExpectedHead == 2) {
-						movementStr = "D" + movementStr;
-						instructionStr = "D" + instructionStr;
+						movementStr = "D|" + movementStr;
+						instructionStr = "D|" + instructionStr;
 					}
 					break;
 				case 4: 
 					if(finalExpectedHead == 1) {
-						movementStr = "D" + movementStr;
-						instructionStr = "D" + instructionStr;
+						movementStr = "D|" + movementStr;
+						instructionStr = "D|" + instructionStr;
 					}
 					else if (finalExpectedHead == 2) {
-						movementStr = "A" + movementStr;
-						instructionStr = "A" + instructionStr;
+						movementStr = "A|" + movementStr;
+						instructionStr = "A|" + instructionStr;
 					}
 					break;
 				}
@@ -601,35 +601,52 @@ public class AStar {
 			
 			while(currMoveDir == "") {
 				DIRECTION rStartHeadDir = r.getCurrDir();
+				String turnDir = "";
 				switch(rStartHeadDir) {
 				case NORTH:
-					if(k == 1)
+					if(k == 1) {
 						r.setCurrDir(DIRECTION.EAST);
-					else
+						turnDir = "|D";
+					}
+					else {
 						r.setCurrDir(DIRECTION.WEST);
+						turnDir = "|A";
+					}
 					break;
 				case SOUTH:
-					if(k == 1)
+					if(k == 1) {
 						r.setCurrDir(DIRECTION.EAST);
-					else
+						turnDir = "|A";
+					}
+					else {
 						r.setCurrDir(DIRECTION.WEST);
+						turnDir = "|D";
+					}
 					break;
 				case EAST:
-					if(k == 1)
+					if(k == 1) {
 						r.setCurrDir(DIRECTION.NORTH);
-					else
+						turnDir = "|A";
+					}
+					else {
 						r.setCurrDir(DIRECTION.SOUTH);
+						turnDir = "|D";
+					}
 					break;
 				case WEST:
-					if(k == 1)
+					if(k == 1) {
 						r.setCurrDir(DIRECTION.NORTH);
-					else
+						turnDir = "|D";
+					}
+					else {
 						r.setCurrDir(DIRECTION.SOUTH);
+						turnDir = "|A";
+					}
 					break;
 				}
 				astar = new AStar(m, r, tarHeadRArr[i], tarHeadCArr[i], tarHeadDirArr[i+1]);
 				astar.process();
-				currMoveDir = astar.displaySolution();
+				currMoveDir = astar.displaySolution() + turnDir;
 				k += 1;
 			}
 			movementDir =  "V" + currMoveDir + movementDir;
