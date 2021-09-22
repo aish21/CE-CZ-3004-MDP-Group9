@@ -1,8 +1,6 @@
 package algorithm;
 
-import constant.Constants;
 import constant.Constants.DIRECTION;
-import entity.Map;
 import entity.Robot;
 import entity.Cell;
 import java.util.*;
@@ -18,23 +16,23 @@ public class NearestNeighbour {
 		return results;
 	}
 
-	public static List<Cell> calcualteDistance(List<Cell> obstacles, Robot r) {
-		System.out.println("-----nearestNeighbour.calculateDist----");
-		for (int i = 0; i < obstacles.size(); i++) {
+	public static List<Cell> calculateDistance(List<Cell> targets, Robot r) {
+		//System.out.println("-----nearestNeighbour.calculateDist----");
+		for (int i = 0; i < targets.size(); i++) {
 			int robotRowVal = r.getPosRow();
 			int robotColVal = r.getPosCol();
-			int obsRow = obstacles.get(i).getRow();
-			int obsCol = obstacles.get(i).getCol();
+			int tarRow = targets.get(i).getRow();
+			int tarCol = targets.get(i).getCol();
 
 			// double heuristicCost =
 			// Math.sqrt(Math.pow(Math.abs(obsRow-robotRowVal),2)+Math.pow(Math.abs(obsCol-robotColVal),2));
-			double heuristicCost = Math.abs(robotRowVal - obsRow) + Math.abs(robotColVal - obsCol);
-			obstacles.get(i).setHeuristicCost(heuristicCost);
-			System.out.println("Cell: [" + obstacles.get(i).getRow() + "][" + obstacles.get(i).getCol() + "] cost: "
-					+ obstacles.get(i).getHeuristicCost());
+			double heuristicCost = Math.abs(robotRowVal - tarRow) + Math.abs(robotColVal - tarCol);
+			targets.get(i).setHeuristicCost(heuristicCost);
+//			System.out.println("Cell: [" + targets.get(i).getRow() + "][" + targets.get(i).getCol() + "] cost: "
+//					+ targets.get(i).getHeuristicCost());
 		}
 		System.out.println("-----End----");
-		return obstacles;
+		return targets;
 	}
 
 	public static void main(String[] args) {
@@ -65,7 +63,7 @@ public class NearestNeighbour {
 		obsList.add(c3);
 
 		// get distance
-		obsList = calcualteDistance(obsList, r);
+		obsList = calculateDistance(obsList, r);
 
 		// get nearest Neighbour
 		ArrayList<Cell >nnList = findNearestNeighbour(obsList);

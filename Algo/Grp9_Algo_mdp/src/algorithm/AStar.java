@@ -1,4 +1,4 @@
-package algorithm;
+package Algorithm;
 
 import java.util.PriorityQueue;
 import constant.Constants;
@@ -6,7 +6,6 @@ import constant.Constants.DIRECTION;
 import entity.Map;
 import entity.Robot;
 import entity.Cell;
-import java.util.Arrays;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,41 +13,30 @@ import java.util.List;
 public class AStar {
 	private Map mapArena; 
 	private PriorityQueue<Cell> openCells; // set of nodes to be evaluated
-	private boolean[][] closedCells;// set of nodes evaluated
-	private int startRow, startCol, startHead;
+	private boolean[][] closedCells; // set of nodes evaluated
 	private int targetRow, targetCol, targetHead;
+	private Robot robot;
 	
-	public AStar(int startRow, int startCol, int tarRow, int tarCol, int[][] blocks, int startHead, int tarHead) { //blocks is an array of obstacles //startHead and tarHead not yet
-		this.mapArena = new Map();
+	public AStar(Map m, Robot r, int targetRow, int targetCol, int targetHead) { 
+		this.mapArena = m;
+		this.robot = r;
 		this.closedCells = new boolean[Constants.MAX_ROW][Constants.MAX_COL];
 		this.openCells = new PriorityQueue<Cell>((Cell c1, Cell c2) -> {
 			return c1.getFinalCost()<c2.getFinalCost() ? -1 : c1.getFinalCost() > c2.getFinalCost() ? 1 : 0;
 		});
-		this.startRow = startRow;
-		this.startCol = startCol;
-		this.startHead = startHead;
-		this.mapArena.setStartRowCol(startRow, startCol);
-		this.targetRow = tarRow;
-		this.targetCol = tarCol;	
-		this.targetHead = tarHead;
+		this.mapArena.setStartRowCol(r.getPosRow(), r.getPosCol());
+		this.targetRow = targetRow;
+		this.targetCol = targetCol;	
+		this.targetHead = targetHead;
 		
 		for (int i=0; i<this.mapArena.getMap().length; i++) {
 			for(int j=0;j<this.mapArena.getMap()[i].length; j++) {
-				double heuristicCost = Math.abs(i - tarRow) + Math.abs(j-tarCol);
+				double heuristicCost = Math.abs(i - targetRow) + Math.abs(j-targetCol);
 				mapArena.getMap()[i][j].setHeuristicCost(heuristicCost);
 				mapArena.getMap()[i][j].setSolution(false);
 			}
 		}
-		for(int i=startRow-1; i<startRow+2; i++) {
-			for(int j=startCol-1; j<startCol+2; j++) {
-				this.mapArena.getMap()[i][j].setFinalCost(0);
-			}
-		}
-		//this.mapArena.getMap()[startRow][startCol].setFinalCost(0);
-		this.mapArena.getMap()[startRow][startCol].setHeadDir(startHead);
-		for(int i=0; i<blocks.length; i++) {
-			this.mapArena.setMapTargetCell(blocks[i][0], blocks[i][1], blocks[i][2]);
-		}
+		this.mapArena.getMap()[r.getPosRow()][r.getPosCol()].setHeadDir(r.ToDirectionHead(r.getCurrDir()));	
 	}
 	
 	public void updateCostIfNeeded(Cell current, Cell tar, double cost, int tarHead) {
@@ -66,13 +54,12 @@ public class AStar {
 			if(!isOpen) {
 				this.openCells.add(tar);
 			}
-			//System.out.println(tar);
 		}
 	}
 	
 	public void process() {
 		//we add the start location to open list
-		openCells.add(this.mapArena.getMap()[this.startRow][this.startCol]);
+		openCells.add(this.mapArena.getMap()[this.robot.getPosRow()][this.robot.getPosCol()]);
 		Cell current;
 		
 		while(true) {
@@ -81,35 +68,9 @@ public class AStar {
 				break;
 			}
 			closedCells[current.getRow()][current.getCol()] = true;
-			
-//			if(current.equals(this.mapArena.getMap()[this.targetRow][this.targetCol])) {
-//				switch (current.getHeadDir()){
-//					case 1: 
-//						if(this.targetHead == 2) {
-//							System.out.println("Hi1");
-//							return;
-//						}
-//					case 2: 
-//						if(this.targetHead == 1) {
-//							System.out.println("Hi2");
-//							return;
-//						}
-//					case 3: 
-//						if(this.targetHead == 4) {
-//							System.out.println("Hi3");
-//							return;
-//						}
-//					case 4: 
-//						if(this.targetHead == 3) {
-//							System.out.println("Hi4");
-//							return;
-//						}
-//				}
-//				
-//			}
+
+			//this part still got problem
 			if(current.equals(this.mapArena.getMap()[this.targetRow][this.targetCol]) && current.getHeadDir() == this.targetHead) {
-				System.out.println("TarHead: " + this.targetHead );
-				System.out.println("CurrHead: " + current.getHeadDir() );
 				return;
 			}
 			
@@ -134,10 +95,6 @@ public class AStar {
 							//t.setHeadDir(1);
 							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 1);
 						}
-//						else {
-//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
-//						}	
 					}
 					
 					//front
@@ -150,13 +107,8 @@ public class AStar {
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-							//t.setHeadDir(1);
 							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 1);
 						}
-//						else {
-//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
-//						}	
 					}
 					
 					//turning right
@@ -172,7 +124,6 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
-								//t.setHeadDir(3);
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 3);
 							}
 						}
@@ -192,7 +143,6 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
-								//t.setHeadDir(4);
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 4);
 							}
 						}
@@ -209,13 +159,8 @@ public class AStar {
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()-1][current.getCol()];
-							//t.setHeadDir(2);
 							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 2);
 						}
-//						else {
-//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
-//						}	
 					}
 					
 					//backward
@@ -228,13 +173,8 @@ public class AStar {
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-							//t.setHeadDir(2);
 							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 2);
 						}
-//						else {
-//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
-//						}	
 					}
 					
 					//turning left
@@ -250,7 +190,6 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()+3];
-								//t.setHeadDir(3);
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 3);
 							}
 						}
@@ -270,7 +209,6 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()-3];
-								//t.setHeadDir(4);
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 4);
 							}
 						}
@@ -287,13 +225,8 @@ public class AStar {
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()][current.getCol()-1];
-							//t.setHeadDir(3);
 							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 3);
 						}
-//						else {
-//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
-//						}	
 					}
 					
 					//front
@@ -306,13 +239,8 @@ public class AStar {
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()][current.getCol()+1];
-							//t.setHeadDir(3);
 							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 3);
 						}
-//						else {
-//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
-//						}	
 					}
 					
 					//turning left
@@ -328,7 +256,6 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
-								//t.setHeadDir(1);
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 1);
 							}
 						}
@@ -348,7 +275,6 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()+3];
-								//t.setHeadDir(2);
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 2);
 							}
 						}
@@ -360,19 +286,13 @@ public class AStar {
 						boolean noObst = true;
 						for(int i=-1; i<2; i++) {
 							if(this.mapArena.getMap()[current.getRow()+i][current.getCol()-2].isObstacle()) {
-								System.out.println("Obs: {" + (current.getRow()+i) + ", "+ (current.getCol()-2) + "}");
 								noObst = false;
 							}
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()][current.getCol()-1];
-							//t.setHeadDir(4);
 							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 4);
-						}
-//						else {
-//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
-//						}	
+						}	
 					}
 					
 					//backward
@@ -386,13 +306,8 @@ public class AStar {
 						}
 						if(noObst) {
 							t = this.mapArena.getMap()[current.getRow()][current.getCol()+1];
-							//t.setHeadDir(4);
 							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.MOVE_COST, 4);
 						}
-//						else {
-//							t = this.mapArena.getMap()[current.getRow()+1][current.getCol()];
-//							updateCostIfNeeded(current, t, current.getFinalCost()+Constants.INFINITE_COST);
-//						}	
 					}
 					
 					//turning right
@@ -409,7 +324,6 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
-								//t.setHeadDir(1);
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 1);
 							}
 						}
@@ -429,7 +343,6 @@ public class AStar {
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()-3];
-								//t.setHeadDir(2);
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 2);
 							}
 						}
@@ -440,78 +353,40 @@ public class AStar {
 		}
 	}
 	
-	public void display() {
-		System.out.println("Map Arena :");
-		
-		for(int i=0; i<this.mapArena.getMap().length; i++) {
-			for(int j=0; j<this.mapArena.getMap()[i].length; j++) {
-				if(i == this.startRow && j == this.startCol)
-					System.out.print("SO  "); //Source Cell
-				else if(i==this.targetRow && j == this.targetCol)
-					System.out.print("DE  "); //destination Cell
-				else if(!this.mapArena.getMap()[i][j].isObstacle()) 
-					System.out.printf("%-3d ", 0);				
-				else
-					System.out.print("BL  "); //obstacle cell
-			}
-			System.out.println();
-		}
-		System.out.println();
-	}
-	
-	public void displayScores() {
-		System.out.println("\nScores for Cells : ");
-		for (int i=0; i<this.mapArena.getMap().length; i++) {
-			for(int j=0; j<this.mapArena.getMap()[i].length; j++) {
-				if(!this.mapArena.getMap()[i][j].isObstacle()) {
-					System.out.printf("%-3s \t", this.mapArena.getMap()[i][j].getFinalCost());
-				}
-				else {
-					System.out.print("BL  \t");
-				}
-				
-			}
-			System.out.println();
-		}
-		System.out.println();
-	}
-	
-	public void displaySolution() {
+	public String displaySolution() {
+		String movementStr = "";
+		String instructionStr = "";
 		if(closedCells[this.targetRow][this.targetCol]) {
 			System.out.println("Path: ");
 			Cell current = this.mapArena.getMap()[this.targetRow][this.targetCol];
 			System.out.println(current);
+			movementStr = Integer.toString(current.getHeadDir());
+			instructionStr = getInstructionStr(current.getParent().getHeadDir(), current.getRow(), current.getCol(), current.getParent().getRow(), current.getParent().getCol());
 			this.mapArena.getMap()[current.getParent().getRow()][current.getParent().getCol()].setSolution(true);
 			
 			while(!current.getParent().isObstacle()) {
 				System.out.println(" -> " + current.getParent());
 				this.mapArena.getMap()[current.getParent().getRow()][current.getParent().getCol()].setSolution(true);;
 				current = current.getParent();
-				if(current.equals(this.mapArena.getMap()[this.startRow][this.startCol])) {
+				if(current.equals(this.mapArena.getMap()[this.robot.getPosRow()][this.robot.getPosCol()])) {
 					break;
 				}
+				movementStr = movementStr + Integer.toString(current.getHeadDir());
+				instructionStr = instructionStr + getInstructionStr(current.getParent().getHeadDir(), current.getRow(), current.getCol(), current.getParent().getRow(), current.getParent().getCol());
 			}
 			
 			System.out.println("\n");
 			
-//			for (int i=0; i<this.mapArena.getMap().length; i++) {
-//				for(int j=0; j<this.mapArena.getMap()[i].length; j++) {
-//					if(!this.mapArena.getMap()[i][j].getIsObstacle()) {
-//						System.out.printf("%-3d ", this.mapArena.getMap()[i][j].getFinalCost());
-//					}
-//					else {
-//						System.out.print("BL  ");
-//					}
-//					System.out.println();
-//				}
-//				System.out.println();
-//			}
+			int finalExpectedHead = this.targetHead;
+			int finalActualHead = -1;
 			for(int i=0; i<this.mapArena.getMap().length; i++) {
 				for(int j=0; j<this.mapArena.getMap()[i].length; j++) {
-					if(i == this.startRow && j == this.startCol)
+					if(i == this.robot.getPosRow() && j == this.robot.getPosCol())
 						System.out.print("SO  "); //Source Cell
-					else if(i==this.targetRow && j == this.targetCol)
+					else if(i==this.targetRow && j == this.targetCol) {
 						System.out.print("DE  "); //destination Cell
+						finalActualHead = this.mapArena.getMap()[i][j].getHeadDir();
+					}
 					else if(!this.mapArena.getMap()[i][j].isObstacle()) 
 						System.out.printf("%-3s ", this.mapArena.getMap()[i][j].isSolution() ? "X" : "0");				
 					else
@@ -519,39 +394,163 @@ public class AStar {
 				}
 				System.out.println();
 			}
+			if(finalActualHead != finalExpectedHead) {
+				switch (finalActualHead) {
+				case 1: 
+					if(finalExpectedHead == 3) {
+						movementStr = "D" + movementStr ;
+						instructionStr = "D" + instructionStr;
+					}
+					else if (finalExpectedHead == 4) {
+						movementStr = "A" + movementStr;
+						instructionStr = "A" + instructionStr;
+					}
+					break;
+				case 2: 
+					if(finalExpectedHead == 3) {
+						movementStr = "A" + movementStr;
+						instructionStr = "A" + instructionStr;
+					}
+					else if (finalExpectedHead == 4) {
+						movementStr = "D" + movementStr ;
+						instructionStr = "D" + instructionStr;
+					}
+					break;
+				case 3: 
+					if(finalExpectedHead == 1) {
+						movementStr = "A" + movementStr;
+						instructionStr = "A" + instructionStr;
+					}
+					else if (finalExpectedHead == 2) {
+						movementStr = "D" + movementStr;
+						instructionStr = "D" + instructionStr;
+					}
+					break;
+				case 4: 
+					if(finalExpectedHead == 1) {
+						movementStr = "D" + movementStr;
+						instructionStr = "D" + instructionStr;
+					}
+					else if (finalExpectedHead == 2) {
+						movementStr = "A" + movementStr;
+						instructionStr = "A" + instructionStr;
+					}
+					break;
+				}
+					
+			}
 			System.out.println();
 		}
 		else {
-			System.out.println("No possible path");
+			movementStr = "";
 		}
+		return instructionStr;
+	}
+	
+	public String getInstructionStr(int parentHeadDir, int currRow, int currCol, int parentRow, int parentCol) {
+		String instrDir = null;
+		switch (parentHeadDir){
+		case 1: 
+			if(currCol == parentCol) {
+				if(currRow>parentRow) {
+					instrDir = "W";
+				}
+				else {
+					instrDir = "S";
+				}
+			}
+			else {
+				if(currCol > parentCol) {
+					instrDir = "E";
+				}
+				else {
+					instrDir = "Q";
+				}
+			}
+			break;
+		case 2: 
+			if(currCol == parentCol) {
+				if(currRow>parentRow) {
+					instrDir = "S";
+				}
+				else {
+					instrDir = "W";
+				}
+			}
+			else {
+				if(currCol > parentCol) {
+					instrDir = "Q";
+				}
+				else {
+					instrDir = "E";
+				}
+			}
+			break;
+		case 3:
+			if(currRow == parentRow) {
+				if(currCol>parentCol) {
+					instrDir = "W";
+				}
+				else {
+					instrDir = "S";
+				}
+			}
+			else {
+				if(currRow > parentRow) {
+					instrDir = "Q";
+				}
+				else {
+					instrDir = "E";
+				}
+			}
+			break;
+		case 4:
+			if(currRow == parentRow) {
+				if(currCol>parentCol) {
+					instrDir = "S";
+				}
+				else {
+					instrDir = "W";
+				}
+			}
+			else {
+				if(currRow > parentRow) {
+					instrDir = "E";
+				}
+				else {
+					instrDir = "Q";
+				}
+			}
+			break;
+		}
+		return instrDir;
 	}
 	
 	public static void main(String[] args) {
-		int startR = 1;
-		int startC = 1;
+		Map m = new Map();
 		Robot r = new Robot(1, 1, DIRECTION.NORTH);
-		//int arrIdx = 0;
-		List<Cell> obsList = new ArrayList<Cell>();
+		
+		ArrayList<Cell> obsList = new ArrayList<Cell>();
 		
 		//adding of Cells
-		Cell c1 = new Cell(5, 6);
-		c1.setHeadDir(3);
+		Cell c1 = new Cell(5, 9);
+		c1.setObsDir(4);
 		c1.setObstacle(true);
 
-		Cell c2 = new Cell(7, 17);
-		c2.setHeadDir(4); //if no possible path, try on spot turn?
+		Cell c2 = new Cell(7, 14);
+		c2.setObsDir(3);
 		c2.setObstacle(true);
 
-		Cell c3 = new Cell(9, 9);
-		c3.setHeadDir(1);
+		Cell c3 = new Cell(12, 9);
+		c3.setObsDir(2);
 		c3.setObstacle(true);
 
-		Cell c4 = new Cell(12, 4);
-		c4.setHeadDir(1);
+		Cell c4 = new Cell(15, 4);
+		c4.setObsDir(2);
 		c4.setObstacle(true);
 
-		Cell c5 = new Cell(12, 15);
-		c5.setHeadDir(1);
+		Cell c5 = new Cell(15, 15);
+		c5.setObsDir(2);
 		c5.setObstacle(true);
 		
 		obsList.add(c5);
@@ -560,14 +559,28 @@ public class AStar {
 		obsList.add(c4);
 		obsList.add(c3);
 		
-		obsList = NearestNeighbour.calcualteDistance(obsList, r);
+		m.setMapObstacle(obsList);
+		for(int i=0; i<obsList.size(); i++) {
+			m.setMapTargetCell(obsList.get(i).getRow(), obsList.get(i).getCol(), obsList.get(i).getObsDir());
+		}
+		
+		List<Cell> tarList = new ArrayList<Cell>();
+		
+		for (int i=0; i<m.getMap().length; i++) {
+			for (int j=0; j<m.getMap()[i].length; j++) {
+				if(m.getMap()[i][j].isTargetCell()) {
+					tarList.add(m.getMap()[i][j]);
+				}
+			}
+		}
+		tarList = NearestNeighbour.calculateDistance(tarList, r);
 
 		// get nearest Neighbour
-		ArrayList<Cell > nnList = NearestNeighbour.findNearestNeighbour(obsList);
+		ArrayList<Cell> nnList = NearestNeighbour.findNearestNeighbour(tarList);
 		
-		int[] tarHeadRArr = new int[5]; //{5, 7, 9, 12, 12};
-		int[] tarHeadCArr = new int[5]; //{6, 17, 9, 4, 15};
-		int[] tarHeadDirArr = new int[6]; //{1, 3, 4, 1, 1, 1};
+		int[] tarHeadRArr = new int[5]; 
+		int[] tarHeadCArr = new int[5]; 
+		int[] tarHeadDirArr = new int[6]; 
 		
 		for (int i=0; i<=nnList.size(); i++) {
 			if(i==0) {
@@ -579,29 +592,51 @@ public class AStar {
 				tarHeadDirArr[i] = nnList.get(i-1).getHeadDir();
 			}
 		}
-		System.out.println(Arrays.toString(tarHeadRArr));
-		System.out.println(Arrays.toString(tarHeadCArr));
-		System.out.println(Arrays.toString(tarHeadDirArr));
-		
+		String movementDir = "";
 		for(int i=0; i<tarHeadRArr.length; i++ ) {
-			AStar astar = new AStar(startR, startC, tarHeadRArr[i], tarHeadCArr[i], new int[][] {
-				{5,9,4}, {7,14,3}, {12,9,2}, {15,15,2}, {15,4,2} //,{13,8,1}
-			}, tarHeadDirArr[i], tarHeadDirArr[i+1]);
+			int k = 1;
+			AStar astar = new AStar(m, r, tarHeadRArr[i], tarHeadCArr[i], tarHeadDirArr[i+1]);
 			astar.process();
-			astar.displayScores();
-			astar.displaySolution();
-			startR = tarHeadRArr[i];
-			startC = tarHeadCArr[i];
-			//arrIdx += 1;
+			String currMoveDir = astar.displaySolution();
 			
+			while(currMoveDir == "") {
+				DIRECTION rStartHeadDir = r.getCurrDir();
+				switch(rStartHeadDir) {
+				case NORTH:
+					if(k == 1)
+						r.setCurrDir(DIRECTION.EAST);
+					else
+						r.setCurrDir(DIRECTION.WEST);
+					break;
+				case SOUTH:
+					if(k == 1)
+						r.setCurrDir(DIRECTION.EAST);
+					else
+						r.setCurrDir(DIRECTION.WEST);
+					break;
+				case EAST:
+					if(k == 1)
+						r.setCurrDir(DIRECTION.NORTH);
+					else
+						r.setCurrDir(DIRECTION.SOUTH);
+					break;
+				case WEST:
+					if(k == 1)
+						r.setCurrDir(DIRECTION.NORTH);
+					else
+						r.setCurrDir(DIRECTION.SOUTH);
+					break;
+				}
+				astar = new AStar(m, r, tarHeadRArr[i], tarHeadCArr[i], tarHeadDirArr[i+1]);
+				astar.process();
+				currMoveDir = astar.displaySolution();
+				k += 1;
+			}
+			movementDir =  "V" + currMoveDir + movementDir;
+			r.setPosRow(tarHeadRArr[i]);
+			r.setPosCol(tarHeadCArr[i]);
+			r.setCurrDir(r.intDirToConstantDir(tarHeadDirArr[i+1]));
 		}
-//		AStar astar = new AStar(1, 1, 3, 4, new int[][] {
-//			{5,9,4}, {7,14,3}, {12,9,2}, {15,15,1}, {15,4,2}//,{13,8,1}
-//		}, 1, 1);
-//		astar.display();
-//		astar.process();
-//		astar.displayScores();
-//		astar.displaySolution();
-		
+		System.out.println(movementDir);
 	}
 }

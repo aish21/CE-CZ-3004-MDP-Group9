@@ -5,7 +5,7 @@ import constant.Constants.MOVEMENT;
 
 /**
  * @author Goh Cheng Guan, Clive
- * @author 
+ * @author Lau Zhen Jie
  * @version 1.0
  * @since 2020-09-10
  */
@@ -87,7 +87,23 @@ public class Robot {
 			return 0;
 		}
     }
-
+    
+    //added new function
+    public DIRECTION intDirToConstantDir(int dir) {
+    	switch (dir) {
+		case 1:
+			return DIRECTION.NORTH;
+		case 2:
+			return DIRECTION.SOUTH;
+		case 3:
+			return DIRECTION.EAST;
+		case 4:
+			return DIRECTION.WEST;
+		default:
+			return null;
+		}
+    }
+    
     /**
      * This method move the robot forward regardless of its current direction
      *
@@ -423,7 +439,4 @@ public class Robot {
        return imageString;
 
    }
-
-    
-    
 }

@@ -7,9 +7,6 @@ public class Map {
 	private Cell[][] map;
 	private int robPosRow; // start pos of rob
 	private int robPosCol; // start pos of rob
-	private int targetRow;
-	private int targetCol;
-	private Hashtable<Cell[][], Double> tarsNDist;
 
 	private Cell startGoal;
 
@@ -26,12 +23,6 @@ public class Map {
 		startGoal = this.map[1][1];
 
 		// setting start position of robot (center of robot)
-//		for (int i=robPosRow-1; i<=robPosRow+1; i++) {
-//			for (int j=robPosCol-1; j<=robPosCol+1; j++) {
-//				this.map[i][j] = -1;
-//			}
-//		}
-		this.tarsNDist = new Hashtable<Cell[][], Double>();
 		this.robPosRow = 1;
 		this.robPosCol = 1;
 	}
@@ -67,25 +58,25 @@ public class Map {
 		this.map[obsRow][obsCol].setObstacle(dir);
 		switch (dir) {
 		case 1:
-			this.targetRow = obsRow + 3;
-			this.targetCol = obsCol;
+
 			this.map[obsRow + 3][obsCol].setTargetCell(true);
-			// this.tarsNDist.put(this.map[obsRow+3][obsCol], 0);
+			this.map[obsRow + 3][obsCol].setHeadDir(2);
+
 			break;
 		case 2:
-			this.targetRow = obsRow - 3;
-			this.targetCol = obsCol;
+
 			this.map[obsRow - 3][obsCol].setTargetCell(true);
+			this.map[obsRow - 3][obsCol].setHeadDir(1);
 			break;
 		case 3:
-			this.targetRow = obsRow;
-			this.targetCol = obsCol + 3;
+
 			this.map[obsRow][obsCol + 3].setTargetCell(true);
+			this.map[obsRow][obsCol + 3].setHeadDir(4);
 			break;
 		case 4:
-			this.targetRow = obsRow;
-			this.targetCol = obsCol - 3;
+
 			this.map[obsRow][obsCol - 3].setTargetCell(true);
+			this.map[obsRow][obsCol - 3].setHeadDir(3);
 			break;
 		}
 	}
@@ -192,8 +183,6 @@ public class Map {
                 return "";
 
         }
-
-        //return "";
     }
     
     /**
@@ -305,72 +294,5 @@ public class Map {
         imageString = "|(" + x1 + "),(" + y1 + ")|(" + x2 + "),(" + y2 + ")|(" + x3 + "),(" + y3 + ")";
 
         return imageString;
-
     }
-
-//	public void updateRobPos(Constants.MOVEMENT goingDir, Constants.DIRECTION facingDir) {
-//		switch (facingDir) {
-//			case NORTH:
-//				if(goingDir == Constants.MOVEMENT.FORWARD) {
-//					this.robPosRow += 1;
-//					for(int col=this.robPosCol-1; col<=this.robPosCol+1; col++) {
-//						this.map[this.robPosRow+1][this.robPosCol] = -1;
-//						this.map[this.robPosRow-2][this.robPosCol] = 0;
-//					}
-//				}
-//				else if (goingDir == Constants.MOVEMENT.BACKWARD) {
-//					this.robPosRow -= 1;
-//					for(int col=robPosCol-1; col<=robPosCol+1; col++) {
-//						this.map[this.robPosRow-1][this.robPosCol] = -1;
-//						this.map[this.robPosRow+2][this.robPosCol] = 0;
-//					}
-//				}
-//			case SOUTH:
-//				if(goingDir == Constants.MOVEMENT.FORWARD) {
-//					this.robPosRow -= 1;
-//					for(int col=this.robPosCol-1; col<=this.robPosCol+1; col++) {
-//						this.map[this.robPosRow-1][this.robPosCol] = -1;
-//						this.map[this.robPosRow+2][this.robPosCol] = 0;
-//					}
-//				}
-//				else if (goingDir == Constants.MOVEMENT.BACKWARD) {
-//					this.robPosRow += 1;
-//					for(int col=robPosCol-1; col<=robPosCol+1; col++) {
-//						this.map[this.robPosRow+1][this.robPosCol] = -1;
-//						this.map[this.robPosRow-2][this.robPosCol] = 0;
-//					}
-//				}
-//			case EAST:
-//				if(goingDir == Constants.MOVEMENT.FORWARD) {
-//					this.robPosCol += 1;
-//					for(int row=this.robPosRow-1; row<=this.robPosRow+1; row++) {
-//						this.map[this.robPosRow][this.robPosCol+1] = -1;
-//						this.map[this.robPosRow][this.robPosCol-2] = 0;
-//					}
-//				}
-//				else if (goingDir == Constants.MOVEMENT.BACKWARD) {
-//					this.robPosRow -= 1;
-//					for(int row=robPosRow-1; row<=robPosCol+1; row++) {
-//						this.map[this.robPosRow][this.robPosCol-1] = -1;
-//						this.map[this.robPosRow][this.robPosCol+2] = 0;
-//					}
-//				}
-//			case WEST:
-//				if(goingDir == Constants.MOVEMENT.FORWARD) {
-//					this.robPosCol -= 1;
-//					for(int row=this.robPosRow-1; row<=this.robPosRow+1; row++) {
-//						this.map[this.robPosRow][this.robPosCol-1] = -1;
-//						this.map[this.robPosRow][this.robPosCol+2] = 0;
-//					}
-//				}
-//				else if (goingDir == Constants.MOVEMENT.BACKWARD) {
-//					this.robPosCol += 1;
-//					for(int row=robPosRow-1; row<=robPosRow+1; row++) {
-//						this.map[this.robPosRow][this.robPosCol+1] = -1;
-//						this.map[this.robPosRow][this.robPosCol-2] = 0;
-//					}
-//				}
-//		}
-//	}
-
 }
