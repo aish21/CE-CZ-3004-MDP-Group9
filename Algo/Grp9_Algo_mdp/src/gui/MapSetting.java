@@ -64,7 +64,7 @@ public class MapSetting extends JPanel {
         hamiltonianBtn = new JButton();
         hamiltonianBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		m.simHamitonian = new Thread(new simulateHamiltonian(m, rBot, map));
+        		m.simHamitonian = new Thread(new simulateHamiltonian(m, rBot, map, m.obsList));
         		m.simHamitonian.start();
 
         		hamiltonianBtn.setEnabled(false);
@@ -200,6 +200,4 @@ public class MapSetting extends JPanel {
         add(separator);   
         
 	}
-	
-	
 }

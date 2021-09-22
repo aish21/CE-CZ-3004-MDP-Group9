@@ -15,7 +15,7 @@ import gui.main;
 
 /**
  * @author Goh Cheng Guan, Cliev
- * @author 
+ * @author Lau Zhen Jie
  * @version 1.0
  * @since 2020-10-19
  */
@@ -29,6 +29,7 @@ public class simulateHamiltonian implements Runnable {
     main mGui;
     private float playSpeed;
     Timer mTimer;
+    ArrayList<Cell> obsList;
 
     /**
      * This method is the non-default constructor to create simulateFastestPath thread class
@@ -37,11 +38,12 @@ public class simulateHamiltonian implements Runnable {
      * @param ro     The robot object which specifies the detail of robot.
      * @param expMap The Map object that the robot have explored.
      */
-    public simulateHamiltonian(main mGui, Robot ro, Map map) {
+    public simulateHamiltonian(main mGui, Robot ro, Map map, ArrayList<Cell> obsList) {
 
         this.map = map;
         this.mGui = mGui;
         this.robot = ro;
+        this.obsList = obsList;
         this.playSpeed = 1 / mGui.getUserSpeed();
     }
     
@@ -54,7 +56,7 @@ public class simulateHamiltonian implements Runnable {
             //ArrayList<Cell> cellsInPath = fastestPath.findAllWPEndPaths(exploreMap);
             //String moveString = convertCellsToMovements(cellsInPath);
             MainConnect mc = new MainConnect();
-            String test = mc.fullPath();//"HP|W5|E1|";
+            String test = mc.fullPath(this.obsList);//"HP|W5|E1|";
             printFastestPathMovement(test);
             //printFastestPathMovement(moveString);
 

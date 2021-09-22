@@ -1,4 +1,4 @@
-package Algorithm;
+package algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,38 +11,38 @@ import entity.Robot;
 public class MainConnect {
 	//private char[] fullPath;
 
-	public String fullPath() {
+	public String fullPath(ArrayList<Cell> obsList) {
 		Map m = new Map();
 		Robot r = new Robot(1, 1, DIRECTION.NORTH);
-		
-		ArrayList<Cell> obsList = new ArrayList<Cell>();
-		
-		//adding of Cells
-		Cell c1 = new Cell(5, 9);
-		c1.setObsDir(4);
-		c1.setObstacle(true);
-
-		Cell c2 = new Cell(7, 14);
-		c2.setObsDir(3);
-		c2.setObstacle(true);
-
-		Cell c3 = new Cell(12, 9);
-		c3.setObsDir(2);
-		c3.setObstacle(true);
-
-		Cell c4 = new Cell(15, 4);
-		c4.setObsDir(2);
-		c4.setObstacle(true);
-
-		Cell c5 = new Cell(15, 15);
-		c5.setObsDir(2);
-		c5.setObstacle(true);
-		
-		obsList.add(c5);
-		obsList.add(c2);
-		obsList.add(c1);
-		obsList.add(c4);
-		obsList.add(c3);
+		System.out.println(obsList.toString());
+//		ArrayList<Cell> obsList = new ArrayList<Cell>();
+//		
+//		//adding of Cells
+//		Cell c1 = new Cell(5, 9);
+//		c1.setObsDir(4);
+//		c1.setObstacle(true);
+//
+//		Cell c2 = new Cell(7, 14);
+//		c2.setObsDir(3);
+//		c2.setObstacle(true);
+//
+//		Cell c3 = new Cell(12, 9);
+//		c3.setObsDir(2);
+//		c3.setObstacle(true);
+//
+//		Cell c4 = new Cell(15, 4);
+//		c4.setObsDir(2);
+//		c4.setObstacle(true);
+//
+//		Cell c5 = new Cell(15, 15);
+//		c5.setObsDir(2);
+//		c5.setObstacle(true);
+//		
+//		obsList.add(c5);
+//		obsList.add(c2);
+//		obsList.add(c1);
+//		obsList.add(c4);
+//		obsList.add(c3);
 		
 		m.setMapObstacle(obsList);
 		for(int i=0; i<obsList.size(); i++) {
@@ -63,9 +63,9 @@ public class MainConnect {
 		// get nearest Neighbour
 		ArrayList<Cell> nnList = NearestNeighbour.findNearestNeighbour(tarList);
 		
-		int[] tarHeadRArr = new int[5]; 
-		int[] tarHeadCArr = new int[5]; 
-		int[] tarHeadDirArr = new int[6]; 
+		int[] tarHeadRArr = new int[nnList.size()]; 
+		int[] tarHeadCArr = new int[nnList.size()]; 
+		int[] tarHeadDirArr = new int[nnList.size()+1]; 
 		
 		for (int i=0; i<=nnList.size(); i++) {
 			if(i==0) {
@@ -143,8 +143,8 @@ public class MainConnect {
 		return movementDir;
 	}
 	
-	public static void main(String arg[]) {
-		MainConnect mc = new MainConnect();
-		System.out.println(mc.fullPath());
-	}
+//	public static void main(String arg[]) {
+//		MainConnect mc = new MainConnect();
+//		System.out.println(mc.fullPath());
+//	}
 }

@@ -87,7 +87,7 @@ public class MapPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
 				cellLabels[cellRow][cellCol].setText("O");
-				m.addObstacle(cellRow, cellCol);
+				m.addObstacle(cellRow, cellCol, 1);
 				
 				//set Cell as obstacle
 				Cell obs = map.getMap()[cellRow-1][cellCol-1];
@@ -102,7 +102,7 @@ public class MapPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
 				cellLabels[cellRow][cellCol].setText(setSymbol(1));
-				m.addObstacle(cellRow, cellCol);
+				m.addObstacle(cellRow, cellCol, 1);
 				
 				//set Cell as obstacle
 				Cell obs = map.getMap()[cellRow-1][cellCol-1];
@@ -117,7 +117,7 @@ public class MapPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
 				cellLabels[cellRow][cellCol].setText(setSymbol(2));
-				m.addObstacle(cellRow, cellCol);
+				m.addObstacle(cellRow, cellCol, 2);
 				
 				//set Cell as obstacle
 				Cell obs = map.getMap()[cellRow-1][cellCol-1];
@@ -132,7 +132,7 @@ public class MapPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
 				cellLabels[cellRow][cellCol].setText(setSymbol(3));
-				m.addObstacle(cellRow, cellCol);
+				m.addObstacle(cellRow, cellCol, 4);
 				
 				//set Cell as obstacle
 				Cell obs = map.getMap()[cellRow-1][cellCol-1];
@@ -147,7 +147,7 @@ public class MapPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
 				cellLabels[cellRow][cellCol].setText(setSymbol(4));
-				m.addObstacle(cellRow, cellCol);
+				m.addObstacle(cellRow, cellCol, 3);
 				
 				//set Cell as obstacle
 				Cell obs = map.getMap()[cellRow-1][cellCol-1];
@@ -158,6 +158,11 @@ public class MapPanel extends JPanel {
 		});
 	}
 
+	public ArrayList<Cell> getObsList(){
+		System.out.println(this.obstacleList.toString());
+		return this.obstacleList;
+	}
+	
 	public JLabel[][] getJLabelMap() {
 		return this.cellLabels;
 	}
@@ -252,5 +257,4 @@ public class MapPanel extends JPanel {
 		}
 		return s;
 	}
-
 }

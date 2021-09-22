@@ -441,9 +441,10 @@ public class AStar {
 			}
 			System.out.println();
 		}
-		else {
-			movementStr = "";
-		}
+//		else {
+//			movementStr = "";
+//		}
+		//System.out.println(instructionStr);
 		return instructionStr;
 	}
 	

@@ -15,6 +15,8 @@ import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.border.EmptyBorder;
 
+import java.util.ArrayList;
+
 import constant.Constants;
 import constant.Constants.DIRECTION;
 import entity.Cell;
@@ -30,6 +32,7 @@ public class main extends JFrame {
 	Thread simHamitonian, simFastest, simRealRun;
 	Map initialMap;
 	Robot rBot;
+	ArrayList<Cell> obsList;
 
 	/**
 	 * Launch the application.
@@ -60,6 +63,7 @@ public class main extends JFrame {
 	private void setMapRobotObj() {
 		initialMap = new Map();
 		rBot = new Robot(1, 1, DIRECTION.NORTH);
+		obsList = new ArrayList<Cell>();
 	}
 
 	private void initLayout() {
@@ -235,8 +239,9 @@ public class main extends JFrame {
 			break;
 
 		}
-
-		
+		System.out.println(obsList.toString());
+		obsList.clear();
+		System.out.println(obsList.toString());
 	}
 
 	public void clearArena() {
@@ -310,20 +315,28 @@ public class main extends JFrame {
 		textArea.setCaretPosition(textArea.getText().length());
     }
 	
-	public void addObstacle(int row, int col) {
+	public void addObstacle(int row, int col, int obsDirr) {
 		JViewport viewport = ((JScrollPane)MapSetting.getComponents()[9]).getViewport();
 		JTextArea textArea = (JTextArea)viewport.getView();
 		textArea.append("Obstacle added at ["+(col-1)+"]["+(row-1)+"]");
 		textArea.append("\n");
 		textArea.setCaretPosition(textArea.getText().length());
+		Cell c = new Cell(row-1, col-1);
+		c.setObsDir(obsDirr);
+		c.setObstacle(true);
+		obsList.add(c);
 	}
 	
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////remove property not done
 	public void removeObstacle(int row, int col) {
 		JViewport viewport = ((JScrollPane)MapSetting.getComponents()[9]).getViewport();
 		JTextArea textArea = (JTextArea)viewport.getView();
 		textArea.append("Obstacle Removed at ["+(col-1)+"]["+(row-1)+"]");
 		textArea.append("\n");
 		textArea.setCaretPosition(textArea.getText().length());
+		Cell c = new Cell(row-1, col-1);
+		obsList.remove(c);
+		System.out.println(obsList.toString());
 	}
 
     /**
@@ -336,7 +349,4 @@ public class main extends JFrame {
         speed = 10;
         return speed;
     }
-	
-
-
 }
