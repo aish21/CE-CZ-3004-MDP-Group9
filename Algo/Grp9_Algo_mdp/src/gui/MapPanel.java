@@ -131,7 +131,7 @@ public class MapPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
-				cellLabels[cellRow][cellCol].setText(setSymbol(3));
+				cellLabels[cellRow][cellCol].setText(setSymbol(4));
 				m.addObstacle(cellRow, cellCol, 4);
 				
 				//set Cell as obstacle
@@ -146,7 +146,7 @@ public class MapPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
-				cellLabels[cellRow][cellCol].setText(setSymbol(4));
+				cellLabels[cellRow][cellCol].setText(setSymbol(3));
 				m.addObstacle(cellRow, cellCol, 3);
 				
 				//set Cell as obstacle
@@ -247,14 +247,15 @@ public class MapPanel extends JPanel {
 			s = "\u2193";
 			break;
 		case 3:
-			s = "\u2190";
+			s = "\u2192";
 			break;
 		case 4:
-			s = "\u2192";
+			s = "\u2190";
 			break;
 		default:
 			break;
 		}
 		return s;
 	}
+
 }
