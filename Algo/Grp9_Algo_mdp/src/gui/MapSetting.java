@@ -79,6 +79,9 @@ public class MapSetting extends JPanel {
         shortestBtn = new JButton();
         shortestBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		m.simShortestPath = new Thread(new simulateShortestPath(m, rBot, map, m.obsList));
+        		m.simShortestPath.start();
+        		
         		hamiltonianBtn.setEnabled(false);
         		shortestBtn.setEnabled(false);
         		connectBtn.setEnabled(false);
@@ -200,4 +203,6 @@ public class MapSetting extends JPanel {
         add(separator);   
         
 	}
+	
+	
 }

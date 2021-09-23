@@ -29,7 +29,7 @@ public class main extends JFrame {
 	private JPanel MapSetting;
 	private JLabel[][] resultMap; // Use to display simulation
 
-	Thread simHamitonian, simFastest, simRealRun;
+	Thread simHamitonian, simShortestPath, simRealRun;
 	Map initialMap;
 	Robot rBot;
 	ArrayList<Cell> obsList;
@@ -346,7 +346,10 @@ public class main extends JFrame {
      */
     public float getUserSpeed() {
         float speed = 1;
-        speed = 10;
+        speed = 3;
         return speed;
     }
+	
+
+
 }
