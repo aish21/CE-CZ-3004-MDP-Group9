@@ -1,4 +1,4 @@
-package algorithm;
+package Algorithm;
 
 import java.util.PriorityQueue;
 import constant.Constants;
@@ -405,6 +405,10 @@ public class AStar {
 						movementStr = "A|" + movementStr;
 						instructionStr = "A|" + instructionStr;
 					}
+					else {
+						movementStr = "D|D|" + movementStr;
+						instructionStr = "D|D|" + instructionStr;
+					}
 					break;
 				case 2: 
 					if(finalExpectedHead == 3) {
@@ -414,6 +418,10 @@ public class AStar {
 					else if (finalExpectedHead == 4) {
 						movementStr = "D|" + movementStr ;
 						instructionStr = "D|" + instructionStr;
+					}
+					else {
+						movementStr = "D|D|" + movementStr;
+						instructionStr = "D|D|" + instructionStr;
 					}
 					break;
 				case 3: 
@@ -425,6 +433,10 @@ public class AStar {
 						movementStr = "D|" + movementStr;
 						instructionStr = "D|" + instructionStr;
 					}
+					else {
+						movementStr = "D|D|" + movementStr;
+						instructionStr = "D|D|" + instructionStr;
+					}
 					break;
 				case 4: 
 					if(finalExpectedHead == 1) {
@@ -434,6 +446,10 @@ public class AStar {
 					else if (finalExpectedHead == 2) {
 						movementStr = "A|" + movementStr;
 						instructionStr = "A|" + instructionStr;
+					}
+					else {
+						movementStr = "D|D|" + movementStr;
+						instructionStr = "D|D|" + instructionStr;
 					}
 					break;
 				}
@@ -650,7 +666,7 @@ public class AStar {
 				currMoveDir = astar.displaySolution() + turnDir;
 				k += 1;
 			}
-			movementDir =  "V" + currMoveDir + movementDir;
+			movementDir =  "V|" + currMoveDir + "|" + movementDir;
 			r.setPosRow(tarHeadRArr[i]);
 			r.setPosCol(tarHeadCArr[i]);
 			r.setCurrDir(r.intDirToConstantDir(tarHeadDirArr[i+1]));
