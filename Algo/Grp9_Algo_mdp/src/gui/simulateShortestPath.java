@@ -6,6 +6,7 @@ import java.util.TimerTask;
 
 import Algorithm.AStar;
 import Algorithm.MainConnect;
+import Algorithm.MainConnectSpare;
 import Algorithm.NearestNeighbour;
 import constant.Constants.MOVEMENT;
 import entity.Cell;
@@ -20,7 +21,7 @@ import gui.main;
  * @since 2020-10-19
  */
 
-public class simulateHamiltonian implements Runnable {
+public class simulateShortestPath implements Runnable {
 	
     AStar as;
     NearestNeighbour nn;
@@ -38,7 +39,7 @@ public class simulateHamiltonian implements Runnable {
      * @param ro     The robot object which specifies the detail of robot.
      * @param expMap The Map object that the robot have explored.
      */
-    public simulateHamiltonian(main mGui, Robot ro, Map map, ArrayList<Cell> obsList) {
+    public simulateShortestPath(main mGui, Robot ro, Map map, ArrayList<Cell> obsList) {
 
         this.map = map;
         this.mGui = mGui;

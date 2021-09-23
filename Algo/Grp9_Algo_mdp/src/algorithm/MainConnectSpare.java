@@ -8,13 +8,41 @@ import entity.Cell;
 import entity.Map;
 import entity.Robot;
 
-public class MainConnect {
+public class MainConnectSpare {
 	//private char[] fullPath;
 
 	public String fullPath(ArrayList<Cell> obsList) {
 		Map m = new Map();
 		Robot r = new Robot(1, 1, DIRECTION.NORTH);
 		System.out.println(obsList.toString());
+//		ArrayList<Cell> obsList = new ArrayList<Cell>();
+//		
+//		//adding of Cells
+//		Cell c1 = new Cell(5, 9);
+//		c1.setObsDir(4);
+//		c1.setObstacle(true);
+//
+//		Cell c2 = new Cell(7, 14);
+//		c2.setObsDir(3);
+//		c2.setObstacle(true);
+//
+//		Cell c3 = new Cell(12, 9);
+//		c3.setObsDir(2);
+//		c3.setObstacle(true);
+//
+//		Cell c4 = new Cell(15, 4);
+//		c4.setObsDir(2);
+//		c4.setObstacle(true);
+//
+//		Cell c5 = new Cell(15, 15);
+//		c5.setObsDir(2);
+//		c5.setObstacle(true);
+//		
+//		obsList.add(c5);
+//		obsList.add(c2);
+//		obsList.add(c1);
+//		obsList.add(c4);
+//		obsList.add(c3);
 		
 		m.setMapObstacle(obsList);
 		for(int i=0; i<obsList.size(); i++) {
@@ -26,47 +54,33 @@ public class MainConnect {
 		for (int i=0; i<m.getMap().length; i++) {
 			for (int j=0; j<m.getMap()[i].length; j++) {
 				if(m.getMap()[i][j].isTargetCell()) {
-					Cell c = new Cell(i, j);
-					c.setHeadDir(m.getMap()[i][j].getHeadDir());
-					tarList.add(c);
+					tarList.add(m.getMap()[i][j]);
 				}
 			}
 		}
-//		tarList = NearestNeighbour.calculateDistance(tarList, r);
-//
-//		// get nearest Neighbour
-//		ArrayList<Cell> nnList = NearestNeighbour.findNearestNeighbour(tarList);
-//		
-//		int[] tarHeadRArr = new int[obsList.size()]; 
-//		int[] tarHeadCArr = new int[obsList.size()]; 
-//		int[] tarHeadDirArr = new int[obsList.size()+1]; 
-//		
-//		for (int i=0; i<=obsList.size(); i++) {
-//			if(i==0) {
-//				tarHeadDirArr[0] = 1;
-//			}
-//			else {
-//				tarHeadRArr[i-1] = nnList.get(i-1).getRow();
-//				tarHeadCArr[i-1] = nnList.get(i-1).getCol();
-//				tarHeadDirArr[i] = nnList.get(i-1).getHeadDir();
-//			}
-//		}
+		tarList = NearestNeighbour.calculateDistance(tarList, r);
+
+		// get nearest Neighbour
+		ArrayList<Cell> nnList = NearestNeighbour.findNearestNeighbour(tarList);
+		
+		int[] tarHeadRArr = new int[nnList.size()]; 
+		int[] tarHeadCArr = new int[nnList.size()]; 
+		int[] tarHeadDirArr = new int[nnList.size()+1]; 
+		
+		for (int i=0; i<=nnList.size(); i++) {
+			if(i==0) {
+				tarHeadDirArr[0] = 1;
+			}
+			else {
+				tarHeadRArr[i-1] = nnList.get(i-1).getRow();
+				tarHeadCArr[i-1] = nnList.get(i-1).getCol();
+				tarHeadDirArr[i] = nnList.get(i-1).getHeadDir();
+			}
+		}
 		String movementDir = "";
-		for(int i=0; i<obsList.size(); i++ ) {
-			//AStar astar;
-			
-			tarList = NearestNeighbour.calculateDistance(tarList, r);
-			
-			// get nearest Neighbour
-			ArrayList<Cell> nnList = NearestNeighbour.findNearestNeighbour(tarList);
-			System.out.println("nnList is: " + nnList);
+		for(int i=0; i<tarHeadRArr.length; i++ ) {
 			int k = 1;
-			//if(i==0) {
-			AStar astar = new AStar(m, r, nnList.get(0).getRow(), nnList.get(0).getCol(), nnList.get(0).getHeadDir());
-			//}
-			//else {
-				//astar = new AStar(m, r, tarHeadRArr[i], tarHeadCArr[i], tarHeadDirArr[i+1]);
-			//}
+			AStar astar = new AStar(m, r, tarHeadRArr[i], tarHeadCArr[i], tarHeadDirArr[i+1]);
 			astar.process();
 			String currMoveDir = astar.displaySolution();
 			
@@ -115,16 +129,15 @@ public class MainConnect {
 					}
 					break;
 				}
-				astar = new AStar(m, r, nnList.get(0).getRow(), nnList.get(0).getCol(), nnList.get(0).getHeadDir());
+				astar = new AStar(m, r, tarHeadRArr[i], tarHeadCArr[i], tarHeadDirArr[i+1]);
 				astar.process();
 				currMoveDir = astar.displaySolution() + turnDir;
 				k += 1;
 			}
 			movementDir =  "V|" + currMoveDir + "|" + movementDir;
-			r.setPosRow(nnList.get(0).getRow());
-			r.setPosCol(nnList.get(0).getCol());
-			r.setCurrDir(r.intDirToConstantDir(nnList.get(0).getHeadDir()));
-			tarList.remove(nnList.get(0));
+			r.setPosRow(tarHeadRArr[i]);
+			r.setPosCol(tarHeadCArr[i]);
+			r.setCurrDir(r.intDirToConstantDir(tarHeadDirArr[i+1]));
 		}
 		System.out.println(movementDir);
 		return movementDir;
