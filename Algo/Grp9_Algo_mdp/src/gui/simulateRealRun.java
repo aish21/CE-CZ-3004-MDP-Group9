@@ -14,10 +14,12 @@ import java.util.ArrayList;
 
 /**
  * @author Goh Cheng Guan, Clive
- * @author 
+ * @author Lau Zhen Jie
  * @version 1.0
  * @since 2021-10-20
  */
+
+
 public class simulateRealRun implements Runnable {
 
     private main mGui;

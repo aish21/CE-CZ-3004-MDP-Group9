@@ -17,10 +17,12 @@ import javax.swing.border.EmptyBorder;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Stack;
 
 import constant.Constants;
 import constant.Constants.DIRECTION;
-import constant.Constants.MOVEMENT;
 import entity.Cell;
 import entity.Map;
 import entity.Robot;
@@ -34,7 +36,8 @@ public class main extends JFrame {
 	Thread simHamitonian, simShortestPath, simRealRun;
 	Map initialMap;
 	Robot rBot;
-	ArrayList<Cell> obsList;
+	private ArrayList<Cell> obsList;
+	private Queue<Cell> obstacleQueue;
 
 	/**
 	 * Launch the application.
@@ -59,13 +62,14 @@ public class main extends JFrame {
 		setMapRobotObj();
 		initLayout();
 		paintResult();
+		setObsList(new ArrayList<Cell>());
+		setObstacleQueue(new PriorityQueue<Cell>());
 
 	}
 
 	private void setMapRobotObj() {
 		initialMap = new Map();
 		rBot = new Robot(1, 1, DIRECTION.NORTH);
-		obsList = new ArrayList<Cell>();
 	}
 
 	private void initLayout() {
@@ -92,13 +96,12 @@ public class main extends JFrame {
 		for (int i = 0; i < Constants.MAX_ROW; i++) {
 			for (int y = 0; y < Constants.MAX_COL; y++) {
 				Cell cellObj = initialMap.getMap()[i][y];
-				if(cellObj.isObstacle() && !cellObj.isVisited()) {
+				if(cellObj.isObstacle() & !cellObj.isVisited()) {
 					resultMap[i + 1][y + 1].setBackground(getMapColorForCell('O'));
 					resultMap[i + 1][y + 1].setText(MapPanel.setSymbol(cellObj.getObsDir()));
 				}
-				else if(cellObj.isObstacle() && cellObj.isVisited())
+				else if(cellObj.isVisited())
 				{
-					System.out.println("line95: cell is obstacle & visited");
 					resultMap[i + 1][y + 1].setBackground(getMapColorForCell('V'));
 				}
 				else
@@ -194,6 +197,7 @@ public class main extends JFrame {
 		rBot.setCurrDir(DIRECTION.NORTH);
 		rBot.setPosCol(1);
 		rBot.setPosRow(1);
+		obstacleQueue.clear();
 		
 		for (int i = 0; i < Constants.MAX_ROW; i++) {
 			for (int y = 0; y < Constants.MAX_COL; y++) {
@@ -251,8 +255,8 @@ public class main extends JFrame {
 
 		}
 		
-		for (int i = 0; i < obsList.size(); i++) {
-			displayMsgToUI("Obstacle["+obsList.get(i).getCol()+"]["+obsList.get(i).getRow()+"] set");
+		for (int i = 0; i < getObsList().size(); i++) {
+			displayMsgToUI("Obstacle["+getObsList().get(i).getCol()+"]["+getObsList().get(i).getRow()+"] set");
 		}
 	}
 
@@ -261,7 +265,8 @@ public class main extends JFrame {
 		rBot.setCurrDir(DIRECTION.NORTH);
 		rBot.setPosCol(1);
 		rBot.setPosRow(1);
-		obsList.clear();
+		getObsList().clear();
+		obstacleQueue.clear();
 		
 		for (int i = 0; i < Constants.MAX_ROW; i++) {
 			for (int y = 0; y < Constants.MAX_COL; y++) {
@@ -343,8 +348,8 @@ public class main extends JFrame {
 		Cell cellObj = initialMap.getMap()[row-1][col-1];
 		cellObj.setObsDir(obsDirr);
 		cellObj.setObstacle(true);
-		obsList.add(cellObj);
-		System.out.println(obsList.toString());
+		getObsList().add(cellObj);
+		System.out.println(getObsList().toString());
 	}
 	
 	
@@ -362,8 +367,8 @@ public class main extends JFrame {
 		textArea.setCaretPosition(textArea.getText().length());
 		Cell cellObj = initialMap.getMap()[row-1][col-1];
 		cellObj.isNotObstacle();
-		obsList.remove(cellObj);
-		System.out.println(obsList.toString());
+		getObsList().remove(cellObj);
+		System.out.println(getObsList().toString());
 	}
 
     /**
@@ -376,161 +381,24 @@ public class main extends JFrame {
         speed = 10;
         return speed;
     }
+
+	public ArrayList<Cell> getObsList() {
+		return obsList;
+	}
+
+	public void setObsList(ArrayList<Cell> obsList) {
+		this.obsList = obsList;
+	}
+
+	public Queue<Cell> getObstacleQueue() {
+		return obstacleQueue;
+	}
+
+	public void setObstacleQueue(Queue<Cell> obstacleQueue) {
+		this.obstacleQueue = obstacleQueue;
+	}
     
-    /**
-     * This method display the string movements instruction on the virutal robot to reach its destination
-     *
-     * @param moveString The string which specifies the consecutive movement that the robot should execute.
-     * @throws InterruptedException If the connection gets interrupted.
-     */
-    private void printFastestPathMovement(String moveString) throws InterruptedException {
-
-        // FPF6R0F1L0F2
-        String[] arr = moveString.split("\\,");
-
-        try {
-     	   int a = 0;
-            for (int i=arr.length-1; i >= 0; i--) {
-                switch (arr[i]) {
-                	   case "V":
-                		   mGui.displayMsgToUI(mGui.obsList.toString());
-                		   mGui.obsList.get(a).setVisited(true);
-                		   a++;
-                		   mGui.displayMsgToUI(Integer.toString(a));
-                		   displayToUI();
-                		   mGui.displayMsgToUI("Obstacle Scanned!");
-                		   break;
-                    case "W":
-                 	   this.robot.move(MOVEMENT.FORWARD);
-                        displayToUI();
-//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                        }
-                        break;
-                    case "A":
-                 	   this.robot.turn(MOVEMENT.LEFT);
-                        displayToUI();
-//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-//                            this.robot.turn(MOVEMENT.LEFT);
-//                            displayToUI();
-//                            //this.robot.move(MOVEMENT.FORWARD);
-//                            //displayToUI();
-//                        }
-                        break;
-                    case "D":
-                 	   this.robot.turn(MOVEMENT.RIGHT);
-                        displayToUI();
-//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-//                            this.robot.turn(MOVEMENT.RIGHT);
-//                            displayToUI();
-//                            //this.robot.move(MOVEMENT.FORWARD);
-//                            //displayToUI();
-//                        }
-                        break;
-                    case "S":
-                 	   this.robot.move(MOVEMENT.BACKWARD);
-                        displayToUI();
-//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-//                            this.robot.move(MOVEMENT.BACKWARD);
-//                            displayToUI();
-//                            //this.robot.turn(MOVEMENT.RIGHT);
-//                            //displayToUI();
-//                            //this.robot.move(MOVEMENT.FORWARD);
-//                            //displayToUI();
-//                        }
-                        break;
-                    case "B":
-                 	   this.robot.turn(MOVEMENT.RIGHT);
-                        displayToUI();
-                        this.robot.turn(MOVEMENT.RIGHT);
-                        displayToUI();
-                        this.robot.move(MOVEMENT.FORWARD);
-                        displayToUI();
-//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-//                            this.robot.turn(MOVEMENT.RIGHT);
-//                            displayToUI();
-//                            this.robot.turn(MOVEMENT.RIGHT);
-//                            displayToUI();
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                        }
-                        break;
-                    case "Q":
-                 	   this.robot.move(MOVEMENT.FORWARD);
-                        displayToUI();
-                        this.robot.move(MOVEMENT.FORWARD);
-                        displayToUI();
-                        this.robot.move(MOVEMENT.FORWARD);
-                        displayToUI();
-                        this.robot.turn(MOVEMENT.LEFT);
-                        displayToUI();
-                        this.robot.move(MOVEMENT.FORWARD);
-                        displayToUI();
-                        this.robot.move(MOVEMENT.FORWARD);
-                        displayToUI();
-                        this.robot.move(MOVEMENT.FORWARD);
-                        displayToUI();
-//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                            this.robot.turn(MOVEMENT.LEFT);
-//                            displayToUI();
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                        }
-                        break;
-                    case "E":
-                 	 this.robot.move(MOVEMENT.FORWARD);
-                      displayToUI();
-                      this.robot.move(MOVEMENT.FORWARD);
-                      displayToUI();
-                      this.robot.move(MOVEMENT.FORWARD);
-                      displayToUI();
-                      this.robot.turn(MOVEMENT.RIGHT);
-                      displayToUI();
-                      this.robot.move(MOVEMENT.FORWARD);
-                      displayToUI();
-                      this.robot.move(MOVEMENT.FORWARD);
-                      displayToUI();
-                      this.robot.move(MOVEMENT.FORWARD);
-                      displayToUI();
-//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                            this.robot.turn(MOVEMENT.RIGHT);
-//                            displayToUI();
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                            this.robot.move(MOVEMENT.FORWARD);
-//                            displayToUI();
-//                        }
-                        break;
-                    
-                    default:
-                        break;
-                }
-            }
-        } catch (Exception ex) {
-            System.out.println("printfastestPathmovement error:" + ex.getMessage());
-        }
-
-
-    }
+    
 	
 
 

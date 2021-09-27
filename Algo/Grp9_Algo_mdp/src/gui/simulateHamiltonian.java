@@ -7,7 +7,6 @@ import java.util.TimerTask;
 
 import algorithm.AStar;
 import algorithm.MainConnect;
-import algorithm.MainConnectSpare;
 import algorithm.NearestNeighbour;
 import constant.Constants.DIRECTION;
 import constant.Constants.MOVEMENT;
@@ -46,9 +45,8 @@ public class simulateHamiltonian implements Runnable {
         this.map = map;
         this.mGui = mGui;
         this.robot = ro;
-        this.obsList = mGui.obsList;
+        this.obsList = mGui.getObsList();
         this.playSpeed = 1 / mGui.getUserSpeed();
-        
         
     }
     
@@ -60,8 +58,8 @@ public class simulateHamiltonian implements Runnable {
 
             //ArrayList<Cell> cellsInPath = fastestPath.findAllWPEndPaths(exploreMap);
             //String moveString = convertCellsToMovements(cellsInPath);
-            MainConnectSpare mc = new MainConnectSpare();
-            String test = mc.fullPath(this.obsList);//"HPW5E1"            
+            MainConnect mc = new MainConnect();
+            String test = mc.fullPath(mGui,1);//"HPW5E1"            
             printFastestPathMovement(test);
             //printFastestPathMovement(moveString);
 
@@ -101,9 +99,6 @@ public class simulateHamiltonian implements Runnable {
         }, 0, 1000);
     }
     
-    /**
-    *
-    */
 
    /**
     * This method will paint the current map object perceived by the robot and its current location to GUI
@@ -321,17 +316,15 @@ public class simulateHamiltonian implements Runnable {
 
        // FPF6R0F1L0F2
        String[] arr = moveString.split("\\,");
-       int a = 0;
        try {
            for (int i=arr.length-1; i >= 0; i--) {
                switch (arr[i]) {
                	   case "V":
-               		   mGui.displayMsgToUI(mGui.obsList.toString());
-               		   mGui.obsList.get(a).setVisited(true);
-               		   a++;
-               		   mGui.displayMsgToUI(Integer.toString(a));
+               		   Cell c = mGui.getObstacleQueue().poll();
+               		   c.setVisited(true);
+               		   map.getMap()[c.getRow()][c.getCol()] = c;
+               		   mGui.displayMsgToUI("Obstacle[" + c.getRow() +"][" + c.getCol() +"] Scanned!");
                		   displayToUI();
-               		   mGui.displayMsgToUI("Obstacle Scanned!");
                		   break;
                    case "W":
                 	   this.robot.move(MOVEMENT.FORWARD);

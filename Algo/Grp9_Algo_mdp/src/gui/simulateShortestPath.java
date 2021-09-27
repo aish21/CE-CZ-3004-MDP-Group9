@@ -41,7 +41,7 @@ public class simulateShortestPath implements Runnable {
         this.map = map;
         this.mGui = mGui;
         this.robot = ro;
-        this.obsList = mGui.obsList;
+        this.obsList = mGui.getObsList();
         this.playSpeed = 1 / mGui.getUserSpeed();
     }
     
@@ -54,7 +54,7 @@ public class simulateShortestPath implements Runnable {
             //ArrayList<Cell> cellsInPath = fastestPath.findAllWPEndPaths(exploreMap);
             //String moveString = convertCellsToMovements(cellsInPath);
             MainConnect mc = new MainConnect();
-            String test = mc.fullPath(this.obsList);//"HP|W5|E1|";
+            String test = mc.fullPath(mGui,2);//"HP|W5|E1|";
             printFastestPathMovement(test);
             //printFastestPathMovement(moveString);
 
@@ -315,7 +315,11 @@ public class simulateShortestPath implements Runnable {
            for (int i=arr.length-1; i >= 0; i--) {
                switch (arr[i]) {
                	   case "V":
-               		   
+               		   Cell c = mGui.getObstacleQueue().remove();
+            		   c.setVisited(true);
+            		   map.getMap()[c.getRow()][c.getCol()] = c;
+            		   mGui.displayMsgToUI("Obstacle Scanned!");
+            		   displayToUI();
                		   break;
                    case "W":
                 	   this.robot.move(MOVEMENT.FORWARD);

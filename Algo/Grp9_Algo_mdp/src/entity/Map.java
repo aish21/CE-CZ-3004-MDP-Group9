@@ -80,6 +80,26 @@ public class Map {
 			break;
 		}
 	}
+	
+	public Cell targetToObstacle(Cell c) {
+		int row = c.getRow();
+		int col = c.getCol();
+		switch (c.getHeadDir()) {
+		case 1:
+			row = row + 4;
+			break;
+		case 2:
+			row = row - 4;
+			break;
+		case 3:
+			col = col + 4;
+			break;
+		case 4:
+			col = col - 4;
+			break;
+		}
+		return this.map[row][col];
+	}
 
 	public void setMapObstacle(ArrayList<Cell> obstacles) {
 		for (int i = 0; i < obstacles.size(); i++) {
