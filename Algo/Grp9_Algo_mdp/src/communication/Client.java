@@ -19,12 +19,12 @@ public class Client {
      */
     public static void main(String[] args) {
 
-        TCPComm tcpObj = TCPComm.getInstance();
+        TCPComm2 tcpObj = TCPComm2.getInstance();
         System.out.println(tcpObj);
         tcpObj.establishConnection();
         System.out.println("Start");
-        //Scanner sc = new Scanner(System.in);
-        //String enteredMsg = "";
+        Scanner sc = new Scanner(System.in);
+        String enteredMsg = "";
         tcpObj.sendMessage("hello!");
 
 		/*

@@ -1,14 +1,13 @@
 package gui;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -16,14 +15,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
-import javax.swing.event.PopupMenuEvent;
-import java.util.ArrayList;
 
 import constant.Constants;
 import entity.Cell;
 import entity.Map;
-
-import javax.swing.JSplitPane;
 
 public class MapPanel extends JPanel {
 
@@ -87,12 +82,9 @@ public class MapPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				cellLabels[cellRow][cellCol].setBackground(main.getMapColorForCell('O'));
 				cellLabels[cellRow][cellCol].setText("O");
-				m.addObstacle(cellRow, cellCol, 1);
 				
-				//set Cell as obstacle
-				Cell obs = map.getMap()[cellRow-1][cellCol-1];
-				obs.setObstacle(1);
-				obstacleList.add(obs);
+				//add obstacle and add to obstacle list
+				m.addObstacle(cellRow, cellCol, 1);
 
 			}
 		});

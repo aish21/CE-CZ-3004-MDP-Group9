@@ -1,13 +1,15 @@
 package gui;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import Algorithm.AStar;
-import Algorithm.MainConnect;
-import Algorithm.MainConnectSpare;
-import Algorithm.NearestNeighbour;
+import algorithm.AStar;
+import algorithm.MainConnect;
+import algorithm.MainConnectSpare;
+import algorithm.NearestNeighbour;
+import constant.Constants.DIRECTION;
 import constant.Constants.MOVEMENT;
 import entity.Cell;
 import entity.Map;
@@ -23,14 +25,14 @@ import gui.main;
 
 public class simulateHamiltonian implements Runnable {
 	
-    AStar as;
-    NearestNeighbour nn;
-    Map map;
-    Robot robot;
-    main mGui;
+    private AStar as;
+    private NearestNeighbour nn;
+    private Map map;
+    private Robot robot;
+    private main mGui;
     private float playSpeed;
-    Timer mTimer;
-    ArrayList<Cell> obsList;
+    private Timer mTimer;
+    private ArrayList<Cell> obsList;
 
     /**
      * This method is the non-default constructor to create simulateFastestPath thread class
@@ -46,6 +48,8 @@ public class simulateHamiltonian implements Runnable {
         this.robot = ro;
         this.obsList = obsList;
         this.playSpeed = 1 / mGui.getUserSpeed();
+        
+        
     }
     
 	@Override
@@ -56,9 +60,112 @@ public class simulateHamiltonian implements Runnable {
 
             //ArrayList<Cell> cellsInPath = fastestPath.findAllWPEndPaths(exploreMap);
             //String moveString = convertCellsToMovements(cellsInPath);
-            MainConnectSpare mc = new MainConnectSpare();
-            String test = mc.fullPath(this.obsList);//"HP|W5|E1|";
-            printFastestPathMovement(test);
+            //MainConnectSpare mc = new MainConnectSpare();
+            //String test = mc.fullPath(this.obsList);//"HPW5E1"
+            
+            //testcode
+            for(int i=0; i<obsList.size(); i++) {
+    			map.setMapTargetCell(obsList.get(i).getRow(), obsList.get(i).getCol(), obsList.get(i).getObsDir());
+    		}
+    		
+    		List<Cell> tarList = new ArrayList<Cell>();
+    		
+    		for (int i=0; i<map.getMap().length; i++) {
+    			for (int j=0; j<map.getMap()[i].length; j++) {
+    				if(map.getMap()[i][j].isTargetCell()) {
+    					tarList.add(map.getMap()[i][j]);
+    				}
+    			}
+    		}
+    		tarList = NearestNeighbour.calculateDistance(tarList, robot);
+    		
+    		// get nearest Neighbour
+    		ArrayList<Cell> nnList = NearestNeighbour.findNearestNeighbour(tarList);
+    		
+    		int[] tarHeadRArr = new int[nnList.size()]; 
+    		int[] tarHeadCArr = new int[nnList.size()]; 
+    		int[] tarHeadDirArr = new int[nnList.size()+1]; 
+    		
+    		for (int i=0; i<=nnList.size(); i++) {
+    			if(i==0) {
+    				tarHeadDirArr[0] = 1;
+    			}
+    			else {
+    				tarHeadRArr[i-1] = nnList.get(i-1).getRow();
+    				tarHeadCArr[i-1] = nnList.get(i-1).getCol();
+    				tarHeadDirArr[i] = nnList.get(i-1).getHeadDir();
+    			}
+    		}
+    		String movementDir = "";
+    		for(int i=0; i<tarHeadRArr.length; i++ ) {
+    			int k = 1;
+    			AStar astar = new AStar(map, robot, tarHeadRArr[i], tarHeadCArr[i], tarHeadDirArr[i+1]);
+    			astar.process();
+    			String currMoveDir = astar.displaySolution();
+    			
+    			while(currMoveDir == "") {
+    				DIRECTION rStartHeadDir = robot.getCurrDir();
+    				String turnDir = "";
+    				switch(rStartHeadDir) {
+    				case NORTH:
+    					if(k == 1) {
+    						robot.setCurrDir(DIRECTION.EAST);
+    						turnDir = "D";
+    					}
+    					else {
+    						robot.setCurrDir(DIRECTION.WEST);
+    						turnDir = "A";
+    					}
+    					break;
+    				case SOUTH:
+    					if(k == 1) {
+    						robot.setCurrDir(DIRECTION.EAST);
+    						turnDir = "A";
+    					}
+    					else {
+    						robot.setCurrDir(DIRECTION.WEST);
+    						turnDir = "D";
+    					}
+    					break;
+    				case EAST:
+    					if(k == 1) {
+    						robot.setCurrDir(DIRECTION.NORTH);
+    						turnDir = "A";
+    					}
+    					else {
+    						robot.setCurrDir(DIRECTION.SOUTH);
+    						turnDir = "D";
+    					}
+    					break;
+    				case WEST:
+    					if(k == 1) {
+    						robot.setCurrDir(DIRECTION.NORTH);
+    						turnDir = "D";
+    					}
+    					else {
+    						robot.setCurrDir(DIRECTION.SOUTH);
+    						turnDir = "A";
+    					}
+    					break;
+    				}
+    				astar = new AStar(map, robot, tarHeadRArr[i], tarHeadCArr[i], tarHeadDirArr[i+1]);
+    				astar.process();
+    				currMoveDir = astar.displaySolution() + turnDir;
+    				k += 1;
+    			}
+    			movementDir =  ",V," + currMoveDir + "" + movementDir;
+    			robot.setPosRow(tarHeadRArr[i]);
+    			robot.setPosCol(tarHeadCArr[i]);
+    			robot.setCurrDir(robot.intDirToConstantDir(tarHeadDirArr[i+1]));
+    		}
+    		robot.setPosRow(1);
+			robot.setPosCol(1);
+			robot.setCurrDir(robot.intDirToConstantDir(1));
+    		System.out.println(movementDir);
+            
+            
+            
+            printFastestPathMovement(movementDir);
             //printFastestPathMovement(moveString);
 
             this.mTimer.cancel();
@@ -112,7 +219,17 @@ public class simulateHamiltonian implements Runnable {
        mGui.paintResult();
        Thread.sleep((long) (playSpeed * 1000));
 
-   }    /**
+   }  
+   
+   private void changeObstacleColor(int row, int col) throws InterruptedException {
+
+       mGui.changeObstacleColor(row, col);
+       Thread.sleep((long) (playSpeed * 1000));
+
+   } 
+   
+   
+   /**
     * This method convert the list of movement into a string instruction that the physical robot
     * could execute consecutively.
     *
@@ -123,7 +240,7 @@ public class simulateHamiltonian implements Runnable {
        int i = 0;
        int j = 0;
        int counter = 1;
-       String result = "HP|";
+       String result = "HP";
 
        while (i < fastestPathMovements.size()) {
 
@@ -160,7 +277,7 @@ public class simulateHamiltonian implements Runnable {
                result += Integer.toString(counter);
            }
            i = j;
-           result += "|";
+           result += "";
            counter = 1;
 
        }
@@ -311,13 +428,15 @@ public class simulateHamiltonian implements Runnable {
     */
    private void printFastestPathMovement(String moveString) throws InterruptedException {
 
-       // FP|F6|R0|F1|L0|F2
-       String[] arr = moveString.split("\\|");
+       // FPF6R0F1L0F2
+       String[] arr = moveString.split("\\,");
 
        try {
            for (int i=arr.length-1; i >= 0; i--) {
+        	   int a = 0;
                switch (arr[i]) {
                	   case "V":
+               		   mGui.displayMsgToUI("Obstacle Scanned!");
                		   break;
                    case "W":
                 	   this.robot.move(MOVEMENT.FORWARD);

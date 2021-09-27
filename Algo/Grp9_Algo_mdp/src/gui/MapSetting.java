@@ -70,6 +70,10 @@ public class MapSetting extends JPanel {
         		hamiltonianBtn.setEnabled(false);
         		shortestBtn.setEnabled(false);
         		connectBtn.setEnabled(false);
+        		upBtn.setEnabled(false);
+        		downBtn.setEnabled(false);
+        		leftBtn.setEnabled(false);
+        		rightBtn.setEnabled(false);
         	}
         });
         hamiltonianBtn.setBounds(10, 521, 135, 30);
@@ -79,12 +83,16 @@ public class MapSetting extends JPanel {
         shortestBtn = new JButton();
         shortestBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		m.simShortestPath = new Thread(new simulateShortestPath(m, rBot, map, m.obsList));
+        		m.simShortestPath = new Thread(new simulateShortestPath(m, rBot, map));
         		m.simShortestPath.start();
         		
         		hamiltonianBtn.setEnabled(false);
         		shortestBtn.setEnabled(false);
         		connectBtn.setEnabled(false);
+        		upBtn.setEnabled(false);
+        		downBtn.setEnabled(false);
+        		leftBtn.setEnabled(false);
+        		rightBtn.setEnabled(false);
         	}
         });
         shortestBtn.setBounds(10, 563, 135, 30);
@@ -94,10 +102,19 @@ public class MapSetting extends JPanel {
         connectBtn = new JButton();
         connectBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		editTextArea.setText("Connecting to Rpi...");
+        		editTextArea.setText("Connecting to Rpi...\n");
+        		editTextArea.setCaretPosition(editTextArea.getText().length());
+        		
+        		m.simRealRun = new Thread(new Realrun(m, rBot, map));
+        		m.simRealRun.start();
+        		
         		hamiltonianBtn.setEnabled(false);
         		shortestBtn.setEnabled(false);
         		connectBtn.setEnabled(false);
+        		upBtn.setEnabled(false);
+        		downBtn.setEnabled(false);
+        		leftBtn.setEnabled(false);
+        		rightBtn.setEnabled(false);
         	}
         });
         connectBtn.setBounds(10, 604, 135, 30);
@@ -107,11 +124,19 @@ public class MapSetting extends JPanel {
         resetBtn = new JButton();
         resetBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		editTextArea.append("\nArena Resetted!");
+        		editTextArea.append("Arena Resetting!\n");
+        		editTextArea.setCaretPosition(editTextArea.getText().length());
         		hamiltonianBtn.setEnabled(true);
         		shortestBtn.setEnabled(true);
         		connectBtn.setEnabled(true);
         		m.resetArena();
+        		editTextArea.append("Arena Resetted!\n");
+        		editTextArea.setCaretPosition(editTextArea.getText().length());
+        		
+        		upBtn.setEnabled(true);
+        		downBtn.setEnabled(true);
+        		leftBtn.setEnabled(true);
+        		rightBtn.setEnabled(true);
         	}
         });
         resetBtn.setText("Reset Arena ");
@@ -121,11 +146,19 @@ public class MapSetting extends JPanel {
         clearBtn = new JButton();
         clearBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		editTextArea.setText("Arena Cleared!");
+        		editTextArea.setText("Arena Cleared!\n");
+        		editTextArea.append("Obstacle List Cleared!\n");
+        		editTextArea.setCaretPosition(editTextArea.getText().length());
+        		
         		hamiltonianBtn.setEnabled(true);
         		shortestBtn.setEnabled(true);
         		connectBtn.setEnabled(true);
         		m.clearArena();
+        		
+        		upBtn.setEnabled(true);
+        		downBtn.setEnabled(true);
+        		leftBtn.setEnabled(true);
+        		rightBtn.setEnabled(true);
         		
         	}
         });

@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import Algorithm.AStar;
-import Algorithm.MainConnect;
-import Algorithm.MainConnectSpare;
-import Algorithm.NearestNeighbour;
+import algorithm.*;
 import constant.Constants.MOVEMENT;
 import entity.Cell;
 import entity.Map;
@@ -15,7 +12,7 @@ import entity.Robot;
 import gui.main;
 
 /**
- * @author Goh Cheng Guan, Cliev
+ * @author Goh Cheng Guan, Clive
  * @author Lau Zhen Jie
  * @version 1.0
  * @since 2020-10-19
@@ -39,12 +36,12 @@ public class simulateShortestPath implements Runnable {
      * @param ro     The robot object which specifies the detail of robot.
      * @param expMap The Map object that the robot have explored.
      */
-    public simulateShortestPath(main mGui, Robot ro, Map map, ArrayList<Cell> obsList) {
+    public simulateShortestPath(main mGui, Robot ro, Map map) {
 
         this.map = map;
         this.mGui = mGui;
         this.robot = ro;
-        this.obsList = obsList;
+        this.obsList = mGui.obsList;
         this.playSpeed = 1 / mGui.getUserSpeed();
     }
     
@@ -318,6 +315,7 @@ public class simulateShortestPath implements Runnable {
            for (int i=arr.length-1; i >= 0; i--) {
                switch (arr[i]) {
                	   case "V":
+               		   
                		   break;
                    case "W":
                 	   this.robot.move(MOVEMENT.FORWARD);

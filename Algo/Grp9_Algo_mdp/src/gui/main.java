@@ -16,6 +16,7 @@ import javax.swing.JViewport;
 import javax.swing.border.EmptyBorder;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import constant.Constants;
 import constant.Constants.DIRECTION;
@@ -94,6 +95,10 @@ public class main extends JFrame {
 					resultMap[i + 1][y + 1].setBackground(getMapColorForCell('O'));
 					resultMap[i + 1][y + 1].setText(MapPanel.setSymbol(cellObj.getObsDir()));
 				}
+				if(cellObj.isObstacle() && cellObj.isVisted())
+				{
+					resultMap[i + 1][y + 1].setBackground(getMapColorForCell('V'));
+				}
 				else
 				{
 					resultMap[i + 1][y + 1].setBackground(getMapColorForCell('U'));
@@ -143,6 +148,10 @@ public class main extends JFrame {
 		}
 
 	}
+	
+	public void changeObstacleColor(int row, int col) {
+		resultMap[row + 1][col + 1].setBackground(getMapColorForCell('V'));
+	}
 
 	/**
 	 * This method return the color of what each celltype represents
@@ -172,6 +181,9 @@ public class main extends JFrame {
 		case 'O':
 			cellColor = Color.decode("#F8C471");
 			break; // top obstacle color
+		case 'V':
+			cellColor = Color.green;
+			break; // visited obstacle color
 		default:
 			cellColor = Color.black; // Error color
 		}
@@ -189,8 +201,6 @@ public class main extends JFrame {
 				Cell cellObj = initialMap.getMap()[i][y];
 				
 				if(cellObj.isObstacle()) {
-					System.out.println("col: " + cellObj.getCol());
-					System.out.println("row: " + cellObj.getRow());
 					resultMap[i+1][y+1].setBackground(getMapColorForCell('O'));
 				}
 				else {
@@ -239,17 +249,18 @@ public class main extends JFrame {
 			break;
 
 		}
-		System.out.println(obsList.toString());
-		obsList.clear();
-		System.out.println(obsList.toString());
+		
+		for (int i = 0; i < obsList.size(); i++) {
+			displayMsgToUI("Obstacle["+obsList.get(i).getCol()+"]["+obsList.get(i).getRow()+"] set");
+		}
 	}
 
 	public void clearArena() {
 		// clear arena with robot at starting point with no obstacles
-		// reset arena with robot at starting point & obstacles
 		rBot.setCurrDir(DIRECTION.NORTH);
 		rBot.setPosCol(1);
 		rBot.setPosRow(1);
+		obsList.clear();
 		
 		for (int i = 0; i < Constants.MAX_ROW; i++) {
 			for (int y = 0; y < Constants.MAX_COL; y++) {
@@ -260,6 +271,7 @@ public class main extends JFrame {
 				
 			}
 		}
+		
 		Cell startZone = initialMap.getStartGoalPosition();
 
 
@@ -315,6 +327,13 @@ public class main extends JFrame {
 		textArea.setCaretPosition(textArea.getText().length());
     }
 	
+	/**
+	 * This method add cell as obstacle and add cell to obstacle list
+	 * 
+	 * @param row
+	 * @param col
+	 * @param obsDirr
+	 */
 	public void addObstacle(int row, int col, int obsDirr) {
 		JViewport viewport = ((JScrollPane)MapSetting.getComponents()[9]).getViewport();
 		JTextArea textArea = (JTextArea)viewport.getView();
@@ -327,15 +346,22 @@ public class main extends JFrame {
 		obsList.add(c);
 	}
 	
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////remove property not done
+	
+	/**
+	 * This method remove cell as obstacle and remove cell to obstacle list
+	 * 
+	 * @param row
+	 * @param col
+	 */
 	public void removeObstacle(int row, int col) {
 		JViewport viewport = ((JScrollPane)MapSetting.getComponents()[9]).getViewport();
 		JTextArea textArea = (JTextArea)viewport.getView();
 		textArea.append("Obstacle Removed at ["+(col-1)+"]["+(row-1)+"]");
 		textArea.append("\n");
 		textArea.setCaretPosition(textArea.getText().length());
-		Cell c = new Cell(row-1, col-1);
-		obsList.remove(c);
+		Cell cellObj = initialMap.getMap()[row][col];
+		cellObj.isNotObstacle();
+		obsList.remove(cellObj);
 		System.out.println(obsList.toString());
 	}
 

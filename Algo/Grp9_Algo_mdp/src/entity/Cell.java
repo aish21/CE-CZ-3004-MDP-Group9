@@ -12,6 +12,7 @@ public class Cell implements Comparable<Cell>, Cloneable {
 	private boolean targetCell;
 	private boolean solution; //check if cell is part of the solution
 	private int headDir; //0= notObstacle 1=Top, 2=Bottom, 3=Right, 4=Left
+	private boolean visted;
 	
 	public Cell(int row, int col) {
 		this.row = row;
@@ -21,9 +22,26 @@ public class Cell implements Comparable<Cell>, Cloneable {
 		this.targetCell = false;
 		this.headDir = 1;
 		this.obsDir = 0;
+		this.visted = false;
 	}
 	
 	
+	/**
+	 * @return the visted
+	 */
+	public boolean isVisted() {
+		return visted;
+	}
+
+
+	/**
+	 * @param visted the visted to set
+	 */
+	public void setVisted(boolean visted) {
+		this.visted = visted;
+	}
+
+
 	public void isNotObstacle() {
 		this.obsDir = 0;
 		this.obstacle = false;

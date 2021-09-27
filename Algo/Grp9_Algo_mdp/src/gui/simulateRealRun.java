@@ -1244,7 +1244,6 @@ public class simulateRealRun implements Runnable {
      * and send it to RPI.
      */
     private void sendMDFInfo() {
-        String mdf1 = map.getMDF1();
         String mdf2 = map.getMDF2();
         sendMsg("MDF|" + mdf1 + "|" + mdf2);
     }

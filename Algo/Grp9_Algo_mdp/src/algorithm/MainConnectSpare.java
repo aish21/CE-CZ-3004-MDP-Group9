@@ -1,4 +1,4 @@
-package Algorithm;
+package algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,41 +91,41 @@ public class MainConnectSpare {
 				case NORTH:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.EAST);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					else {
 						r.setCurrDir(DIRECTION.WEST);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					break;
 				case SOUTH:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.EAST);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					else {
 						r.setCurrDir(DIRECTION.WEST);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					break;
 				case EAST:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.NORTH);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					else {
 						r.setCurrDir(DIRECTION.SOUTH);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					break;
 				case WEST:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.NORTH);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					else {
 						r.setCurrDir(DIRECTION.SOUTH);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					break;
 				}
@@ -134,7 +134,7 @@ public class MainConnectSpare {
 				currMoveDir = astar.displaySolution() + turnDir;
 				k += 1;
 			}
-			movementDir =  "V|" + currMoveDir + "|" + movementDir;
+			movementDir =  "V," + currMoveDir + "," + movementDir;
 			r.setPosRow(tarHeadRArr[i]);
 			r.setPosCol(tarHeadCArr[i]);
 			r.setCurrDir(r.intDirToConstantDir(tarHeadDirArr[i+1]));
@@ -219,41 +219,41 @@ public class MainConnectSpare {
 				case NORTH:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.EAST);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					else {
 						r.setCurrDir(DIRECTION.WEST);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					break;
 				case SOUTH:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.EAST);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					else {
 						r.setCurrDir(DIRECTION.WEST);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					break;
 				case EAST:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.NORTH);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					else {
 						r.setCurrDir(DIRECTION.SOUTH);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					break;
 				case WEST:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.NORTH);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					else {
 						r.setCurrDir(DIRECTION.SOUTH);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					break;
 				}
@@ -262,7 +262,7 @@ public class MainConnectSpare {
 				currMoveDir = astar.displaySolution() + turnDir;
 				k += 1;
 			}
-			movementDir =  "V|" + currMoveDir + "|" + movementDir;
+			movementDir =  "V," + currMoveDir + "," + movementDir;
 			r.setPosRow(tarHeadRArr[i]);
 			r.setPosCol(tarHeadCArr[i]);
 			r.setCurrDir(r.intDirToConstantDir(tarHeadDirArr[i+1]));

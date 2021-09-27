@@ -1,4 +1,4 @@
-package Algorithm;
+package algorithm;
 
 import java.util.PriorityQueue;
 import constant.Constants;
@@ -372,7 +372,7 @@ public class AStar {
 					break;
 				}
 				movementStr = movementStr + Integer.toString(current.getHeadDir());
-				instructionStr = instructionStr + "|" + getInstructionStr(current.getParent().getHeadDir(), current.getRow(), current.getCol(), current.getParent().getRow(), current.getParent().getCol());
+				instructionStr = instructionStr + "," + getInstructionStr(current.getParent().getHeadDir(), current.getRow(), current.getCol(), current.getParent().getRow(), current.getParent().getCol());
 			}
 			
 			System.out.println("\n");
@@ -398,58 +398,58 @@ public class AStar {
 				switch (finalActualHead) {
 				case 1: 
 					if(finalExpectedHead == 3) {
-						movementStr = "D|" + movementStr ;
-						instructionStr = "D|" + instructionStr;
+						movementStr = "D," + movementStr ;
+						instructionStr = "D," + instructionStr;
 					}
 					else if (finalExpectedHead == 4) {
-						movementStr = "A|" + movementStr;
-						instructionStr = "A|" + instructionStr;
+						movementStr = "A," + movementStr;
+						instructionStr = "A," + instructionStr;
 					}
 					else {
-						movementStr = "D|D|" + movementStr;
-						instructionStr = "D|D|" + instructionStr;
+						movementStr = "D,D," + movementStr;
+						instructionStr = "D,D," + instructionStr;
 					}
 					break;
 				case 2: 
 					if(finalExpectedHead == 3) {
-						movementStr = "A|" + movementStr;
-						instructionStr = "A|" + instructionStr;
+						movementStr = "A," + movementStr;
+						instructionStr = "A," + instructionStr;
 					}
 					else if (finalExpectedHead == 4) {
-						movementStr = "D|" + movementStr ;
-						instructionStr = "D|" + instructionStr;
+						movementStr = "D," + movementStr ;
+						instructionStr = "D," + instructionStr;
 					}
 					else {
-						movementStr = "D|D|" + movementStr;
-						instructionStr = "D|D|" + instructionStr;
+						movementStr = "D,D," + movementStr;
+						instructionStr = "D,D," + instructionStr;
 					}
 					break;
 				case 3: 
 					if(finalExpectedHead == 1) {
-						movementStr = "A|" + movementStr;
-						instructionStr = "A|" + instructionStr;
+						movementStr = "A," + movementStr;
+						instructionStr = "A," + instructionStr;
 					}
 					else if (finalExpectedHead == 2) {
-						movementStr = "D|" + movementStr;
-						instructionStr = "D|" + instructionStr;
+						movementStr = "D," + movementStr;
+						instructionStr = "D," + instructionStr;
 					}
 					else {
-						movementStr = "D|D|" + movementStr;
-						instructionStr = "D|D|" + instructionStr;
+						movementStr = "D,D," + movementStr;
+						instructionStr = "D,D," + instructionStr;
 					}
 					break;
 				case 4: 
 					if(finalExpectedHead == 1) {
-						movementStr = "D|" + movementStr;
-						instructionStr = "D|" + instructionStr;
+						movementStr = "D," + movementStr;
+						instructionStr = "D," + instructionStr;
 					}
 					else if (finalExpectedHead == 2) {
-						movementStr = "A|" + movementStr;
-						instructionStr = "A|" + instructionStr;
+						movementStr = "A," + movementStr;
+						instructionStr = "A," + instructionStr;
 					}
 					else {
-						movementStr = "D|D|" + movementStr;
-						instructionStr = "D|D|" + instructionStr;
+						movementStr = "D,D," + movementStr;
+						instructionStr = "D,D," + instructionStr;
 					}
 					break;
 				}
@@ -623,41 +623,41 @@ public class AStar {
 				case NORTH:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.EAST);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					else {
 						r.setCurrDir(DIRECTION.WEST);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					break;
 				case SOUTH:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.EAST);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					else {
 						r.setCurrDir(DIRECTION.WEST);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					break;
 				case EAST:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.NORTH);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					else {
 						r.setCurrDir(DIRECTION.SOUTH);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					break;
 				case WEST:
 					if(k == 1) {
 						r.setCurrDir(DIRECTION.NORTH);
-						turnDir = "|D";
+						turnDir = ",D";
 					}
 					else {
 						r.setCurrDir(DIRECTION.SOUTH);
-						turnDir = "|A";
+						turnDir = ",A";
 					}
 					break;
 				}
@@ -666,7 +666,7 @@ public class AStar {
 				currMoveDir = astar.displaySolution() + turnDir;
 				k += 1;
 			}
-			movementDir =  "V|" + currMoveDir + "|" + movementDir;
+			movementDir =  "V," + currMoveDir + "," + movementDir;
 			r.setPosRow(tarHeadRArr[i]);
 			r.setPosCol(tarHeadCArr[i]);
 			r.setCurrDir(r.intDirToConstantDir(tarHeadDirArr[i+1]));
