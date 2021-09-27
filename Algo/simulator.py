@@ -49,7 +49,7 @@ def calculateInitialCarToObtDistance(OBSTACLES, robotCurrPos):
     for item in OBSTACLES:
         dist = math.sqrt(((abs(item["xPos"]-robotCurrPos["xPos"]))**2) + ((abs(item["yPos"]-robotCurrPos["yPos"]))**2))
         item["distance"] = dist
-    return OBSTACLES
+    return OBSTACLE
 
 # calculate the distances between obstacles
 def calDistanceBetweenObs(distanceMatrix, OBSTACLES):
