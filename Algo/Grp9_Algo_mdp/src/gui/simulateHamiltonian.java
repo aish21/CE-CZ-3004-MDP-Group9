@@ -41,12 +41,12 @@ public class simulateHamiltonian implements Runnable {
      * @param ro     The robot object which specifies the detail of robot.
      * @param expMap The Map object that the robot have explored.
      */
-    public simulateHamiltonian(main mGui, Robot ro, Map map, ArrayList<Cell> obsList) {
+    public simulateHamiltonian(main mGui, Robot ro, Map map) {
 
         this.map = map;
         this.mGui = mGui;
         this.robot = ro;
-        this.obsList = obsList;
+        this.obsList = mGui.obsList;
         this.playSpeed = 1 / mGui.getUserSpeed();
         
         
@@ -60,112 +60,9 @@ public class simulateHamiltonian implements Runnable {
 
             //ArrayList<Cell> cellsInPath = fastestPath.findAllWPEndPaths(exploreMap);
             //String moveString = convertCellsToMovements(cellsInPath);
-            //MainConnectSpare mc = new MainConnectSpare();
-            //String test = mc.fullPath(this.obsList);//"HPW5E1"
-            
-            //testcode
-            for(int i=0; i<obsList.size(); i++) {
-    			map.setMapTargetCell(obsList.get(i).getRow(), obsList.get(i).getCol(), obsList.get(i).getObsDir());
-    		}
-    		
-    		List<Cell> tarList = new ArrayList<Cell>();
-    		
-    		for (int i=0; i<map.getMap().length; i++) {
-    			for (int j=0; j<map.getMap()[i].length; j++) {
-    				if(map.getMap()[i][j].isTargetCell()) {
-    					tarList.add(map.getMap()[i][j]);
-    				}
-    			}
-    		}
-    		tarList = NearestNeighbour.calculateDistance(tarList, robot);
-    		
-    		// get nearest Neighbour
-    		ArrayList<Cell> nnList = NearestNeighbour.findNearestNeighbour(tarList);
-    		
-    		int[] tarHeadRArr = new int[nnList.size()]; 
-    		int[] tarHeadCArr = new int[nnList.size()]; 
-    		int[] tarHeadDirArr = new int[nnList.size()+1]; 
-    		
-    		for (int i=0; i<=nnList.size(); i++) {
-    			if(i==0) {
-    				tarHeadDirArr[0] = 1;
-    			}
-    			else {
-    				tarHeadRArr[i-1] = nnList.get(i-1).getRow();
-    				tarHeadCArr[i-1] = nnList.get(i-1).getCol();
-    				tarHeadDirArr[i] = nnList.get(i-1).getHeadDir();
-    			}
-    		}
-    		String movementDir = "";
-    		for(int i=0; i<tarHeadRArr.length; i++ ) {
-    			int k = 1;
-    			AStar astar = new AStar(map, robot, tarHeadRArr[i], tarHeadCArr[i], tarHeadDirArr[i+1]);
-    			astar.process();
-    			String currMoveDir = astar.displaySolution();
-    			
-    			while(currMoveDir == "") {
-    				DIRECTION rStartHeadDir = robot.getCurrDir();
-    				String turnDir = "";
-    				switch(rStartHeadDir) {
-    				case NORTH:
-    					if(k == 1) {
-    						robot.setCurrDir(DIRECTION.EAST);
-    						turnDir = "D";
-    					}
-    					else {
-    						robot.setCurrDir(DIRECTION.WEST);
-    						turnDir = "A";
-    					}
-    					break;
-    				case SOUTH:
-    					if(k == 1) {
-    						robot.setCurrDir(DIRECTION.EAST);
-    						turnDir = "A";
-    					}
-    					else {
-    						robot.setCurrDir(DIRECTION.WEST);
-    						turnDir = "D";
-    					}
-    					break;
-    				case EAST:
-    					if(k == 1) {
-    						robot.setCurrDir(DIRECTION.NORTH);
-    						turnDir = "A";
-    					}
-    					else {
-    						robot.setCurrDir(DIRECTION.SOUTH);
-    						turnDir = "D";
-    					}
-    					break;
-    				case WEST:
-    					if(k == 1) {
-    						robot.setCurrDir(DIRECTION.NORTH);
-    						turnDir = "D";
-    					}
-    					else {
-    						robot.setCurrDir(DIRECTION.SOUTH);
-    						turnDir = "A";
-    					}
-    					break;
-    				}
-    				astar = new AStar(map, robot, tarHeadRArr[i], tarHeadCArr[i], tarHeadDirArr[i+1]);
-    				astar.process();
-    				currMoveDir = astar.displaySolution() + turnDir;
-    				k += 1;
-    			}
-    			movementDir =  ",V," + currMoveDir + "" + movementDir;
-    			robot.setPosRow(tarHeadRArr[i]);
-    			robot.setPosCol(tarHeadCArr[i]);
-    			robot.setCurrDir(robot.intDirToConstantDir(tarHeadDirArr[i+1]));
-    		}
-    		robot.setPosRow(1);
-			robot.setPosCol(1);
-			robot.setCurrDir(robot.intDirToConstantDir(1));
-    		System.out.println(movementDir);
-            
-            
-            
-            printFastestPathMovement(movementDir);
+            MainConnectSpare mc = new MainConnectSpare();
+            String test = mc.fullPath(this.obsList);//"HPW5E1"            
+            printFastestPathMovement(test);
             //printFastestPathMovement(moveString);
 
             this.mTimer.cancel();
@@ -221,12 +118,6 @@ public class simulateHamiltonian implements Runnable {
 
    }  
    
-   private void changeObstacleColor(int row, int col) throws InterruptedException {
-
-       mGui.changeObstacleColor(row, col);
-       Thread.sleep((long) (playSpeed * 1000));
-
-   } 
    
    
    /**
@@ -430,12 +321,16 @@ public class simulateHamiltonian implements Runnable {
 
        // FPF6R0F1L0F2
        String[] arr = moveString.split("\\,");
-
+       int a = 0;
        try {
            for (int i=arr.length-1; i >= 0; i--) {
-        	   int a = 0;
                switch (arr[i]) {
                	   case "V":
+               		   mGui.displayMsgToUI(mGui.obsList.toString());
+               		   mGui.obsList.get(a).setVisited(true);
+               		   a++;
+               		   mGui.displayMsgToUI(Integer.toString(a));
+               		   displayToUI();
                		   mGui.displayMsgToUI("Obstacle Scanned!");
                		   break;
                    case "W":

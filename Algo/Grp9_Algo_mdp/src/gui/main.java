@@ -20,6 +20,7 @@ import java.util.Iterator;
 
 import constant.Constants;
 import constant.Constants.DIRECTION;
+import constant.Constants.MOVEMENT;
 import entity.Cell;
 import entity.Map;
 import entity.Robot;
@@ -91,12 +92,13 @@ public class main extends JFrame {
 		for (int i = 0; i < Constants.MAX_ROW; i++) {
 			for (int y = 0; y < Constants.MAX_COL; y++) {
 				Cell cellObj = initialMap.getMap()[i][y];
-				if(cellObj.isObstacle()) {
+				if(cellObj.isObstacle() && !cellObj.isVisited()) {
 					resultMap[i + 1][y + 1].setBackground(getMapColorForCell('O'));
 					resultMap[i + 1][y + 1].setText(MapPanel.setSymbol(cellObj.getObsDir()));
 				}
-				if(cellObj.isObstacle() && cellObj.isVisted())
+				else if(cellObj.isObstacle() && cellObj.isVisited())
 				{
+					System.out.println("line95: cell is obstacle & visited");
 					resultMap[i + 1][y + 1].setBackground(getMapColorForCell('V'));
 				}
 				else
@@ -149,9 +151,6 @@ public class main extends JFrame {
 
 	}
 	
-	public void changeObstacleColor(int row, int col) {
-		resultMap[row + 1][col + 1].setBackground(getMapColorForCell('V'));
-	}
 
 	/**
 	 * This method return the color of what each celltype represents
@@ -202,9 +201,11 @@ public class main extends JFrame {
 				
 				if(cellObj.isObstacle()) {
 					resultMap[i+1][y+1].setBackground(getMapColorForCell('O'));
+					cellObj.setVisited(false);
 				}
 				else {
 					resultMap[i+1][y+1].setBackground(getMapColorForCell('U'));
+					cellObj.resetCell();
 				}
 				
 			}
@@ -267,8 +268,7 @@ public class main extends JFrame {
 				Cell cellObj = initialMap.getMap()[i][y];
 				resultMap[i + 1][y + 1].setBackground(getMapColorForCell('U'));
 				resultMap[i + 1][y + 1].setText("");
-				cellObj.isNotObstacle();
-				
+				cellObj.resetCell();
 			}
 		}
 		
@@ -340,10 +340,11 @@ public class main extends JFrame {
 		textArea.append("Obstacle added at ["+(col-1)+"]["+(row-1)+"]");
 		textArea.append("\n");
 		textArea.setCaretPosition(textArea.getText().length());
-		Cell c = new Cell(row-1, col-1);
-		c.setObsDir(obsDirr);
-		c.setObstacle(true);
-		obsList.add(c);
+		Cell cellObj = initialMap.getMap()[row-1][col-1];
+		cellObj.setObsDir(obsDirr);
+		cellObj.setObstacle(true);
+		obsList.add(cellObj);
+		System.out.println(obsList.toString());
 	}
 	
 	
@@ -359,7 +360,7 @@ public class main extends JFrame {
 		textArea.append("Obstacle Removed at ["+(col-1)+"]["+(row-1)+"]");
 		textArea.append("\n");
 		textArea.setCaretPosition(textArea.getText().length());
-		Cell cellObj = initialMap.getMap()[row][col];
+		Cell cellObj = initialMap.getMap()[row-1][col-1];
 		cellObj.isNotObstacle();
 		obsList.remove(cellObj);
 		System.out.println(obsList.toString());
@@ -372,8 +373,163 @@ public class main extends JFrame {
      */
     public float getUserSpeed() {
         float speed = 1;
-        speed = 3;
+        speed = 10;
         return speed;
+    }
+    
+    /**
+     * This method display the string movements instruction on the virutal robot to reach its destination
+     *
+     * @param moveString The string which specifies the consecutive movement that the robot should execute.
+     * @throws InterruptedException If the connection gets interrupted.
+     */
+    private void printFastestPathMovement(String moveString) throws InterruptedException {
+
+        // FPF6R0F1L0F2
+        String[] arr = moveString.split("\\,");
+
+        try {
+     	   int a = 0;
+            for (int i=arr.length-1; i >= 0; i--) {
+                switch (arr[i]) {
+                	   case "V":
+                		   mGui.displayMsgToUI(mGui.obsList.toString());
+                		   mGui.obsList.get(a).setVisited(true);
+                		   a++;
+                		   mGui.displayMsgToUI(Integer.toString(a));
+                		   displayToUI();
+                		   mGui.displayMsgToUI("Obstacle Scanned!");
+                		   break;
+                    case "W":
+                 	   this.robot.move(MOVEMENT.FORWARD);
+                        displayToUI();
+//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                        }
+                        break;
+                    case "A":
+                 	   this.robot.turn(MOVEMENT.LEFT);
+                        displayToUI();
+//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                            this.robot.turn(MOVEMENT.LEFT);
+//                            displayToUI();
+//                            //this.robot.move(MOVEMENT.FORWARD);
+//                            //displayToUI();
+//                        }
+                        break;
+                    case "D":
+                 	   this.robot.turn(MOVEMENT.RIGHT);
+                        displayToUI();
+//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                            this.robot.turn(MOVEMENT.RIGHT);
+//                            displayToUI();
+//                            //this.robot.move(MOVEMENT.FORWARD);
+//                            //displayToUI();
+//                        }
+                        break;
+                    case "S":
+                 	   this.robot.move(MOVEMENT.BACKWARD);
+                        displayToUI();
+//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                            this.robot.move(MOVEMENT.BACKWARD);
+//                            displayToUI();
+//                            //this.robot.turn(MOVEMENT.RIGHT);
+//                            //displayToUI();
+//                            //this.robot.move(MOVEMENT.FORWARD);
+//                            //displayToUI();
+//                        }
+                        break;
+                    case "B":
+                 	   this.robot.turn(MOVEMENT.RIGHT);
+                        displayToUI();
+                        this.robot.turn(MOVEMENT.RIGHT);
+                        displayToUI();
+                        this.robot.move(MOVEMENT.FORWARD);
+                        displayToUI();
+//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                            this.robot.turn(MOVEMENT.RIGHT);
+//                            displayToUI();
+//                            this.robot.turn(MOVEMENT.RIGHT);
+//                            displayToUI();
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                        }
+                        break;
+                    case "Q":
+                 	   this.robot.move(MOVEMENT.FORWARD);
+                        displayToUI();
+                        this.robot.move(MOVEMENT.FORWARD);
+                        displayToUI();
+                        this.robot.move(MOVEMENT.FORWARD);
+                        displayToUI();
+                        this.robot.turn(MOVEMENT.LEFT);
+                        displayToUI();
+                        this.robot.move(MOVEMENT.FORWARD);
+                        displayToUI();
+                        this.robot.move(MOVEMENT.FORWARD);
+                        displayToUI();
+                        this.robot.move(MOVEMENT.FORWARD);
+                        displayToUI();
+//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                            this.robot.turn(MOVEMENT.LEFT);
+//                            displayToUI();
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                        }
+                        break;
+                    case "E":
+                 	 this.robot.move(MOVEMENT.FORWARD);
+                      displayToUI();
+                      this.robot.move(MOVEMENT.FORWARD);
+                      displayToUI();
+                      this.robot.move(MOVEMENT.FORWARD);
+                      displayToUI();
+                      this.robot.turn(MOVEMENT.RIGHT);
+                      displayToUI();
+                      this.robot.move(MOVEMENT.FORWARD);
+                      displayToUI();
+                      this.robot.move(MOVEMENT.FORWARD);
+                      displayToUI();
+                      this.robot.move(MOVEMENT.FORWARD);
+                      displayToUI();
+//                        for (int y = 0; y < Integer.parseInt(arr[i].substring(1, arr[i].length())); y++) {
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                            this.robot.turn(MOVEMENT.RIGHT);
+//                            displayToUI();
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                            this.robot.move(MOVEMENT.FORWARD);
+//                            displayToUI();
+//                        }
+                        break;
+                    
+                    default:
+                        break;
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println("printfastestPathmovement error:" + ex.getMessage());
+        }
+
+
     }
 	
 

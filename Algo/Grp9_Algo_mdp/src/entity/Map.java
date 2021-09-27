@@ -59,24 +59,24 @@ public class Map {
 		switch (dir) {
 		case 1:
 
-			this.map[obsRow + 3][obsCol].setTargetCell(true);
-			this.map[obsRow + 3][obsCol].setHeadDir(2);
+			this.map[obsRow + 4][obsCol].setTargetCell(true);
+			this.map[obsRow + 4][obsCol].setHeadDir(2);
 
 			break;
 		case 2:
 
-			this.map[obsRow - 3][obsCol].setTargetCell(true);
-			this.map[obsRow - 3][obsCol].setHeadDir(1);
+			this.map[obsRow - 4][obsCol].setTargetCell(true);
+			this.map[obsRow - 4][obsCol].setHeadDir(1);
 			break;
 		case 3:
 
-			this.map[obsRow][obsCol + 3].setTargetCell(true);
-			this.map[obsRow][obsCol + 3].setHeadDir(4);
+			this.map[obsRow][obsCol + 4].setTargetCell(true);
+			this.map[obsRow][obsCol + 4].setHeadDir(4);
 			break;
 		case 4:
 
-			this.map[obsRow][obsCol - 3].setTargetCell(true);
-			this.map[obsRow][obsCol - 3].setHeadDir(3);
+			this.map[obsRow][obsCol - 4].setTargetCell(true);
+			this.map[obsRow][obsCol - 4].setHeadDir(3);
 			break;
 		}
 	}

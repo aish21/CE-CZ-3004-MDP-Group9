@@ -34,8 +34,12 @@ public class Realrun implements Runnable {
 			int obstacleCount = 1;
 			do {
 				obstacleCount = checkandPlotOB();
+				mGui.displayMsgToUI("Obstacle "+obstacleCount + " Plotted!");
 			} while (obstacleCount != 0);
 			displayToUI();
+			mGui.displayMsgToUI("Initiating Astar and Nearest Neighbour Algorithm");
+			
+			
 
 		}catch(
 
@@ -171,10 +175,10 @@ public class Realrun implements Runnable {
 			msg = tcpObj.readMessage();
 		} while (msg == null || msg.length() == 0);
 
-		if (msg.substring(0, 2).equals("N|")) {
-			sendMDFInfo();
-			throw new InterruptedException();
-		}
+//		if (msg.substring(0, 2).equals("N|")) {
+//			sendMDFInfo();
+//			throw new InterruptedException();
+//		}
 		mGui.displayMsgToUI("Received: " + msg);
 		return msg;
 	}

@@ -309,7 +309,7 @@ public class simulateShortestPath implements Runnable {
    private void printFastestPathMovement(String moveString) throws InterruptedException {
 
        // FP|F6|R0|F1|L0|F2
-       String[] arr = moveString.split("\\|");
+       String[] arr = moveString.split("\\,");
 
        try {
            for (int i=arr.length-1; i >= 0; i--) {

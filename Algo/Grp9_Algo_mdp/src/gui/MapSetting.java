@@ -64,7 +64,7 @@ public class MapSetting extends JPanel {
         hamiltonianBtn = new JButton();
         hamiltonianBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		m.simHamitonian = new Thread(new simulateHamiltonian(m, rBot, map, m.obsList));
+        		m.simHamitonian = new Thread(new simulateHamiltonian(m, rBot, map));
         		m.simHamitonian.start();
 
         		hamiltonianBtn.setEnabled(false);
@@ -83,6 +83,7 @@ public class MapSetting extends JPanel {
         shortestBtn = new JButton();
         shortestBtn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		
         		m.simShortestPath = new Thread(new simulateShortestPath(m, rBot, map));
         		m.simShortestPath.start();
         		
