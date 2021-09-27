@@ -381,7 +381,6 @@ public class main extends JFrame {
         speed = 10;
         return speed;
     }
-
 	public ArrayList<Cell> getObsList() {
 		return obsList;
 	}
@@ -398,8 +397,6 @@ public class main extends JFrame {
 		this.obstacleQueue = obstacleQueue;
 	}
     
-    
-	
 
 
 }
