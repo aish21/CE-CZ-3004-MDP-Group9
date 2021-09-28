@@ -59,7 +59,7 @@ public class simulateHamiltonian implements Runnable {
             //ArrayList<Cell> cellsInPath = fastestPath.findAllWPEndPaths(exploreMap);
             //String moveString = convertCellsToMovements(cellsInPath);
             MainConnect mc = new MainConnect();
-            String test = mc.fullPath(mGui,1);//"HPW5E1"            
+            String test = mc.fullPath(mGui);//"HPW5E1"            
             printFastestPathMovement(test);
             //printFastestPathMovement(moveString);
 
@@ -323,7 +323,7 @@ public class simulateHamiltonian implements Runnable {
                		   Cell c = mGui.getObstacleQueue().poll();
                		   c.setVisited(true);
                		   map.getMap()[c.getRow()][c.getCol()] = c;
-               		   mGui.displayMsgToUI("Obstacle[" + c.getRow() +"][" + c.getCol() +"] Scanned!");
+               		   mGui.displayMsgToUI("Obstacle[" + c.getCol() +"][" + c.getRow() +"] Scanned!");
                		   displayToUI();
                		   break;
                    case "W":
