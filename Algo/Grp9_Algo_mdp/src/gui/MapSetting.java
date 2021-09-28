@@ -34,9 +34,8 @@ import entity.Map;
 
 public class MapSetting extends JPanel {
 
-
 	private static final long serialVersionUID = 1L;
-	
+
 	JTextArea editTextArea;
 	JScrollPane scroll;
 	JButton hamiltonianBtn;
@@ -49,194 +48,207 @@ public class MapSetting extends JPanel {
 	JButton downBtn;
 	JButton leftBtn;
 	JButton rightBtn;
-	
+
 	private float playSpeed;
 
 	/**
 	 * Create the panel.
 	 */
-	public MapSetting(main m,Map map,Robot rBot) {
+	public MapSetting(main m, Map map, Robot rBot) {
 
+		setLayout(null);
+		setPreferredSize(new Dimension(450, 650));
 
-        setLayout(null);
-        setPreferredSize(new Dimension(450, 650));
-        
-        hamiltonianBtn = new JButton();
-        hamiltonianBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		m.simHamitonian = new Thread(new simulateHamiltonian(m, rBot, map));
-        		m.simHamitonian.start();
+		hamiltonianBtn = new JButton();
+		hamiltonianBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				m.simHamitonian = new Thread(new simulateHamiltonian(m, rBot, map));
+				m.simHamitonian.start();
 
-        		hamiltonianBtn.setEnabled(false);
-        		shortestBtn.setEnabled(false);
-        		connectBtn.setEnabled(false);
-        		upBtn.setEnabled(false);
-        		downBtn.setEnabled(false);
-        		leftBtn.setEnabled(false);
-        		rightBtn.setEnabled(false);
-        	}
-        });
-        hamiltonianBtn.setBounds(10, 521, 135, 30);
-        hamiltonianBtn.setText("Hamiliton Path");
-        add(hamiltonianBtn);
-        
-        shortestBtn = new JButton();
-        shortestBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		
-        		m.simShortestPath = new Thread(new simulateShortestPath(m, rBot, map));
-        		m.simShortestPath.start();
-        		
-        		hamiltonianBtn.setEnabled(false);
-        		shortestBtn.setEnabled(false);
-        		connectBtn.setEnabled(false);
-        		upBtn.setEnabled(false);
-        		downBtn.setEnabled(false);
-        		leftBtn.setEnabled(false);
-        		rightBtn.setEnabled(false);
-        	}
-        });
-        shortestBtn.setBounds(10, 563, 135, 30);
-        shortestBtn.setText("Shortest Path");
-        add(shortestBtn);
-        
-        connectBtn = new JButton();
-        connectBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		editTextArea.setText("Connecting to Rpi...\n");
-        		editTextArea.setCaretPosition(editTextArea.getText().length());
-        		
-        		m.simRealRun = new Thread(new Realrun(m, rBot, map));
-        		m.simRealRun.start();
-        		
-        		hamiltonianBtn.setEnabled(false);
-        		shortestBtn.setEnabled(false);
-        		connectBtn.setEnabled(false);
-        		upBtn.setEnabled(false);
-        		downBtn.setEnabled(false);
-        		leftBtn.setEnabled(false);
-        		rightBtn.setEnabled(false);
-        	}
-        });
-        connectBtn.setBounds(10, 604, 135, 30);
-        connectBtn.setText("Connect to Rpi");
-        add(connectBtn);
-        
-        resetBtn = new JButton();
-        resetBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		editTextArea.append("Arena Resetting!\n");
-        		editTextArea.setCaretPosition(editTextArea.getText().length());
-        		hamiltonianBtn.setEnabled(true);
-        		shortestBtn.setEnabled(true);
-        		connectBtn.setEnabled(true);
-        		m.resetArena();
-        		editTextArea.append("Arena Resetted!\n");
-        		editTextArea.setCaretPosition(editTextArea.getText().length());
-        		
-        		upBtn.setEnabled(true);
-        		downBtn.setEnabled(true);
-        		leftBtn.setEnabled(true);
-        		rightBtn.setEnabled(true);
-        	}
-        });
-        resetBtn.setText("Reset Arena ");
-        resetBtn.setBounds(155, 563, 110, 30);
-        add(resetBtn);
-        
-        clearBtn = new JButton();
-        clearBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		editTextArea.setText("Arena Cleared!\n");
-        		editTextArea.append("Obstacle List Cleared!\n");
-        		editTextArea.setCaretPosition(editTextArea.getText().length());
-        		
-        		hamiltonianBtn.setEnabled(true);
-        		shortestBtn.setEnabled(true);
-        		connectBtn.setEnabled(true);
-        		m.clearArena();
-        		
-        		upBtn.setEnabled(true);
-        		downBtn.setEnabled(true);
-        		leftBtn.setEnabled(true);
-        		rightBtn.setEnabled(true);
-        		
-        	}
-        });
-        clearBtn.setText("Clear Arena ");
-        clearBtn.setBounds(155, 521, 110, 30);
-        add(clearBtn);
-        
-        
-        upBtn = new JButton();
-        upBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		if(rBot.isMovementValid(map, MOVEMENT.FORWARD)) {
-        			rBot.move(MOVEMENT.FORWARD);
-            		m.paintResult();
-        		}
-        	}
-        });
-        upBtn.setBounds(308, 521, 103, 30);
-        upBtn.setText("Forward");
-        add(upBtn);
-        
-        downBtn = new JButton();
-        downBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		if (rBot.isMovementValid(map, MOVEMENT.BACKWARD)) {
-        		rBot.move(MOVEMENT.BACKWARD);
-        		m.paintResult();
-        		}
-        	}
-        });
-        downBtn.setBounds(308, 604, 103, 30);
-        downBtn.setText("Reverse");
-        add(downBtn);
-        
-        leftBtn = new JButton();
-        leftBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		if(rBot.isMovementValid(map, MOVEMENT.LEFT)) {
-        			rBot.turn(MOVEMENT.LEFT);
-            		m.paintResult();
-        		}
-        	}
-        });
-        leftBtn.setBounds(293, 563, 71, 30);
-        leftBtn.setText("Left");
-        add(leftBtn);
-        
-        rightBtn = new JButton();
-        rightBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		if(rBot.isMovementValid(map, MOVEMENT.RIGHT)) {
-        			rBot.turn(MOVEMENT.RIGHT);
-            		m.paintResult();
-        		}
-        	}
-        });
-        rightBtn.setBounds(369, 563, 71, 30);
-        rightBtn.setText("Right");
-        add(rightBtn);
-        
-        
-        scroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        editTextArea = new JTextArea();
-        editTextArea.setFont(new Font("Monospaced", Font.PLAIN, 15));
-        editTextArea.setLineWrap(true);
-        editTextArea.setEditable(false);
-        scroll.setViewportView(editTextArea);
-        scroll.setBounds(0, 10, 450, 500);
-        add(scroll);
-        editTextArea.setText("Instructions: Right-click on the grid to add\nobstacles.\n");
-        
-        JSeparator separator = new JSeparator();
-        separator.setOrientation(SwingConstants.VERTICAL);
-        separator.setBounds(275, 521, 8, 113);
-        add(separator);   
-        
+				hamiltonianBtn.setEnabled(false);
+				shortestBtn.setEnabled(false);
+				connectBtn.setEnabled(false);
+				upBtn.setEnabled(false);
+				downBtn.setEnabled(false);
+				leftBtn.setEnabled(false);
+				rightBtn.setEnabled(false);
+			}
+		});
+		hamiltonianBtn.setBounds(10, 521, 135, 30);
+		hamiltonianBtn.setText("Hamiliton Path");
+		add(hamiltonianBtn);
+
+		shortestBtn = new JButton();
+		shortestBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				m.simShortestPath = new Thread(new simulateShortestPath(m, rBot, map));
+				m.simShortestPath.start();
+
+				hamiltonianBtn.setEnabled(false);
+				shortestBtn.setEnabled(false);
+				connectBtn.setEnabled(false);
+				upBtn.setEnabled(false);
+				downBtn.setEnabled(false);
+				leftBtn.setEnabled(false);
+				rightBtn.setEnabled(false);
+			}
+		});
+		shortestBtn.setBounds(10, 563, 135, 30);
+		shortestBtn.setText("Shortest Path");
+		add(shortestBtn);
+
+		connectBtn = new JButton();
+		connectBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// change button name to disconnect
+				
+				if (connectBtn.getText().equals("Disconnect")) {
+					hamiltonianBtn.setEnabled(true);
+					shortestBtn.setEnabled(true);
+					connectBtn.setEnabled(true);
+					upBtn.setEnabled(true);
+					downBtn.setEnabled(true);
+					leftBtn.setEnabled(true);
+					rightBtn.setEnabled(true);
+					connectBtn.setText("Connect To Rpi");
+					m.simRealRun.stop();
+					m.clearArena();
+				}else {
+					connectBtn.setText("Disconnect");
+					editTextArea.setText("Connecting to Rpi...\n");
+					editTextArea.setCaretPosition(editTextArea.getText().length());
+
+					m.simRealRun = new Thread(new Realrun(m, rBot, map));
+					m.simRealRun.start();
+
+					hamiltonianBtn.setEnabled(false);
+					shortestBtn.setEnabled(false);
+					upBtn.setEnabled(false);
+					downBtn.setEnabled(false);
+					leftBtn.setEnabled(false);
+					rightBtn.setEnabled(false);
+					resetBtn.setEnabled(false);
+					clearBtn.setEnabled(false);
+				}
+			}
+		});
+		connectBtn.setBounds(10, 604, 135, 30);
+		connectBtn.setText("Connect to Rpi");
+		add(connectBtn);
+
+		resetBtn = new JButton();
+		resetBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editTextArea.append("Arena Resetting!\n");
+				editTextArea.setCaretPosition(editTextArea.getText().length());
+				hamiltonianBtn.setEnabled(true);
+				shortestBtn.setEnabled(true);
+				connectBtn.setEnabled(true);
+				m.resetArena();
+				editTextArea.append("Arena Resetted!\n");
+				editTextArea.setCaretPosition(editTextArea.getText().length());
+
+				upBtn.setEnabled(true);
+				downBtn.setEnabled(true);
+				leftBtn.setEnabled(true);
+				rightBtn.setEnabled(true);
+			}
+		});
+		resetBtn.setText("Reset Arena ");
+		resetBtn.setBounds(155, 563, 110, 30);
+		add(resetBtn);
+
+		clearBtn = new JButton();
+		clearBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editTextArea.setText("Arena Cleared!\n");
+				editTextArea.append("Obstacle List Cleared!\n");
+				editTextArea.setCaretPosition(editTextArea.getText().length());
+
+				hamiltonianBtn.setEnabled(true);
+				shortestBtn.setEnabled(true);
+				connectBtn.setEnabled(true);
+				m.clearArena();
+
+				upBtn.setEnabled(true);
+				downBtn.setEnabled(true);
+				leftBtn.setEnabled(true);
+				rightBtn.setEnabled(true);
+
+			}
+		});
+		clearBtn.setText("Clear Arena ");
+		clearBtn.setBounds(155, 521, 110, 30);
+		add(clearBtn);
+
+		upBtn = new JButton();
+		upBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (rBot.isMovementValid(map, MOVEMENT.FORWARD)) {
+					rBot.move(MOVEMENT.FORWARD);
+					m.paintResult();
+				}
+			}
+		});
+		upBtn.setBounds(308, 521, 103, 30);
+		upBtn.setText("Forward");
+		add(upBtn);
+
+		downBtn = new JButton();
+		downBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (rBot.isMovementValid(map, MOVEMENT.BACKWARD)) {
+					rBot.move(MOVEMENT.BACKWARD);
+					m.paintResult();
+				}
+			}
+		});
+		downBtn.setBounds(308, 604, 103, 30);
+		downBtn.setText("Reverse");
+		add(downBtn);
+
+		leftBtn = new JButton();
+		leftBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (rBot.isMovementValid(map, MOVEMENT.LEFT)) {
+					rBot.turn(MOVEMENT.LEFT);
+					m.paintResult();
+				}
+			}
+		});
+		leftBtn.setBounds(293, 563, 71, 30);
+		leftBtn.setText("Left");
+		add(leftBtn);
+
+		rightBtn = new JButton();
+		rightBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (rBot.isMovementValid(map, MOVEMENT.RIGHT)) {
+					rBot.turn(MOVEMENT.RIGHT);
+					m.paintResult();
+				}
+			}
+		});
+		rightBtn.setBounds(369, 563, 71, 30);
+		rightBtn.setText("Right");
+		add(rightBtn);
+
+		scroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		editTextArea = new JTextArea();
+		editTextArea.setFont(new Font("Monospaced", Font.PLAIN, 15));
+		editTextArea.setLineWrap(true);
+		editTextArea.setEditable(false);
+		scroll.setViewportView(editTextArea);
+		scroll.setBounds(0, 10, 450, 500);
+		add(scroll);
+		editTextArea.setText("Instructions: Right-click on the grid to add\nobstacles.\n");
+
+		JSeparator separator = new JSeparator();
+		separator.setOrientation(SwingConstants.VERTICAL);
+		separator.setBounds(275, 521, 8, 113);
+		add(separator);
+
 	}
-	
-	
+
 }

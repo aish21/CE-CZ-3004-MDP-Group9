@@ -39,27 +39,47 @@ public class Realrun implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
+			
+//			//=====================RPI===================================================
+//			
+//			// ==================== Establish connection to RPI =========================
+//			establishCommsToRPI();
+//			// checkandPlotRobot();
+//			//checkandPlotOBTest();
+//			
+//			// ==================== Waiting for Obstacles =========================
+//			int obCount = 1;
+//			do {
+//				obCount = checkandPlotOB();
+//				displayToUI();
+//			} while (obCount != 0);
+//			displayToUI();
+//			
+//			// ==================== Astar and Nearest Neighbour Algorithm =========================
+//			mGui.displayMsgToUI("Initiating Astar and Nearest Neighbour\n Algorithm");
+//			mGui.displayMsgToUI("Starting Fastest Path..");
+//			MainConnect mc = new MainConnect();
+//			System.out.println(mGui.getObsList());
+//			String path = mc.fullPath(mGui);
+//			if(path.charAt(path.length()-1) == ',') {
+//				path = path.substring(0,path.length()-1);
+//			}
+//			sendMsg("FP,"+path);
+//			waitForFastestPath(); // Waiting for fastest path command
+//			
+//			//TODO substring of path
+//            //sendMsg(sendMsg("FP,"+path));
+//			// ====================  =========================
+			
+			//=========================Testing====================================================
 			initialiseTimer();
-			establishCommsToRPI();
-			// checkandPlotRobot();
-			//checkandPlotOBTest();
-			int obCount = 1;
-			do {
-				obCount = checkandPlotOB();
-				displayToUI();
-			} while (obCount != 0);
-			displayToUI();
-			mGui.displayMsgToUI("Initiating Astar and Nearest Neighbour Algorithm");
-			mGui.displayMsgToUI("Starting Fastest Path..");
-			MainConnect mc = new MainConnect();
-			System.out.println(mGui.getObsList());
-			String test = mc.fullPath(mGui);// "HPW5E1"
-			if(test.charAt(test.length()-1) == ',') {
-				test = test.substring(0,test.length()-1);
-			}
-			sendMsg("FP,"+test);
-			printFastestPathMovement(test);
-			mGui.displayMsgToUI(test);
+            mGui.displayMsgToUI("Real run test Thread Started");
+            checkandPlotOBTest();
+            //ArrayList<Cell> cellsInPath = fastestPath.findAllWPEndPaths(exploreMap);
+            //String moveString = convertCellsToMovements(cellsInPath);
+            MainConnect mc = new MainConnect();
+            String test = mc.fullPath(mGui);//"HPW5E1"            
+            printFastestPathMovement(test);
 			this.mTimer.cancel();
 			this.mTimer.purge();
 		} catch (
