@@ -59,11 +59,11 @@ public class MainConnect {
 			//AStar astar;
 			
 			tarList = NearestNeighbour.calculateDistance(tarList, r);
-			q.add(m.targetToObstacle(tarList.get(0)));
 			
 			
 			// get nearest Neighbour
 			ArrayList<Cell> nnList = NearestNeighbour.findNearestNeighbour(tarList);
+			q.add(m.targetToObstacle(nnList.get(0)));
 			System.out.println("nnList is: " + nnList);
 			int k = 1;
 			//if(i==0) {

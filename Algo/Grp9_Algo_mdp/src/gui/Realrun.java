@@ -3,6 +3,9 @@ package gui;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Arrays; // just for print remove it after test
+import java.util.LinkedList;
+import java.util.Queue;
 
 import algorithm.MainConnect;
 import communication.TCPComm2;
@@ -73,18 +76,47 @@ public class Realrun implements Runnable {
 			
 			//=========================Testing====================================================
 			initialiseTimer();
+			establishCommsToRPI();
             mGui.displayMsgToUI("Real run test Thread Started");
-            checkandPlotOBTest();
+            int obCount = 1;
+            do {
+            	obCount = checkandPlotOB();
+            	displayToUI();
+            }while(obCount!=0);
+            displayToUI();
+            //checkandPlotOBTest();
             //ArrayList<Cell> cellsInPath = fastestPath.findAllWPEndPaths(exploreMap);
             //String moveString = convertCellsToMovements(cellsInPath);
             MainConnect mc = new MainConnect();
-            String test = mc.fullPath(mGui);//"HPW5E1"            
-            printFastestPathMovement(test);
+            String test = mc.fullPath(mGui);//"HPW5E1"    
+            Queue<Cell> obsQueueToSend = new LinkedList<Cell>();
+            obsQueueToSend = mGui.getObstacleQueue();
+            String[] arr = test.split(",V,");
+            for(int i=arr.length - 1; i>=0; i--) {
+            	if(i!=0) {
+            		arr[i] = "V,"+arr[i];
+            	}
+				Cell currObs = obsQueueToSend.poll();            
+            	sendMsg("FP," + currObs.getCol() + "," + currObs.getRow() + "," + arr[i]);
+            	printFastestPathMovement(arr[i]);
+//            	String rmsg = "";
+//        		// OB,[1,1,1] [row ,col, obDir]
+//        		mGui.displayMsgToUI("Waiting for rpi to scan...");
+//        		rmsg = readMsg();        
+//        		mGui.displayMsgToUI("command received to start:" + rmsg);
+            	int senseMsg = 1;
+            	do {	
+            		senseMsg = checkForSendingNextInst();
+            	}while (senseMsg != 0);
+            }
+//            if(test.charAt(test.length()-1) == ',') {
+//            	test = test.substring(0, test.length()-1);
+//            }
+            //sendMsg("FP,"+test);
+            //printFastestPathMovement(test);
 			this.mTimer.cancel();
 			this.mTimer.purge();
-		} catch (
-
-		InterruptedException e) {
+		} catch (InterruptedException e) {
 			System.out.println("RealRun thread InterruptedException" + e.getMessage());
 			e.printStackTrace();
 			tcpObj.closeConnection();
@@ -93,7 +125,6 @@ public class Realrun implements Runnable {
 			System.out.println("RealRun thread exception.." + e.getMessage());
 			e.printStackTrace();
 			tcpObj.closeConnection();
-
 		}
 		mGui.displayMsgToUI("RealRun Thread Ended Successfully!");
 
@@ -362,6 +393,17 @@ public class Realrun implements Runnable {
 			}
 			
 		}
+		return 1;
+	}
+	
+	public int checkForSendingNextInst() throws Exception{
+		String rmsg = "";
+		mGui.displayMsgToUI("Waiting for rpi to scan...");
+		rmsg = readMsg();
+		
+		if (rmsg.equals("FP,V\n")) {
+			return 0;
+		}	
 		return 1;
 	}
 

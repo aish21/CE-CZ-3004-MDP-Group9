@@ -113,10 +113,10 @@ public class AStar {
 					
 					//turning right
 					if(current.getRow()+4 < this.mapArena.getMap().length) {
-						if(current.getCol()+4 < this.mapArena.getMap().length) {
+						if(current.getCol()+5 < this.mapArena.getMap().length) {
 							boolean noObst = true;
 							for(int i=2; i<5; i++) {
-								for(int j=-1; j<5; j++) {
+								for(int j=-1; j<6; j++) {
 									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].isObstacle()) {
 										noObst = false;
 									}
@@ -131,10 +131,10 @@ public class AStar {
 					
 					//turning left
 					if(current.getRow()+4 < this.mapArena.getMap().length) {
-						if(current.getCol()-4 >=0) {
+						if(current.getCol()-5 >=0) {
 							boolean noObst = true;
 							for(int i=2; i<5; i++) {
-								for(int j=-4; j<2; j++) {
+								for(int j=-5; j<2; j++) {
 									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].isObstacle()) {
 										noObst = false;
 									}
@@ -179,10 +179,10 @@ public class AStar {
 					
 					//turning left
 					if(current.getRow()-4 >= 0) {
-						if(current.getCol()+4 < this.mapArena.getMap().length) {
+						if(current.getCol()+5 < this.mapArena.getMap().length) {
 							boolean noObst = true;
 							for(int i=-4; i<-1; i++) {
-								for(int j=-1; j<5; j++) {
+								for(int j=-1; j<6; j++) {
 									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].isObstacle()) {
 										noObst = false;
 									}
@@ -197,10 +197,10 @@ public class AStar {
 					
 					//turning right
 					if(current.getRow()-4 >= 0) {
-						if(current.getCol()-4 >=0) {
+						if(current.getCol()-5 >=0) {
 							boolean noObst = true;
 							for(int i=-4; i<-1; i++) {
-								for(int j=-4; j<2; j++) {
+								for(int j=-5; j<2; j++) {
 									if(this.mapArena.getMap()[current.getRow()+i][current.getCol()+j].isObstacle()) {
 										noObst = false;
 									}
@@ -245,10 +245,10 @@ public class AStar {
 					
 					//turning left
 					if(current.getCol()+4 < this.mapArena.getMap().length) {
-						if(current.getRow()+4 < this.mapArena.getMap().length) {
+						if(current.getRow()+5 < this.mapArena.getMap().length) {
 							boolean noObst = true;
 							for(int i=2; i<5; i++) {
-								for(int j=-1; j<5; j++) {
+								for(int j=-1; j<6; j++) {
 									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].isObstacle()) {
 										noObst = false;
 									}
@@ -263,10 +263,10 @@ public class AStar {
 					
 					//turning right
 					if(current.getCol()+4 < this.mapArena.getMap().length) {
-						if(current.getRow()-4 >=0) {
+						if(current.getRow()-5 >=0) {
 							boolean noObst = true;
 							for(int i=2; i<5; i++) {
-								for(int j=-4; j<2; j++) {
+								for(int j=-5; j<2; j++) {
 									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].isObstacle()) {
 										noObst = false;
 									}
@@ -312,10 +312,10 @@ public class AStar {
 					
 					//turning right
 					if(current.getCol()-4 >= 0) {
-						if(current.getRow()+4 < this.mapArena.getMap().length) {
+						if(current.getRow()+5 < this.mapArena.getMap().length) {
 							boolean noObst = true;
 							for(int i=-4; i<-1; i++) {
-								for(int j=-1; j<5; j++) {
+								for(int j=-1; j<6; j++) {
 									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].isObstacle()) {
 										
 										noObst = false;
@@ -331,10 +331,10 @@ public class AStar {
 					
 					//turning left
 					if(current.getCol()-4 >= 0) {
-						if(current.getRow()-4 >=0) {
+						if(current.getRow()-5 >=0) {
 							boolean noObst = true;
 							for(int i=-4; i<-1; i++) {
-								for(int j=-4; j<2; j++) {
+								for(int j=-5; j<2; j++) {
 									if(this.mapArena.getMap()[current.getRow()+j][current.getCol()+i].isObstacle()) {
 										noObst = false;
 									}
