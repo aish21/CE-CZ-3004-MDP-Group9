@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.LinkedList;
 
 import constant.Constants;
 import constant.Constants.DIRECTION;
@@ -63,7 +64,7 @@ public class main extends JFrame {
 		initLayout();
 		paintResult();
 		setObsList(new ArrayList<Cell>());
-		setObstacleQueue(new PriorityQueue<Cell>());
+		setObstacleQueue(new LinkedList<Cell>());
 
 	}
 

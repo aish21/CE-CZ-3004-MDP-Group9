@@ -89,15 +89,17 @@ public class Realrun implements Runnable {
             //String moveString = convertCellsToMovements(cellsInPath);
             MainConnect mc = new MainConnect();
             String test = mc.fullPath(mGui);//"HPW5E1"    
-            Queue<Cell> obsQueueToSend = new LinkedList<Cell>();
-            obsQueueToSend = mGui.getObstacleQueue();
+            //Queue<Cell> obsQueueToSend = new LinkedList<Cell>();
+            //obsQueueToSend = mGui.getObstacleQueue();
             String[] arr = test.split(",V,");
+            //System.out.println(obsQueueToSend.toString());
             for(int i=arr.length - 1; i>=0; i--) {
             	if(i!=0) {
             		arr[i] = "V,"+arr[i];
             	}
-				Cell currObs = obsQueueToSend.poll();            
-            	sendMsg("FP," + currObs.getCol() + "," + currObs.getRow() + "," + arr[i]);
+				//Cell currObs = obsQueueToSend.poll();     
+            	//sendMsg("FP," + currObs.getCol() + "," + currObs.getRow() + "," + arr[i]);
+            	System.out.println(arr[i]);
             	printFastestPathMovement(arr[i]);
 //            	String rmsg = "";
 //        		// OB,[1,1,1] [row ,col, obDir]
@@ -146,9 +148,11 @@ public class Realrun implements Runnable {
 			for (int i = arr.length - 1; i >= 0; i--) {
 				switch (arr[i]) {
 				case "V":
+					System.out.println(mGui.getObstacleQueue().toString());
 					Cell c = mGui.getObstacleQueue().poll();
 					c.setVisited(true);
 					map.getMap()[c.getRow()][c.getCol()] = c;
+					sendMsg("FP," + c.getCol() + "," + c.getRow() + "," + moveString);
 					mGui.displayMsgToUI("Obstacle[" + c.getCol() + "][" + c.getRow() + "] Scanned!");
 					displayToUI();
 					break;

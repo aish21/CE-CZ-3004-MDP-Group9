@@ -18,7 +18,7 @@ public class MainConnect {
 		Robot r = new Robot(1, 1, DIRECTION.NORTH);
 		System.out.println(mGui.getObsList().toString());
 		Queue<Cell> q = mGui.getObstacleQueue();
-		
+		System.out.println("line 21: " + q.toString());
 		m.setMapObstacle(mGui.getObsList());
 		for(int i=0; i<mGui.getObsList().size(); i++) {
 			m.setMapTargetCell(mGui.getObsList().get(i).getRow(), mGui.getObsList().get(i).getCol(), mGui.getObsList().get(i).getObsDir());
@@ -64,6 +64,8 @@ public class MainConnect {
 			// get nearest Neighbour
 			ArrayList<Cell> nnList = NearestNeighbour.findNearestNeighbour(tarList);
 			q.add(m.targetToObstacle(nnList.get(0)));
+			System.out.println("line67: " + m.targetToObstacle(nnList.get(0)).toString());
+			System.out.println("line68: "+ q.toString());
 			System.out.println("nnList is: " + nnList);
 			int k = 1;
 			//if(i==0) {
@@ -130,11 +132,13 @@ public class MainConnect {
 			r.setPosCol(nnList.get(0).getCol());
 			r.setCurrDir(r.intDirToConstantDir(nnList.get(0).getHeadDir()));
 			tarList.remove(nnList.get(0));
+			System.out.println("line 135: " + q.toString());
 		}
 		System.out.println(movementDir);
 		if(movementDir.charAt(movementDir.length()-1) == ',') {
 			movementDir = movementDir.substring(0,movementDir.length()-1);
 		}
+		System.out.println("line 138: " + q.toString());
 		mGui.setObstacleQueue(q);
 		return movementDir;
 	}
