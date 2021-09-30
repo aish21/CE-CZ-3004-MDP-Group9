@@ -122,6 +122,9 @@ public class AStar {
 									}
 								}		
 							}
+							if(this.mapArena.getMap()[current.getRow()+1][current.getCol()+2].isObstacle()) {
+								noObst = false;
+							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 3);
@@ -140,6 +143,9 @@ public class AStar {
 									}
 									
 								}		
+							}
+							if(this.mapArena.getMap()[current.getRow()+1][current.getCol()-2].isObstacle()) {
+								noObst = false;
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
@@ -188,6 +194,9 @@ public class AStar {
 									}
 								}		
 							}
+							if(this.mapArena.getMap()[current.getRow()-1][current.getCol()+2].isObstacle()) {
+								noObst = false;
+							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()+3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 3);
@@ -206,6 +215,9 @@ public class AStar {
 									}
 									
 								}		
+							}
+							if(this.mapArena.getMap()[current.getRow()-1][current.getCol()-2].isObstacle()) {
+								noObst = false;
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()-3];
@@ -254,6 +266,9 @@ public class AStar {
 									}
 								}		
 							}
+							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()+1].isObstacle()) {
+								noObst = false;
+							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 1);
@@ -272,6 +287,9 @@ public class AStar {
 									}
 									
 								}		
+							}
+							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()+1].isObstacle()) {
+								noObst = false;
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()+3];
@@ -322,6 +340,9 @@ public class AStar {
 									}
 								}		
 							}
+							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()-1].isObstacle()) {
+								noObst = false;
+							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 1);
@@ -340,6 +361,9 @@ public class AStar {
 									}
 									
 								}		
+							}
+							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()-1].isObstacle()) {
+								noObst = false;
 							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()-3];
