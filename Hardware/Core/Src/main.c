@@ -806,7 +806,7 @@ void moveForward1()
 {
 		//speedA = 800;
 		//speedB = 600;
-		speedA = 2500;
+		speedA = 2450;
 		speedB = 2000;
 	  if (speedA == speedB){
 	    dummy += 1;
@@ -926,9 +926,9 @@ sentUART(char sw1)
 void motors(void *argument)
 {
 	//for turning right
-	int calR = 90*2200/90;
+	int calR = 90*1925/90;
 	//for turning left
-	int calL = 90*2500/90;
+	int calL = 90*2450/90;
 
   	/* USER CODE BEGIN motors */
 	//for motor var
@@ -989,7 +989,7 @@ void motors(void *argument)
 					moveForward1();
 					//30cm
 					osDelay(1200);
-					stop();
+					//stop();
 					i++;
 					break;
 					//end for faster car track
@@ -1087,13 +1087,13 @@ void motors(void *argument)
 					//for turning right
 					//set moveForward
 					moveForward1();
-					osDelay(225);
+					osDelay(100);
 					stop();
 					osDelay(500);
 
 					//for turning Right 90
 					turnRight();
-					osDelay(500);
+					osDelay(200);
 					moveForward1();
 					osDelay(calR);
 					stop();
@@ -1102,7 +1102,7 @@ void motors(void *argument)
 
 					//setMovebackword
 					moveBackword1();
-					osDelay(500);
+					osDelay(350);
 					stop();
 
 					sentUART('E');
@@ -1115,7 +1115,7 @@ void motors(void *argument)
 					//for turning left
 					//set moveForward
 					moveForward1();
-					osDelay(225);
+					osDelay(100);
 					stop();
 					osDelay(500);
 
@@ -1130,7 +1130,7 @@ void motors(void *argument)
 
 					//setMovebackword
 					moveBackword1();
-					osDelay(500);
+					osDelay(400);
 					stop();
 					sentUART('Q');
 					i++;
