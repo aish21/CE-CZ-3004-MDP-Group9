@@ -10,6 +10,13 @@ import entity.Cell;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Lau Zhen Jie
+ * @author Goh Cheng Guan, Clive
+ * @version 1.0
+ * @since 2020-10-19
+ */
+
 public class AStar {
 	private Map mapArena; 
 	private PriorityQueue<Cell> openCells; // set of nodes to be evaluated
@@ -17,6 +24,16 @@ public class AStar {
 	private int targetRow, targetCol, targetHead;
 	private Robot robot;
 	
+	
+	/**
+	 * Default constructor
+	 * 
+	 * @param m map
+	 * @param r robot
+	 * @param targetRow
+	 * @param targetCol
+	 * @param targetHead
+	 */
 	public AStar(Map m, Robot r, int targetRow, int targetCol, int targetHead) { 
 		this.mapArena = m;
 		this.robot = r;
@@ -39,6 +56,14 @@ public class AStar {
 		this.mapArena.getMap()[r.getPosRow()][r.getPosCol()].setHeadDir(r.ToDirectionHead(r.getCurrDir()));	
 	}
 	
+	/**
+	 * This method update final cost
+	 * 
+	 * @param current
+	 * @param tar
+	 * @param cost
+	 * @param tarHead
+	 */
 	public void updateCostIfNeeded(Cell current, Cell tar, double cost, int tarHead) {
 		if(tar==null || closedCells[tar.getRow()][tar.getCol()]) {
 			return;
@@ -57,6 +82,9 @@ public class AStar {
 		}
 	}
 	
+	/**
+	 * this method processes A Star Algorithm
+	 */
 	public void process() {
 		//we add the start location to open list
 		openCells.add(this.mapArena.getMap()[this.robot.getPosRow()][this.robot.getPosCol()]);
@@ -377,6 +405,10 @@ public class AStar {
 		}
 	}
 	
+	
+	/**
+	 * this method returns A Star Algorithm solution as a string
+	 */
 	public String displaySolution() {
 		String movementStr = "";
 		String instructionStr = "";
@@ -493,6 +525,15 @@ public class AStar {
 		return instructionStr;
 	}
 	
+	
+	/**
+	 * @param parentHeadDir
+	 * @param currRow
+	 * @param currCol
+	 * @param parentRow
+	 * @param parentCol
+	 * @return String
+	 */
 	public String getInstructionStr(int parentHeadDir, int currRow, int currCol, int parentRow, int parentCol) {
 		String instrDir = null;
 		switch (parentHeadDir){
