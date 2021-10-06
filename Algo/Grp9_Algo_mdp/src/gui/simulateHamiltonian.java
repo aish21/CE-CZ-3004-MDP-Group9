@@ -59,7 +59,8 @@ public class simulateHamiltonian implements Runnable {
             //ArrayList<Cell> cellsInPath = fastestPath.findAllWPEndPaths(exploreMap);
             //String moveString = convertCellsToMovements(cellsInPath);
             MainConnect mc = new MainConnect();
-            String test = mc.fullPath(mGui);//"HPW5E1"            
+            System.out.println("here working");
+            String test = mc.fullPath(mGui);//"HPW5E1"    
             printFastestPathMovement(test);
             //printFastestPathMovement(moveString);
 
@@ -320,6 +321,7 @@ public class simulateHamiltonian implements Runnable {
            for (int i=arr.length-1; i >= 0; i--) {
                switch (arr[i]) {
                	   case "V":
+               		   System.out.println("simulHam:" + mGui.getObstacleQueue().toString());
                		   Cell c = mGui.getObstacleQueue().poll();
                		   c.setVisited(true);
                		   map.getMap()[c.getRow()][c.getCol()] = c;

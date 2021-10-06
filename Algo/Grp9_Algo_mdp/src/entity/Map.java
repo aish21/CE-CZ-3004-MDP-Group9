@@ -54,31 +54,36 @@ public class Map {
 		this.robPosCol = startCol;
 	}
 
-	public void setMapTargetCell(int obsRow, int obsCol, int dir) { // 1=Top, 2=Bottom, 3=Left, 4=Right
+	public Cell setMapTargetCell(int obsRow, int obsCol, int dir) { // 1=Top, 2=Bottom, 3=Left, 4=Right
+		Cell newCell;
 		this.map[obsRow][obsCol].setObstacle(dir);
 		switch (dir) {
 		case 1:
-
+			newCell = new Cell(obsRow + 4, obsCol);
+			newCell.setHeadDir(2);
 			this.map[obsRow + 4][obsCol].setTargetCell(true);
 			this.map[obsRow + 4][obsCol].setHeadDir(2);
-
-			break;
+			return newCell;
 		case 2:
-
+			newCell = new Cell(obsRow - 4, obsCol);
+			newCell.setHeadDir(1);
 			this.map[obsRow - 4][obsCol].setTargetCell(true);
 			this.map[obsRow - 4][obsCol].setHeadDir(1);
-			break;
+			return newCell;
 		case 3:
-
+			newCell = new Cell(obsRow, obsCol + 4);
+			newCell.setHeadDir(4);
 			this.map[obsRow][obsCol + 4].setTargetCell(true);
 			this.map[obsRow][obsCol + 4].setHeadDir(4);
-			break;
+			return newCell;
 		case 4:
-
+			newCell = new Cell(obsRow, obsCol - 4);
+			newCell.setHeadDir(3);
 			this.map[obsRow][obsCol - 4].setTargetCell(true);
 			this.map[obsRow][obsCol - 4].setHeadDir(3);
-			break;
+			return newCell;
 		}
+		return null;
 	}
 	
 	public Cell targetToObstacle(Cell c) {

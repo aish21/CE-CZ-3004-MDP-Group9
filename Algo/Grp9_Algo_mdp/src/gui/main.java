@@ -379,7 +379,7 @@ public class main extends JFrame {
      */
     public float getUserSpeed() {
         float speed = 1;
-        speed = 10;
+        speed = 5;
         return speed;
     }
 	public ArrayList<Cell> getObsList() {

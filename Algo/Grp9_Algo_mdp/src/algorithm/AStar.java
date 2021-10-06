@@ -405,7 +405,11 @@ public class AStar {
 			int finalActualHead = -1;
 			for(int i=0; i<this.mapArena.getMap().length; i++) {
 				for(int j=0; j<this.mapArena.getMap()[i].length; j++) {
-					if(i == this.robot.getPosRow() && j == this.robot.getPosCol())
+					if(i == this.robot.getPosRow() && j == this.robot.getPosCol() && i==this.targetRow && j == this.targetCol) {
+						System.out.print("wow "); //Source Cell
+						finalActualHead = this.mapArena.getMap()[i][j].getHeadDir();
+					}
+					else if(i == this.robot.getPosRow() && j == this.robot.getPosCol())
 						System.out.print("SO  "); //Source Cell
 					else if(i==this.targetRow && j == this.targetCol) {
 						System.out.print("DE  "); //destination Cell
@@ -418,6 +422,7 @@ public class AStar {
 				}
 				System.out.println();
 			}
+			System.out.println("astar line 421, head and exp Head: "+ finalActualHead +" , "+finalExpectedHead);
 			if(finalActualHead != finalExpectedHead) {
 				switch (finalActualHead) {
 				case 1: 
@@ -484,7 +489,7 @@ public class AStar {
 //		else {
 //			movementStr = "";
 //		}
-		//System.out.println(instructionStr);
+		System.out.println("astar line 492: " + instructionStr);
 		return instructionStr;
 	}
 	
