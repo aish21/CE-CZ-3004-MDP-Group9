@@ -10,9 +10,20 @@ import entity.Map;
 import entity.Robot;
 import gui.main;
 
+/**
+ * @author Lau Zhen Jie
+ * @author Goh Cheng Guan, Clive
+ * @version 1.0
+ * @since 2020-10-19
+ */
+
 public class MainConnect {
 	//private char[] fullPath;
 
+	/**
+	 * @param mGui main
+	 * @return full path of the astar algorithm with nearest neighbor
+	 */
 	public String fullPath(main mGui) {
 		Map m = new Map();
 		Robot r = new Robot(1, 1, DIRECTION.NORTH);
