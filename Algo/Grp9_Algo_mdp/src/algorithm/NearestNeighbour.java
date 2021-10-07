@@ -6,9 +6,23 @@ import entity.Cell;
 import java.util.*;
 import java.lang.Math;
 
+
+/**
+ * @author Goh Cheng Guan, Clive
+ * @author Lau Zhen Jie
+ * @version 1.0
+ * @since 2020-10-19
+ */
+
+
 public class NearestNeighbour {
 
-	// trying to implement
+	
+	/**
+	 * @param list of obstacles
+	 * @return return sorted list of obstacles based on their nearest neighbour
+	 */
+	
 	public static ArrayList<Cell> findNearestNeighbour(List<Cell> obstacles) {
 		ArrayList<Cell> results = new ArrayList<Cell>();
 		results.addAll(obstacles);
@@ -16,6 +30,11 @@ public class NearestNeighbour {
 		return results;
 	}
 
+	/**
+	 * @param list of targets
+	 * @param r robot
+	 * @return updated list of target with their heuristic cost
+	 */
 	public static List<Cell> calculateDistance(List<Cell> targets, Robot r) {
 		//System.out.println("-----nearestNeighbour.calculateDist----");
 		for (int i = 0; i < targets.size(); i++) {

@@ -3,12 +3,12 @@ package communication;
 import java.util.Scanner;
 
 /**
- * @author Nicholas Yeo Ming Jie
- * @author Neo Zhao Wei
- * @author David Loh Shun Hao
+ * @author Goh Cheng Guan, Clive
+ * @author Lau Zhen Jie
  * @version 1.0
- * @since 2020-10-27
+ * @since 2020-10-19
  */
+
 public class Client {
 
     /**
