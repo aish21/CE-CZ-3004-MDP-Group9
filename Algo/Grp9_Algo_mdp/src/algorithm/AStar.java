@@ -422,7 +422,6 @@ public class AStar {
 				}
 				System.out.println();
 			}
-			System.out.println("astar line 421, head and exp Head: "+ finalActualHead +" , "+finalExpectedHead);
 			if(finalActualHead != finalExpectedHead) {
 				switch (finalActualHead) {
 				case 1: 
@@ -486,10 +485,6 @@ public class AStar {
 			}
 			System.out.println();
 		}
-//		else {
-//			movementStr = "";
-//		}
-		System.out.println("astar line 492: " + instructionStr);
 		return instructionStr;
 	}
 	

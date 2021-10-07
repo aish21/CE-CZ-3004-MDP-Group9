@@ -26,7 +26,6 @@ public class MainConnect {
 		}
 		
 		
-		System.out.println("Line hahaha" + tarList.toString());
 //		for (int i=0; i<m.getMap().length; i++) {
 //			for (int j=0; j<m.getMap()[i].length; j++) {
 //				if(m.getMap()[i][j].isTargetCell()) {
@@ -46,7 +45,7 @@ public class MainConnect {
 			
 			// get nearest Neighbour
 			ArrayList<Cell> nnList = NearestNeighbour.findNearestNeighbour(tarList);
-			q.add(m.targetToObstacle(nnList.get(0)));
+			
 			System.out.println("nnList is: " + nnList);
 			int k = 1;
 			AStar astar = new AStar(m, r, nnList.get(0).getRow(), nnList.get(0).getCol(), nnList.get(0).getHeadDir());
@@ -57,6 +56,9 @@ public class MainConnect {
 			while(currMoveDir == "") {
 				DIRECTION rStartHeadDir = r.getCurrDir();
 				String turnDir = "";
+				if(k>2) {
+					break;
+				}
 				switch(rStartHeadDir) {
 				case NORTH:
 					if(k == 1) {
@@ -102,20 +104,27 @@ public class MainConnect {
 				astar = new AStar(m, r, nnList.get(0).getRow(), nnList.get(0).getCol(), nnList.get(0).getHeadDir());
 				astar.process();
 				currMoveDir = astar.displaySolution() + turnDir;
+				if(currMoveDir.length()<=2) {
+					r.setCurrDir(rStartHeadDir);
+					currMoveDir = "";
+				}
 				k += 1;
-			}	
-			movementDir =  "V," + currMoveDir + "," + movementDir;
-			r.setPosRow(nnList.get(0).getRow());
-			r.setPosCol(nnList.get(0).getCol());
-			r.setCurrDir(r.intDirToConstantDir(nnList.get(0).getHeadDir()));
-			System.out.println("Line 111 MC");
+			}
+			if(currMoveDir != "") {
+				movementDir =  "V," + currMoveDir + "," + movementDir;
+				q.add(m.targetToObstacle(nnList.get(0)));
+				r.setPosRow(nnList.get(0).getRow());
+				r.setPosCol(nnList.get(0).getCol());
+				r.setCurrDir(r.intDirToConstantDir(nnList.get(0).getHeadDir()));
+			}
+			
+			
 			if(nnList.size() > 1) {
 				for(int p=0; p<nnList.size()-1; p++) {
 					if(nnList.get(p).getRow() != nnList.get(p+1).getRow() || nnList.get(p).getCol() != nnList.get(p+1).getCol()) {
 						break;
 					}
 					if(nnList.get(p).getRow() == nnList.get(p+1).getRow() && nnList.get(p).getCol() == nnList.get(p+1).getCol()) {
-						System.out.println("line 112 MC enter if");
 						switch(nnList.get(p).getHeadDir()) {
 						case 1:
 							if(nnList.get(p+1).getHeadDir() == 2) {
@@ -163,22 +172,20 @@ public class MainConnect {
 							break;
 						}
 						i ++;
-						System.out.println("MC line 160 i is" + i);
 						r.setCurrDir(r.intDirToConstantDir(nnList.get(p+1).getHeadDir()));
 						q.add(m.targetToObstacle(nnList.get(p+1)));
 						tarList.remove(nnList.get(p+1));
 					}
 				}
 			}	
-			System.out.println("MC line 167 "+ tarList.toString());
 			tarList.remove(nnList.get(0));
 			
 		}
 		
-		System.out.println(movementDir);
 		if(movementDir.charAt(movementDir.length()-1) == ',') {
 			movementDir = movementDir.substring(0,movementDir.length()-1);
 		}
+		System.out.println(movementDir);
 		mGui.setObstacleQueue(q);
 		return movementDir;
 	}
