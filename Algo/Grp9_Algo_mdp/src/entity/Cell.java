@@ -1,7 +1,12 @@
 package entity;
 
 import constant.Constants;
-
+/**
+ * @author Goh Cheng Guan, Clive
+ * @author Lau Zhen Jie
+ * @version 1.0
+ * @since 2021-9-15
+ */
 public class Cell implements Comparable<Cell>, Cloneable {
 	private int row, col;
 	private Cell parent;

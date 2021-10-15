@@ -9,20 +9,17 @@ import entity.Cell;
 import entity.Map;
 import entity.Robot;
 import gui.main;
-
 /**
- * @author Lau Zhen Jie
  * @author Goh Cheng Guan, Clive
+ * @author Lau Zhen Jie
  * @version 1.0
- * @since 2020-10-19
+ * @since 2021-9-15
  */
-
 public class MainConnect {
-	//private char[] fullPath;
-
-	/**
-	 * @param mGui main
-	 * @return full path of the astar algorithm with nearest neighbor
+	/*
+	 *This method  returns the full path for the main UI
+	 * @param mGui The main GUI
+	 * @return
 	 */
 	public String fullPath(main mGui) {
 		Map m = new Map();
@@ -35,27 +32,24 @@ public class MainConnect {
 			Cell c1 = m.setMapTargetCell(mGui.getObsList().get(i).getRow(), mGui.getObsList().get(i).getCol(), mGui.getObsList().get(i).getObsDir());
 			tarList.add(c1);
 		}
-		
-		
-//		for (int i=0; i<m.getMap().length; i++) {
-//			for (int j=0; j<m.getMap()[i].length; j++) {
-//				if(m.getMap()[i][j].isTargetCell()) {
-//					Cell c = new Cell(i, j);
-//					c.setHeadDir(m.getMap()[i][j].getHeadDir());
-//					tarList.add(c);
-//				}
-//			}
-//		}
 
 		String movementDir = "";
+		Cell tempCell = new Cell(19, 19);
+		boolean havePath = true;
+		int noPathCount = 0;
 		for(int i=0; i<mGui.getObsList().size(); i++ ) {
 			//AStar astar;
 			
 			tarList = NearestNeighbour.calculateDistance(tarList, r);
 			
-			
 			// get nearest Neighbour
 			ArrayList<Cell> nnList = NearestNeighbour.findNearestNeighbour(tarList);
+			
+			if(!havePath) {
+				tarList.add(tempCell);
+				nnList.add(tempCell);
+				havePath=true;
+			}
 			
 			System.out.println("nnList is: " + nnList);
 			int k = 1;
@@ -128,8 +122,16 @@ public class MainConnect {
 				r.setPosCol(nnList.get(0).getCol());
 				r.setCurrDir(r.intDirToConstantDir(nnList.get(0).getHeadDir()));
 			}
-			
-			
+			else {
+				if(tempCell == nnList.get(0) || noPathCount > 5) {
+					break;
+				}
+				tempCell = nnList.get(0);
+				havePath = false;
+				i--;
+				noPathCount++;
+			}
+			tarList.remove(nnList.get(0));
 			if(nnList.size() > 1) {
 				for(int p=0; p<nnList.size()-1; p++) {
 					if(nnList.get(p).getRow() != nnList.get(p+1).getRow() || nnList.get(p).getCol() != nnList.get(p+1).getCol()) {
@@ -189,7 +191,7 @@ public class MainConnect {
 					}
 				}
 			}	
-			tarList.remove(nnList.get(0));
+			
 			
 		}
 		
@@ -201,6 +203,11 @@ public class MainConnect {
 		return movementDir;
 	}
 	
+	/**
+	 * This method is used for the robot to go to the obstacles and go one round the obstacle until it get a target image (task in checklist)
+	 * @param obsPos The target obstacle's position
+	 * @return
+	 */
 	public String fullPathForCompVisArdAObs(Cell obsPos) {
 		Map m = new Map();
 		Robot r = new Robot(1, 1, DIRECTION.NORTH);

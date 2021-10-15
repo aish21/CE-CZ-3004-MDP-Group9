@@ -19,7 +19,12 @@ import javax.swing.SwingConstants;
 import constant.Constants;
 import entity.Cell;
 import entity.Map;
-
+/**
+ * @author Goh Cheng Guan, Clive
+ * @author Lau Zhen Jie
+ * @version 1.0
+ * @since 2021-9-15
+ */
 public class MapPanel extends JPanel {
 
 	private JLabel[][] cellLabels;

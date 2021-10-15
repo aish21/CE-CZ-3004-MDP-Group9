@@ -2,12 +2,11 @@ package entity;
 
 import constant.Constants.DIRECTION;
 import constant.Constants.MOVEMENT;
-
 /**
  * @author Goh Cheng Guan, Clive
  * @author Lau Zhen Jie
  * @version 1.0
- * @since 2020-09-10
+ * @since 2021-9-15
  */
 public class Robot {
 

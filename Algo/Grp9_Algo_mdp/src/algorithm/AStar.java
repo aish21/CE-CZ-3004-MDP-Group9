@@ -9,14 +9,12 @@ import entity.Cell;
 
 import java.util.ArrayList;
 import java.util.List;
-
 /**
- * @author Lau Zhen Jie
  * @author Goh Cheng Guan, Clive
+ * @author Lau Zhen Jie
  * @version 1.0
- * @since 2020-10-19
+ * @since 2021-9-15
  */
-
 public class AStar {
 	private Map mapArena; 
 	private PriorityQueue<Cell> openCells; // set of nodes to be evaluated
@@ -24,16 +22,6 @@ public class AStar {
 	private int targetRow, targetCol, targetHead;
 	private Robot robot;
 	
-	
-	/**
-	 * Default constructor
-	 * 
-	 * @param m map
-	 * @param r robot
-	 * @param targetRow
-	 * @param targetCol
-	 * @param targetHead
-	 */
 	public AStar(Map m, Robot r, int targetRow, int targetCol, int targetHead) { 
 		this.mapArena = m;
 		this.robot = r;
@@ -57,12 +45,12 @@ public class AStar {
 	}
 	
 	/**
-	 * This method update final cost
+	 * this method will decide whether to update a cost of a cell 
 	 * 
-	 * @param current
-	 * @param tar
-	 * @param cost
-	 * @param tarHead
+	 * @param current The cell which needs to be evaluated
+	 * @param tar The target cell
+	 * @param cost The new cost of the cell which will be evaluated whether to be updated on the cell
+	 * @param tarHead The target cell's head direction
 	 */
 	public void updateCostIfNeeded(Cell current, Cell tar, double cost, int tarHead) {
 		if(tar==null || closedCells[tar.getRow()][tar.getCol()]) {
@@ -83,7 +71,7 @@ public class AStar {
 	}
 	
 	/**
-	 * this method processes A Star Algorithm
+	 * This method decides the path of the robot
 	 */
 	public void process() {
 		//we add the start location to open list
@@ -96,8 +84,6 @@ public class AStar {
 				break;
 			}
 			closedCells[current.getRow()][current.getCol()] = true;
-
-			//this part still got problem
 			if(current.equals(this.mapArena.getMap()[this.targetRow][this.targetCol]) && current.getHeadDir() == this.targetHead) {
 				return;
 			}
@@ -150,9 +136,9 @@ public class AStar {
 									}
 								}		
 							}
-							if(this.mapArena.getMap()[current.getRow()+1][current.getCol()+2].isObstacle()) {
-								noObst = false;
-							}
+//							if(this.mapArena.getMap()[current.getRow()+1][current.getCol()+2].isObstacle()) {
+//								noObst = false;
+//							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 3);
@@ -172,9 +158,9 @@ public class AStar {
 									
 								}		
 							}
-							if(this.mapArena.getMap()[current.getRow()+1][current.getCol()-2].isObstacle()) {
-								noObst = false;
-							}
+//							if(this.mapArena.getMap()[current.getRow()+1][current.getCol()-2].isObstacle()) {
+//								noObst = false;
+//							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 4);
@@ -222,9 +208,9 @@ public class AStar {
 									}
 								}		
 							}
-							if(this.mapArena.getMap()[current.getRow()-1][current.getCol()+2].isObstacle()) {
-								noObst = false;
-							}
+//							if(this.mapArena.getMap()[current.getRow()-1][current.getCol()+2].isObstacle()) {
+//								noObst = false;
+//							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()+3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 3);
@@ -244,9 +230,9 @@ public class AStar {
 									
 								}		
 							}
-							if(this.mapArena.getMap()[current.getRow()-1][current.getCol()-2].isObstacle()) {
-								noObst = false;
-							}
+//							if(this.mapArena.getMap()[current.getRow()-1][current.getCol()-2].isObstacle()) {
+//								noObst = false;
+//							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()-3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 4);
@@ -294,9 +280,9 @@ public class AStar {
 									}
 								}		
 							}
-							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()+1].isObstacle()) {
-								noObst = false;
-							}
+//							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()+1].isObstacle()) {
+//								noObst = false;
+//							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()+3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 1);
@@ -316,9 +302,9 @@ public class AStar {
 									
 								}		
 							}
-							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()+1].isObstacle()) {
-								noObst = false;
-							}
+//							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()+1].isObstacle()) {
+//								noObst = false;
+//							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()+3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 2);
@@ -368,9 +354,9 @@ public class AStar {
 									}
 								}		
 							}
-							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()-1].isObstacle()) {
-								noObst = false;
-							}
+//							if(this.mapArena.getMap()[current.getRow()+2][current.getCol()-1].isObstacle()) {
+//								noObst = false;
+//							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()+3][current.getCol()-3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 1);
@@ -390,9 +376,9 @@ public class AStar {
 									
 								}		
 							}
-							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()-1].isObstacle()) {
-								noObst = false;
-							}
+//							if(this.mapArena.getMap()[current.getRow()-2][current.getCol()-1].isObstacle()) {
+//								noObst = false;
+//							}
 							if(noObst) {
 								t = this.mapArena.getMap()[current.getRow()-3][current.getCol()-3];
 								updateCostIfNeeded(current, t, current.getFinalCost()+Constants.RIGHT_LEFT_COST, 2);
@@ -405,9 +391,8 @@ public class AStar {
 		}
 	}
 	
-	
-	/**
-	 * this method returns A Star Algorithm solution as a string
+	/*
+	 * This method will print the solution for the path and also return the path as a String of the full path
 	 */
 	public String displaySolution() {
 		String movementStr = "";
@@ -520,14 +505,14 @@ public class AStar {
 		return instructionStr;
 	}
 	
-	
 	/**
-	 * @param parentHeadDir
-	 * @param currRow
-	 * @param currCol
-	 * @param parentRow
-	 * @param parentCol
-	 * @return String
+	 * This method returns the direction for the robot to move based on current direction and next direction
+	 * @param parentHeadDir The parent cell of current cell
+	 * @param currRow The row of current cell
+	 * @param currCol The column of current cell
+	 * @param parentRow The row of the parent cell
+	 * @param parentCol The column of parent cell
+	 * @return
 	 */
 	public String getInstructionStr(int parentHeadDir, int currRow, int currCol, int parentRow, int parentCol) {
 		String instrDir = null;

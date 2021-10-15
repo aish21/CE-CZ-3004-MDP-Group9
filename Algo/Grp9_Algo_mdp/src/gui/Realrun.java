@@ -13,7 +13,6 @@ import constant.Constants.MOVEMENT;
 import entity.Cell;
 import entity.Map;
 import entity.Robot;
-
 /**
  * @author Goh Cheng Guan, Clive
  * @author Lau Zhen Jie

@@ -27,7 +27,12 @@ import constant.Constants.DIRECTION;
 import entity.Cell;
 import entity.Map;
 import entity.Robot;
-
+/**
+ * @author Goh Cheng Guan, Clive
+ * @author Lau Zhen Jie
+ * @version 1.0
+ * @since 2021-9-15
+ */
 public class main extends JFrame {
 
 	private MapPanel MapPanel;

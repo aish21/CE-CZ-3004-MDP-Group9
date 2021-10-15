@@ -5,24 +5,19 @@ import entity.Robot;
 import entity.Cell;
 import java.util.*;
 import java.lang.Math;
-
-
 /**
  * @author Goh Cheng Guan, Clive
  * @author Lau Zhen Jie
  * @version 1.0
- * @since 2020-10-19
+ * @since 2021-9-15
  */
-
-
 public class NearestNeighbour {
 
-	
 	/**
-	 * @param list of obstacles
-	 * @return return sorted list of obstacles based on their nearest neighbour
+	 * This method sorts the list of obstacles based on their distance to the current cell
+	 * @param obstacles The list of obstacles
+	 * @return
 	 */
-	
 	public static ArrayList<Cell> findNearestNeighbour(List<Cell> obstacles) {
 		ArrayList<Cell> results = new ArrayList<Cell>();
 		results.addAll(obstacles);
@@ -31,26 +26,21 @@ public class NearestNeighbour {
 	}
 
 	/**
-	 * @param list of targets
-	 * @param r robot
-	 * @return updated list of target with their heuristic cost
+	 * This method calculates the distance from current robot position to the targets' location
+	 * @param targets The list of target obstacles
+	 * @param r The robot
+	 * @return
 	 */
 	public static List<Cell> calculateDistance(List<Cell> targets, Robot r) {
-		//System.out.println("-----nearestNeighbour.calculateDist----");
 		for (int i = 0; i < targets.size(); i++) {
 			int robotRowVal = r.getPosRow();
 			int robotColVal = r.getPosCol();
 			int tarRow = targets.get(i).getRow();
 			int tarCol = targets.get(i).getCol();
 
-			// double heuristicCost =
-			// Math.sqrt(Math.pow(Math.abs(obsRow-robotRowVal),2)+Math.pow(Math.abs(obsCol-robotColVal),2));
 			double heuristicCost = Math.abs(robotRowVal - tarRow) + Math.abs(robotColVal - tarCol);
 			targets.get(i).setHeuristicCost(heuristicCost);
-//			System.out.println("Cell: [" + targets.get(i).getRow() + "][" + targets.get(i).getCol() + "] cost: "
-//					+ targets.get(i).getHeuristicCost());
 		}
-		System.out.println("-----End----");
 		return targets;
 	}
 

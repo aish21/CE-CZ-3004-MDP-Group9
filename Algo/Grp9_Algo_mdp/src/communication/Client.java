@@ -6,9 +6,8 @@ import java.util.Scanner;
  * @author Goh Cheng Guan, Clive
  * @author Lau Zhen Jie
  * @version 1.0
- * @since 2020-10-19
+ * @since 2021-9-15
  */
-
 public class Client {
 
     /**

@@ -2,7 +2,12 @@ package entity;
 
 import constant.Constants;
 import java.util.*;
-
+/**
+ * @author Goh Cheng Guan, Clive
+ * @author Lau Zhen Jie
+ * @version 1.0
+ * @since 2021-9-15
+ */
 public class Map {
 	private Cell[][] map;
 	private int robPosRow; // start pos of rob
@@ -40,20 +45,38 @@ public class Map {
 	public Cell getStartGoalPosition() {
 		return this.startGoal;
 	}
-
+	
+	/**
+	 * @return robot's row
+	 */
 	public int getStartRow() {
 		return this.robPosRow;
 	}
 
+	/**
+	 * @return robot's column
+	 */
 	public int getStartCol() {
 		return this.robPosCol;
 	}
 
+	/**
+	 * This method sets the robot's row and column
+	 * @param startRow
+	 * @param startCol
+	 */
 	public void setStartRowCol(int startRow, int startCol) {
 		this.robPosRow = startRow;
 		this.robPosCol = startCol;
 	}
 
+	/**
+	 * This method sets the target cell in the map
+	 * @param obsRow The obstacle's row
+	 * @param obsCol The obstacle's column
+	 * @param dir The obstacle's direction
+	 * @return
+	 */
 	public Cell setMapTargetCell(int obsRow, int obsCol, int dir) { // 1=Top, 2=Bottom, 3=Left, 4=Right
 		Cell newCell;
 		this.map[obsRow][obsCol].setObstacle(dir);
@@ -86,6 +109,11 @@ public class Map {
 		return null;
 	}
 	
+	/**
+	 * This method set the target cell based on the obstacle's cell
+	 * @param c The obstacle cell
+	 * @return
+	 */
 	public Cell targetToObstacle(Cell c) {
 		int row = c.getRow();
 		int col = c.getCol();
@@ -106,6 +134,10 @@ public class Map {
 		return this.map[row][col];
 	}
 
+	/**
+	 * This method set the obstacles on the map
+	 * @param obstacles The obstacle list
+	 */
 	public void setMapObstacle(ArrayList<Cell> obstacles) {
 		for (int i = 0; i < obstacles.size(); i++) {
 			try {
@@ -116,7 +148,12 @@ public class Map {
 			}
 		}
 	}
-
+	
+	/**
+	 * This method set the h cost for the cells
+	 * @param targetRow The target cell's row
+	 * @param targetCol The target cell's col
+	 */
 	public void setMapHeuristicCost(int targetRow, int targetCol) {
 		for (int i = 0; i < this.getMap().length; i++) {
 			for (int j = 0; j < this.getMap()[i].length; j++) {
@@ -127,6 +164,10 @@ public class Map {
 		}
 	}
 
+	/**
+	 * This method set the robot's position in map
+	 * @param r The robot
+	 */
 	public void setRobotMap(Robot r) {
 		// final cost
 		for (int i = r.getPosRow() - 1; i < r.getPosRow() + 2; i++) {
@@ -143,6 +184,12 @@ public class Map {
 		System.out.println("----End-------");
 	}
 
+	/**
+	 * This method set the obstacles in the map
+	 * @param row The obstacle's row
+	 * @param col The obstacle's column
+	 * @param obsDir The obstacle's direction
+	 */
 	public void setObstacle(int row, int col, int obsDir) {
 		this.getMap()[row][col].setObstacle(true);
 		this.getMap()[row][col].setObsDir(obsDir);

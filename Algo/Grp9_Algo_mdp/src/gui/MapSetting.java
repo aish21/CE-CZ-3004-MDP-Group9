@@ -31,7 +31,12 @@ import javax.swing.SwingConstants;
 import constant.Constants.MOVEMENT;
 import entity.Robot;
 import entity.Map;
-
+/**
+ * @author Goh Cheng Guan, Clive
+ * @author Lau Zhen Jie
+ * @version 1.0
+ * @since 2021-9-15
+ */
 public class MapSetting extends JPanel {
 
 	private static final long serialVersionUID = 1L;
