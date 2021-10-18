@@ -3,26 +3,11 @@ package gui;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
-import java.awt.GridLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.JComboBox;
 import javax.swing.JTextArea;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Font;
 
-import javax.swing.BoxLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
+import java.awt.Font;
 import java.awt.Dimension;
 
-import javax.swing.JLabel;
-import javax.swing.JSplitPane;
-import javax.swing.JToolBar;
-import javax.swing.JScrollBar;
-import javax.swing.JTextPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
@@ -57,7 +42,12 @@ public class MapSetting extends JPanel {
 	private float playSpeed;
 
 	/**
-	 * Create the panel.
+	 * Creates a setting panel with main buttons to execute various algorithm
+	 *
+	 * @param main m
+	 * @param Map map
+	 * @param Robot rBot
+	 * 
 	 */
 	public MapSetting(main m, Map map, Robot rBot) {
 
