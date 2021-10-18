@@ -72,12 +72,24 @@ public class main extends JFrame {
 		setObstacleQueue(new LinkedList<Cell>());
 
 	}
+	
+	
 
+	/**
+	 * This method initiate map and robot object.
+	 * Robot centre will be at (1,1) and facing north
+	 */
 	private void setMapRobotObj() {
 		initialMap = new Map();
 		rBot = new Robot(1, 1, DIRECTION.NORTH);
 	}
 
+	
+	/**
+	 * This method initiate the JFrame layout.
+	 * MapPanel and MapSetting is initiated and added to the JFrame 
+	 * 
+	 */
 	private void initLayout() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1000, 650);
@@ -198,6 +210,10 @@ public class main extends JFrame {
 		return cellColor;
 	}
 
+	
+	/**
+	 * This method reset the Arena with robot at starting point with obstacles placed.
+	 */
 	public void resetArena() {
 		// reset arena with robot at starting point & obstacles
 		rBot.setCurrDir(DIRECTION.NORTH);
@@ -266,6 +282,10 @@ public class main extends JFrame {
 		}
 	}
 
+	
+	/**
+	 * This method clear the Arena with robot at starting point with no obstacles placed.
+	 */
 	public void clearArena() {
 		// clear arena with robot at starting point with no obstacles
 		rBot.setCurrDir(DIRECTION.NORTH);
@@ -387,18 +407,41 @@ public class main extends JFrame {
         speed = 5;
         return speed;
     }
+    
+    /**
+     * This method gets the obstacle List
+     *
+     * @return ArrayList<Cell> of obstacles cell
+     */
 	public ArrayList<Cell> getObsList() {
 		return obsList;
 	}
 
+	/**
+     * This method set the obstacle List
+     *
+     * @param ArrayList<Cell> ObstacleList
+     */
 	public void setObsList(ArrayList<Cell> obsList) {
 		this.obsList = obsList;
 	}
 
+	/**
+     * This method gets the obstacle queue
+     * Obstacle queue is needed to update the obstacle object when robot visits the obstacle.
+     *
+     * @return Queue<Cell> of obstacles cell
+     */
 	public Queue<Cell> getObstacleQueue() {
 		return obstacleQueue;
 	}
 
+	/**
+     * This method set the obstacle queue
+     * Obstacle queue is needed to update the obstacle object when robot visits the obstacle.
+     *
+     * @param Queue<Cell> of obstacles cell
+     */
 	public void setObstacleQueue(Queue<Cell> obstacleQueue) {
 		this.obstacleQueue = obstacleQueue;
 	}
