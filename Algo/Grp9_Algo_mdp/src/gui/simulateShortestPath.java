@@ -9,8 +9,6 @@ import constant.Constants.MOVEMENT;
 import entity.Cell;
 import entity.Map;
 import entity.Robot;
-import gui.main;
-
 /**
  * @author Goh Cheng Guan, Clive
  * @author Lau Zhen Jie
@@ -45,6 +43,11 @@ public class simulateShortestPath implements Runnable {
         this.playSpeed = 1 / mGui.getUserSpeed();
     }
     
+    /**
+     * This method represent the starting method for this thread to execute when called from GUI.
+     * It will perform the various method required to create the path to the obstacles (nearest neighbour & a* algorithm)
+     * and move the virtual robot accordingly.
+     */
 	@Override
 	public void run() {
         try {
@@ -109,196 +112,7 @@ public class simulateShortestPath implements Runnable {
        mGui.paintResult();
        Thread.sleep((long) (playSpeed * 1000));
 
-   }    /**
-    * This method convert the list of movement into a string instruction that the physical robot
-    * could execute consecutively.
-    *
-    * @param fastestPathMovements Arraylist of movement to reach the destination
-    * @return String instruction that physical robot could execute consecutively.
-    */
-   public String parseFPMovement(ArrayList<MOVEMENT> fastestPathMovements) {
-       int i = 0;
-       int j = 0;
-       int counter = 1;
-       String result = "HP|";
-
-       while (i < fastestPathMovements.size()) {
-
-           switch (fastestPathMovements.get(i)) {
-
-               case FORWARD:
-                   result += "W";
-                   break;
-               case LEFT:
-                   result += "A";
-                   break;
-               case RIGHT:
-                   result += "D";
-                   break;
-               case BACKWARD:
-                   result += "S";
-                   break;
-               default:
-                   break;
-
-           }
-           for (j = i + 1; j < fastestPathMovements.size(); j++) {
-               if (fastestPathMovements.get(i) == fastestPathMovements.get(j)) {
-                   counter++;
-               } else {
-                   break;
-               }
-
-           }
-
-           if (fastestPathMovements.get(i) == MOVEMENT.FORWARD && counter < 10) {
-               result += "0" + Integer.toString(counter);
-           } else {
-               result += Integer.toString(counter);
-           }
-           i = j;
-           result += "|";
-           counter = 1;
-
-       }
-       System.out.println("R:" + result);
-       return result;
-   }
-   
-   /**
-    * This method convert a path(List of cell) that the robot should travel along into a string
-    * which consist of turns and movements to reach the destination.
-    *
-    * @param cellsInPath The arraylist of cell that forms a path the robot should take.
-    * @return String that consist of turns and movement to reach the destination
-    */
-   public String convertCellsToMovements(ArrayList<Cell> cellsInPath) {
-
-       Robot mBot = new Robot(this.robot.getPosRow(), this.robot.getPosCol(), this.robot.getCurrDir());
-       int currRow = mBot.getPosRow();
-       int currCol = mBot.getPosCol();
-
-       ArrayList<MOVEMENT> fastestPathMovements = new ArrayList<MOVEMENT>();
-
-       for (int i = 0; i < cellsInPath.size(); i++) {
-           int destRow = cellsInPath.get(i).getRow();
-           int destCol = cellsInPath.get(i).getCol();
-           switch (mBot.getCurrDir()) {
-               case NORTH:
-                   if (currCol == destCol) {
-                       if (currRow < destRow) {
-                           fastestPathMovements.add(MOVEMENT.FORWARD);
-                           mBot.move(MOVEMENT.FORWARD);
-                       } else if (currRow > destRow) {
-                           fastestPathMovements.add(MOVEMENT.BACKWARD);
-
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       }
-                   } else if (currRow == destRow) {
-                       if (currCol < destCol) {
-                           fastestPathMovements.add(MOVEMENT.RIGHT);
-
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       } else if (currCol > destCol) {
-                           fastestPathMovements.add(MOVEMENT.LEFT);
-
-                           mBot.turn(MOVEMENT.LEFT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       }
-                   }
-                   break;
-               case SOUTH:
-                   if (currCol == destCol) {
-                       if (currRow < destRow) {
-                           fastestPathMovements.add(MOVEMENT.BACKWARD);
-
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       } else if (currRow > destRow) {
-                           fastestPathMovements.add(MOVEMENT.FORWARD);
-                           mBot.move(MOVEMENT.FORWARD);
-                       }
-                   } else if (currRow == destRow) {
-                       if (currCol < destCol) {
-                           fastestPathMovements.add(MOVEMENT.LEFT);
-
-                           mBot.turn(MOVEMENT.LEFT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       } else if (currCol > destCol) {
-                           fastestPathMovements.add(MOVEMENT.RIGHT);
-
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       }
-                   }
-                   break;
-               case EAST:
-                   if (currCol == destCol) {
-                       if (currRow < destRow) {
-                           fastestPathMovements.add(MOVEMENT.LEFT);
-
-                           mBot.turn(MOVEMENT.LEFT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       } else if (currRow > destRow) {
-                           fastestPathMovements.add(MOVEMENT.RIGHT);
-
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       }
-                   } else if (currRow == destRow) {
-                       if (currCol < destCol) {
-                           fastestPathMovements.add(MOVEMENT.FORWARD);
-                           mBot.move(MOVEMENT.FORWARD);
-                       } else if (currCol > destCol) {
-                           fastestPathMovements.add(MOVEMENT.BACKWARD);
-
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       }
-                   }
-                   break;
-               case WEST:
-                   if (currCol == destCol) {
-                       if (currRow < destRow) {
-                           fastestPathMovements.add(MOVEMENT.RIGHT);
-
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       } else if (currRow > destRow) {
-                           fastestPathMovements.add(MOVEMENT.LEFT);
-
-                           mBot.turn(MOVEMENT.LEFT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       }
-                   } else if (currRow == destRow) {
-                       if (currCol < destCol) {
-                           fastestPathMovements.add(MOVEMENT.BACKWARD);
-
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.turn(MOVEMENT.RIGHT);
-                           mBot.move(MOVEMENT.FORWARD);
-                       } else if (currCol > destCol) {
-                           fastestPathMovements.add(MOVEMENT.FORWARD);
-                           mBot.move(MOVEMENT.FORWARD);
-                       }
-                   }
-                   break;
-           }
-
-           currRow = mBot.getPosRow();
-           currCol = mBot.getPosCol();
-
-       }
-
-
-       String result = parseFPMovement(fastestPathMovements);
-       return result;
-   }
+   }    
    
    /**
     * This method display the string movements instruction on the virutal robot to reach its destination

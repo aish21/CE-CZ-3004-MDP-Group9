@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -15,15 +14,16 @@ import javax.imageio.ImageIO;
 import algorithm.AStar;
 import algorithm.MainConnect;
 import algorithm.NearestNeighbour;
-import constant.Constants.DIRECTION;
 import constant.Constants.MOVEMENT;
 import entity.Cell;
 import entity.Map;
 import entity.Robot;
-import gui.main;
 
 /**
- * @author Goh Cheng Guan, Cliev
+ * This method is to simulate the shortest path algorithm automatically in a loop for 100 times.
+ * While running, the program will take a screen capture of the obstacles placed and save it as an image.
+ * 
+ * @author Goh Cheng Guan, Clive
  * @author Lau Zhen Jie
  * @version 1.0
  * @since 2020-10-19
@@ -126,6 +126,11 @@ public class SimulateTest implements Runnable {
 		WriteToFileFinal(pass,fail);
 	}
 	
+	/**
+	 * This method take a screenshot and save the image into image folder
+	 * @param mGUI
+	 * @param n number of the run in the simulation
+	 */
 	public void takeScreen(main mGUI, int n) {
 		BufferedImage img = new BufferedImage(mGUI.getWidth(), mGUI.getHeight(), BufferedImage.TYPE_INT_RGB);
 		mGUI.paint(img.getGraphics());
@@ -138,6 +143,13 @@ public class SimulateTest implements Runnable {
 		}
 	}
 	
+	/**
+	 * write to a textfile of the error that occur for logging and debugging
+	 * 
+	 * @param mGui
+	 * @param error
+	 * @throws IOException
+	 */
 	public void writeToErrorFile(main mGui, String error) throws IOException  {
 		String s = mGui.getObsList().toString();
 		BufferedWriter writer = new BufferedWriter(new FileWriter("error.txt",true));
@@ -147,6 +159,11 @@ public class SimulateTest implements Runnable {
 		writer.close();
 	}
 	
+	/**
+	 * write success message which contains the number of obstacle in the simulation and how many obstacles cleared.
+	 * @param mGui
+	 * @throws IOException
+	 */
 	public void writeSussToFile(main mGui) throws IOException  {
 		String s = mGui.getObsList().toString();
 		BufferedWriter writer = new BufferedWriter(new FileWriter("error.txt",true));
@@ -156,6 +173,11 @@ public class SimulateTest implements Runnable {
 		writer.close();
 	}
 	
+	/**
+	 * write final text to the document to record total number of passed and failed runs
+	 * @param pass
+	 * @param fail
+	 */
 	public void WriteToFileFinal(int pass, int fail) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter("error.txt",true));
@@ -169,11 +191,23 @@ public class SimulateTest implements Runnable {
 		
 	}
 
+	/**
+	 * This method generate a random number of obstacles between min and max
+	 * 
+	 * @param min number of obstacles
+	 * @param max number of obstacles
+	 * @return number of obstacles
+	 */
 	public static int generateNoOfObstacle(int min, int max) {
 		int range = (max - min) + 1;
 		return (int) (Math.random() * range) + min;
 	}
 
+	/**
+	 * generate the obstacles in the map grid
+	 * @param mGui
+	 * @return
+	 */
 	public static int generateObstacle(main mGui) {
 		int range = 19;
 		int row = 0;
@@ -188,6 +222,7 @@ public class SimulateTest implements Runnable {
 			obsdir = (int) (Math.random() * 4) + 1;
 			
 		}
+		//while loop need to change
 		while(row == 0 || row == 1 || row == 2 || col == 0 || col == 1 || col == 2);
 		
 		ArrayList<Cell> a = mGui.getObsList();
@@ -235,196 +270,6 @@ public class SimulateTest implements Runnable {
 
 	}
 
-	/**
-	 * This method convert the list of movement into a string instruction that the
-	 * physical robot could execute consecutively.
-	 *
-	 * @param fastestPathMovements Arraylist of movement to reach the destination
-	 * @return String instruction that physical robot could execute consecutively.
-	 */
-	public String parseFPMovement(ArrayList<MOVEMENT> fastestPathMovements) {
-		int i = 0;
-		int j = 0;
-		int counter = 1;
-		String result = "HP";
-
-		while (i < fastestPathMovements.size()) {
-
-			switch (fastestPathMovements.get(i)) {
-
-			case FORWARD:
-				result += "W";
-				break;
-			case LEFT:
-				result += "A";
-				break;
-			case RIGHT:
-				result += "D";
-				break;
-			case BACKWARD:
-				result += "S";
-				break;
-			default:
-				break;
-
-			}
-			for (j = i + 1; j < fastestPathMovements.size(); j++) {
-				if (fastestPathMovements.get(i) == fastestPathMovements.get(j)) {
-					counter++;
-				} else {
-					break;
-				}
-
-			}
-
-			if (fastestPathMovements.get(i) == MOVEMENT.FORWARD && counter < 10) {
-				result += "0" + Integer.toString(counter);
-			} else {
-				result += Integer.toString(counter);
-			}
-			i = j;
-			result += "";
-			counter = 1;
-
-		}
-		System.out.println("R:" + result);
-		return result;
-	}
-
-	/**
-	 * This method convert a path(List of cell) that the robot should travel along
-	 * into a string which consist of turns and movements to reach the destination.
-	 *
-	 * @param cellsInPath The arraylist of cell that forms a path the robot should
-	 *                    take.
-	 * @return String that consist of turns and movement to reach the destination
-	 */
-	public String convertCellsToMovements(ArrayList<Cell> cellsInPath) {
-
-		Robot mBot = new Robot(this.robot.getPosRow(), this.robot.getPosCol(), this.robot.getCurrDir());
-		int currRow = mBot.getPosRow();
-		int currCol = mBot.getPosCol();
-
-		ArrayList<MOVEMENT> fastestPathMovements = new ArrayList<MOVEMENT>();
-
-		for (int i = 0; i < cellsInPath.size(); i++) {
-			int destRow = cellsInPath.get(i).getRow();
-			int destCol = cellsInPath.get(i).getCol();
-			switch (mBot.getCurrDir()) {
-			case NORTH:
-				if (currCol == destCol) {
-					if (currRow < destRow) {
-						fastestPathMovements.add(MOVEMENT.FORWARD);
-						mBot.move(MOVEMENT.FORWARD);
-					} else if (currRow > destRow) {
-						fastestPathMovements.add(MOVEMENT.BACKWARD);
-
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.move(MOVEMENT.FORWARD);
-					}
-				} else if (currRow == destRow) {
-					if (currCol < destCol) {
-						fastestPathMovements.add(MOVEMENT.RIGHT);
-
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.move(MOVEMENT.FORWARD);
-					} else if (currCol > destCol) {
-						fastestPathMovements.add(MOVEMENT.LEFT);
-
-						mBot.turn(MOVEMENT.LEFT);
-						mBot.move(MOVEMENT.FORWARD);
-					}
-				}
-				break;
-			case SOUTH:
-				if (currCol == destCol) {
-					if (currRow < destRow) {
-						fastestPathMovements.add(MOVEMENT.BACKWARD);
-
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.move(MOVEMENT.FORWARD);
-					} else if (currRow > destRow) {
-						fastestPathMovements.add(MOVEMENT.FORWARD);
-						mBot.move(MOVEMENT.FORWARD);
-					}
-				} else if (currRow == destRow) {
-					if (currCol < destCol) {
-						fastestPathMovements.add(MOVEMENT.LEFT);
-
-						mBot.turn(MOVEMENT.LEFT);
-						mBot.move(MOVEMENT.FORWARD);
-					} else if (currCol > destCol) {
-						fastestPathMovements.add(MOVEMENT.RIGHT);
-
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.move(MOVEMENT.FORWARD);
-					}
-				}
-				break;
-			case EAST:
-				if (currCol == destCol) {
-					if (currRow < destRow) {
-						fastestPathMovements.add(MOVEMENT.LEFT);
-
-						mBot.turn(MOVEMENT.LEFT);
-						mBot.move(MOVEMENT.FORWARD);
-					} else if (currRow > destRow) {
-						fastestPathMovements.add(MOVEMENT.RIGHT);
-
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.move(MOVEMENT.FORWARD);
-					}
-				} else if (currRow == destRow) {
-					if (currCol < destCol) {
-						fastestPathMovements.add(MOVEMENT.FORWARD);
-						mBot.move(MOVEMENT.FORWARD);
-					} else if (currCol > destCol) {
-						fastestPathMovements.add(MOVEMENT.BACKWARD);
-
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.move(MOVEMENT.FORWARD);
-					}
-				}
-				break;
-			case WEST:
-				if (currCol == destCol) {
-					if (currRow < destRow) {
-						fastestPathMovements.add(MOVEMENT.RIGHT);
-
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.move(MOVEMENT.FORWARD);
-					} else if (currRow > destRow) {
-						fastestPathMovements.add(MOVEMENT.LEFT);
-
-						mBot.turn(MOVEMENT.LEFT);
-						mBot.move(MOVEMENT.FORWARD);
-					}
-				} else if (currRow == destRow) {
-					if (currCol < destCol) {
-						fastestPathMovements.add(MOVEMENT.BACKWARD);
-
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.turn(MOVEMENT.RIGHT);
-						mBot.move(MOVEMENT.FORWARD);
-					} else if (currCol > destCol) {
-						fastestPathMovements.add(MOVEMENT.FORWARD);
-						mBot.move(MOVEMENT.FORWARD);
-					}
-				}
-				break;
-			}
-
-			currRow = mBot.getPosRow();
-			currCol = mBot.getPosCol();
-
-		}
-
-		String result = parseFPMovement(fastestPathMovements);
-		return result;
-	}
 
 	/**
 	 * This method display the string movements instruction on the virutal robot to
