@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -17,7 +16,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 
 import constant.Constants;
-import entity.Cell;
 import entity.Map;
 /**
  * @author Goh Cheng Guan, Clive
@@ -41,9 +39,12 @@ public class MapPanel extends JPanel {
 	JMenuItem obstacleRight = new JMenuItem("Obstacle Right");
 
 	/**
-	 * Creates a MapPanel
+	 * Creates a MapPanel with popup menu and their respective action listener
 	 *
+	 * @param main m
+	 * @param Map map
 	 * @param isClickable Allow for mouse click when true.
+	 * 
 	 */
 	public MapPanel(main m,boolean isClickable, Map map) {
 		super(new GridLayout(Constants.MAX_ROW + 1, Constants.MAX_COL + 1));
@@ -133,10 +134,18 @@ public class MapPanel extends JPanel {
 
 
 	
+	/**
+	 * This method return the Map Labels
+	 * @return JLabel[][]
+	 */
 	public JLabel[][] getJLabelMap() {
 		return this.cellLabels;
 	}
 
+	
+	/**
+	 * This method creates 20x20 map grid of the arena
+	 */
 	private void populateMapPanel() {
 		cellLabels = new JLabel[Constants.MAX_ROW + 1][Constants.MAX_COL + 1];
 
@@ -166,6 +175,9 @@ public class MapPanel extends JPanel {
 		}
 	}
 
+	/**
+	 * This method allows mouse events on the map grid. Allow user to right-click to place obstacles.
+	 */
 	private void setupClick() {
 		for (int row = Constants.MAX_ROW; row >= 0; row--) {
 			for (int col = 0; col < Constants.MAX_COL + 1; col++) {
@@ -207,6 +219,10 @@ public class MapPanel extends JPanel {
 		}
 	}
 	
+	/**
+	 * This method changes numerical obstacle direction to their respective arrow symbol in the map grid
+	 * @return string value of arrow direction
+	 */
 	public String setSymbol(int ObsDir) {
 		String s = "";
 		switch (ObsDir) {
