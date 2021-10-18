@@ -39,7 +39,6 @@ public class MapSetting extends JPanel {
 	JButton leftBtn;
 	JButton rightBtn;
 
-	private float playSpeed;
 
 	/**
 	 * Creates a setting panel with main buttons to execute various algorithm
